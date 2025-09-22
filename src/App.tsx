@@ -1,35 +1,26 @@
-import { useState } from 'react'
-import './App.css'
-import { Button, Timeline } from 'antd';
-function App() {
-const [reverse, setReverse] = useState(false);
+import Header from '~/components/Header/Header'
+import { Routes, Route, useLocation } from 'react-router-dom'
+import Login from '~/pages/Auth/Login'
+import NotFound from '~/pages/404/NotFound'
 
-  const handleClick = () => {
-    setReverse(!reverse);
-  };
+function App() {
+  const location = useLocation()
+
+  // show header only on specific routes
+  const showHeader = ['/', '/login'].includes(location.pathname)
 
   return (
-    <div>
-      <Timeline
-        pending="Recording..."
-        reverse={reverse}
-        items={[
-          {
-            children: 'Create a services site 2015-09-01',
-          },
-          {
-            children: 'Solve initial network problems 2015-09-01',
-          },
-          {
-            children: 'Technical testing 2015-09-01',
-          },
-        ]}
-      />
-      <Button type="primary" style={{ marginTop: 16 }} onClick={handleClick}>
-        Toggle Reverse
-      </Button>
-    </div>
-  );
+    <>
+      {showHeader && <Header />}
+      <main className={showHeader ? 'mt-[71px]' : ''}>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<div>Home Page</div>} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
+    </>
+  )
 }
 
 export default App

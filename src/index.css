@@ -1,2 +1,26 @@
 @import "tailwindcss";
 
+/* Use @theme to define CSS variables and keyframes */
+@theme {
+    --animate-stars: stars 12s linear infinite alternate;
+    --animate-spin-slow: spinSlow 5s linear infinite;
+
+    @keyframes stars {
+        0% { background-position: -100% 100%; }
+        100% { background-position: 0 0; }
+    }
+
+    @keyframes spinSlow {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+}
+
+@layer utilities {
+    .animate-stars {
+        animation: var(--animate-stars);
+    }
+    .animate-spin-slow {
+        animation: var(--animate-spin-slow);
+    }
+}
