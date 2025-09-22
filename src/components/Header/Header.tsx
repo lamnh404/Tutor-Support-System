@@ -4,10 +4,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
 import Noti from './Noti'
-
+import { useContext } from 'react'
+import { userContext } from '~/context/userContext'
 
 export default function Header() {
-  const user = { name: 'Lam' } // Replace with actual user authentication logic
   const [isOpenNoti, setIsOpenNoti] = useState(false)
   const notifications = [
     'Thông báo 1',
@@ -16,6 +16,7 @@ export default function Header() {
     'Thông báo 4',
     'Thông báo 5'
   ]
+  const { user } = useContext(userContext)
 
   return (
     <nav className="mb-0 px-10 bg-[#0388B4] border-b border-white h-[71px] items-stretch
