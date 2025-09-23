@@ -1,17 +1,17 @@
 export const features = [
   {
     icon: '⭐',
-    title: 'Support for Students',
-    description: 'Students can register for the program, and facilitate tutor selection or automated matching.'
+    title: 'Hỗ trợ cho sinh viên',
+    description: 'Sinh viên có thể đăng ký tham gia chương trình, lựa chọn hoặc được gợi ý tutor phù hợp'
   },
   {
     icon: '📜',
-    title: 'Personalized Schedule',
-    description: 'Tutors are able to set their availability, organize advising sessions, and manage both in-person and online meetings.'
+    title: 'Lịch trình cá nhân hóa',
+    description: 'Tutor có thể thiết lập lịch rảnh, mở các buổi tư vấn, và quản lý các buổi gặp gỡ trực tiếp hoặc trực tuyến'
   },
   {
     icon: '🌐',
-    title: 'Tools for Feedback and Evaluation',
-    description: 'Students can evaluate the quality of the sessions, and tutors can track and record students’ progress.'
+    title: 'Công cụ phản hồi và đánh giá',
+    description: 'Sinh viên có thể đánh giá chất lượng các buổi học, và tutor có thể theo dõi và ghi lại tiến trình của sinh viên.'
   }
 ]
