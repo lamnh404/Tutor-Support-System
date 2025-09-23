@@ -6,9 +6,12 @@ import { useState } from 'react'
 import Noti from './Noti'
 import { useContext } from 'react'
 import { userContext } from '~/context/userContext'
-
+import type { MenuProps } from 'antd'
+import { Dropdown, Avatar } from 'antd'
+import { useNavigate } from 'react-router-dom'
 export default function Header() {
   const [isOpenNoti, setIsOpenNoti] = useState(false)
+  const navigate = useNavigate()
   const notifications = [
     'Thông báo 1',
     'Thông báo 2',
@@ -16,11 +19,30 @@ export default function Header() {
     'Thông báo 4',
     'Thông báo 5'
   ]
-  const { user } = useContext(userContext)
+  const { user, setUser } = useContext(userContext)
+  const handleLogout = () => {
+    setUser(null)
+    localStorage.removeItem('user')
+    localStorage.removeItem('isLoggedIn')
+    navigate('/login')
+  }
+  const items: MenuProps['items'] = [
+    {
+      key: 'settings',
+      label: 'Cài đặt',
+      onClick: () => navigate('/settings')
+    },
+    {
+      key: 'logout',
+      label: 'Đăng xuất',
+      danger: true,
+      onClick: handleLogout
+    }
+  ]
 
   return (
     <nav className="mb-0 px-10 bg-[#0388B4] border-b border-white h-[71px] items-stretch
-                    fixed top-0 left-0 right-0 z-[1030] flex flex-row justify-start box-border">
+                    fixed top-0 left-0 right-0 z-10 flex flex-row justify-start box-border">
       <div className="w-full h-full flex items-center justify-between box-border">
         <Link
           to="/"
@@ -55,6 +77,16 @@ export default function Header() {
                     </ul>
                   </div>
                 )}
+              </div>
+              <div className="h-full flex items-center ml-4 mr-2">
+                <Dropdown menu={{ items }} trigger={['click']}>
+                  <div className="cursor-pointer flex items-center gap-2">
+                    <Avatar src={user?.avatarUrl} alt={user?.name}>
+                      {user?.name?.[0] ?? 'U'}
+                    </Avatar>
+                    <span>{user?.name ?? 'Guest'}</span>
+                  </div>
+                </Dropdown>
               </div>
             </div>
 

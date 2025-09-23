@@ -1,5 +1,4 @@
 
-
 export const mockData = {
     "user": {
         _id: "1",

@@ -1,8 +1,8 @@
 // src/pages/NotFound.tsx
 import { Link } from 'react-router-dom'
 import { Home } from 'lucide-react'
-import PlanetSvg from '~/assets/planet.svg'
-import AstronautSvg from '~/assets/astronaut.svg'
+import PlanetSvg from '~/assets/404/planet.svg'
+import AstronautSvg from '~/assets/404/astronaut.svg'
 
 export default function NotFound() {
   return (

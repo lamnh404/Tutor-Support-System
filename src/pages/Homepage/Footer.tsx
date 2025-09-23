@@ -3,8 +3,8 @@ import React from 'react'
 const Footer: React.FC = () => {
   return (
     <footer className="bg-gray-800 text-gray-300 py-12">
-      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 px-4">
-        <div>
+      <div className="container mx-auto grid md:grid-cols-2 gap-8 px-4 ">
+        <div className="items-center justify-between mx-auto">
           <h4 className="text-lg font-bold mb-4">HCMUT</h4>
           <ul className="space-y-2 text-sm">
             <li><a href="https://hcmut.edu.vn/" className="hover:underline">Trang chủ</a></li>
@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
           </ul>
         </div>
 
-        <div>
+        <div className="items-center justify-between mx-auto">
           <h4 className="text-lg font-bold mb-4">Các trang</h4>
           <ul className="space-y-2 text-sm">
             <li><a href="#" className="hover:underline">Dashboard</a></li>
