@@ -24,8 +24,6 @@ export default tseslint.config([
         }
     },
      rules: {
-      // 🔹 Variables
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
 
       // 🔹 React
       'react-refresh/only-export-components': 'warn',
