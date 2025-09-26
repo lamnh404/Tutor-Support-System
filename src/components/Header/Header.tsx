@@ -42,7 +42,7 @@ export default function Header() {
 
   return (
     <nav className="mb-0 px-10 bg-[#0388B4] border-b border-white h-[71px] items-stretch
-                    fixed top-0 left-0 right-0 z-10 flex flex-row justify-start box-border">
+                    fixed top-0 left-0 right-0 z-20 flex flex-row justify-start box-border">
       <div className="w-full h-full flex items-center justify-between box-border">
         <Link
           to="/"
