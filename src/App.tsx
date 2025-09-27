@@ -3,6 +3,7 @@ import { Routes, Route, useLocation, Outlet, Navigate } from 'react-router-dom'
 import Login from '~/pages/Auth/Login'
 import NotFound from '~/pages/404/NotFound'
 import Home from './pages/Homepage/Home'
+import Settings from './pages/Homepage/Settings'
 import { useState } from 'react'
 import { userContext } from './context/userContext.tsx'
 import { type User } from './context/userContext.tsx'
@@ -38,7 +39,7 @@ function App() {
             <Route path="/student/*" element={<div>Student Dashboard</div>} />
             <Route path="/lecturer/*" element={<div>Lecturer Dashboard</div>} />
             <Route path="/admin/*" element={<div>Admin Dashboard</div>} />
-            <Route path="/settings" element={<div>Settings Page</div>} />
+            <Route path="/settings" element={<Settings />} />
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<Home />} />
