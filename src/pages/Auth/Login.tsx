@@ -12,7 +12,7 @@ import { userContext } from '~/context/userContext.tsx'
 import { toast } from 'react-toastify'
 import { userLoginAPI } from '~/apis/userAPI'
 import { AxiosError } from 'axios'
-import { type User} from '~/context/userContext'
+import { type User } from '~/context/userContext'
 
 type LoginFormData = {
   username: string
@@ -42,7 +42,7 @@ const Login: React.FC = () => {
           error: 'Đăng nhập thất bại!'
         }
       )
-      // console.log(res)
+      console.log(res)
       login(res )
       setError(null)
       navigate('/')

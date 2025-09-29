@@ -20,7 +20,7 @@ export const userLoginAPI = async (username: string, password: string) => {
 
 // ~/apis/userAPI.ts
 export const userRegisterAPI = async (email: string, password: string) => {
-  console.log('User Register API called with:', { email, password })
+  // console.log('User Register API called with:', { email, password })
   const res = await authorizedAxiosInstance.post(`${API_ROOT}/api/auth/register`, { email, password })
   return res.data
 }
