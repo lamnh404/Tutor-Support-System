@@ -12,7 +12,7 @@ import { userContext } from '~/context/userContext.tsx'
 import { toast } from 'react-toastify'
 import { userLoginAPI } from '~/apis/userAPI'
 import { AxiosError } from 'axios'
-import { type LoginResponse } from '~/context/userContext'
+import { type User} from '~/context/userContext'
 
 type LoginFormData = {
   username: string
@@ -34,7 +34,7 @@ const Login: React.FC = () => {
   const handleLogin = async (data: LoginFormData) => {
     const { username, password } = data
     try {
-      const res = await toast.promise<LoginResponse>(
+      const res = await toast.promise<User>(
         userLoginAPI(username, password),
         {
           pending: 'Đang đăng nhập...',
@@ -43,7 +43,7 @@ const Login: React.FC = () => {
         }
       )
       // console.log(res)
-      login(res.user, res.accessToken )
+      login(res )
       setError(null)
       navigate('/')
     } catch (err: unknown) {
