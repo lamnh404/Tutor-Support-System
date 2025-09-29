@@ -1,21 +1,21 @@
 import React, { useContext, useState } from 'react'
-import { 
-  Card, 
-  Form, 
-  Input, 
-  Button, 
-  Avatar, 
-  Divider, 
-  Upload, 
+import {
+  Card,
+  Form,
+  Input,
+  Button,
+  Avatar,
+  Divider,
+  Upload,
   message,
   Row,
   Col,
   Typography,
   Space
 } from 'antd'
-import { 
-  UserOutlined, 
-  UploadOutlined, 
+import {
+  UserOutlined,
+  UploadOutlined,
   SaveOutlined,
   LockOutlined,
   HistoryOutlined,
@@ -44,19 +44,19 @@ const Settings: React.FC = () => {
     }
   }, [user, form])
 
-  const handleSaveProfile = async (values: any) => {
+  const handleSaveProfile = async (values : unknown) => {
     setLoading(true)
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000))
-      
+
       // Update user in context and localStorage
       if (user) {
         const updatedUser = { ...user, name: values.name }
         setUser(updatedUser)
         localStorage.setItem('user', JSON.stringify(updatedUser))
       }
-      
+
       message.success('Cập nhật thông tin thành công!')
     } catch (error) {
       message.error('Có lỗi xảy ra khi cập nhật thông tin!')
@@ -92,7 +92,7 @@ const Settings: React.FC = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-6xl mx-auto px-4">
         <Title level={2} className="mb-8 text-center">⚙️ Cài đặt tài khoản</Title>
-        
+
         <Row gutter={[24, 24]}>
           {/* Profile Settings */}
           <Col xs={24} lg={16}>
@@ -149,9 +149,9 @@ const Settings: React.FC = () => {
                   name="bio"
                   label="Giới thiệu về bản thân"
                 >
-                  <Input.TextArea 
-                    rows={4} 
-                    placeholder="Viết vài dòng giới thiệu về bản thân..." 
+                  <Input.TextArea
+                    rows={4}
+                    placeholder="Viết vài dòng giới thiệu về bản thân..."
                     maxLength={200}
                     showCount
                     size="large"
@@ -159,9 +159,9 @@ const Settings: React.FC = () => {
                 </Form.Item>
 
                 <Form.Item className="mb-0">
-                  <Button 
-                    type="primary" 
-                    htmlType="submit" 
+                  <Button
+                    type="primary"
+                    htmlType="submit"
                     loading={loading}
                     size="large"
                     icon={<SaveOutlined />}
@@ -201,7 +201,7 @@ const Settings: React.FC = () => {
                   </div>
                 </Col>
               </Row>
-              
+
               <Divider />
 
               <Row gutter={[16, 16]}>
@@ -279,10 +279,10 @@ const Settings: React.FC = () => {
                   className="border-4 border-gray-200 shadow-lg"
                 />
               </div>
-              
+
               <Upload {...uploadProps}>
-                <Button 
-                  icon={<UploadOutlined />} 
+                <Button
+                  icon={<UploadOutlined />}
                   size="large"
                   type="dashed"
                   className="w-full"
@@ -290,7 +290,7 @@ const Settings: React.FC = () => {
                   Thay đổi ảnh đại diện
                 </Button>
               </Upload>
-              
+
               <Text type="secondary" className="text-xs mt-2 block">
                 Định dạng: JPG, PNG • Kích thước tối đa: 2MB
               </Text>
@@ -307,8 +307,8 @@ const Settings: React.FC = () => {
                 <div className="flex justify-between">
                   <Text type="secondary">Vai trò:</Text>
                   <Text strong className="capitalize">
-                    {user?.role === 'student' ? '🎓 Sinh viên' : 
-                     user?.role === 'lecturer' ? '👨‍🏫 Giảng viên' : '👨‍💼 Quản trị viên'}
+                    {user?.role === 'student' ? '🎓 Sinh viên' :
+                      user?.role === 'lecturer' ? '👨‍🏫 Giảng viên' : '👨‍💼 Quản trị viên'}
                   </Text>
                 </div>
                 <Divider className="my-2" />
@@ -327,26 +327,26 @@ const Settings: React.FC = () => {
             {/* Security Card */}
             <Card title="🔒 Bảo mật & Quyền riêng tư">
               <Space direction="vertical" className="w-full" size="middle">
-                <Button 
-                  icon={<LockOutlined />} 
-                  size="large" 
+                <Button
+                  icon={<LockOutlined />}
+                  size="large"
                   block
                   type="default"
                 >
                   Đổi mật khẩu
                 </Button>
-                <Button 
-                  icon={<HistoryOutlined />} 
-                  size="large" 
-                  block 
+                <Button
+                  icon={<HistoryOutlined />}
+                  size="large"
+                  block
                   type="dashed"
                 >
                   Lịch sử đăng nhập
                 </Button>
-                <Button 
-                  icon={<LogoutOutlined />} 
-                  size="large" 
-                  block 
+                <Button
+                  icon={<LogoutOutlined />}
+                  size="large"
+                  block
                   danger
                 >
                   Đăng xuất tất cả thiết bị
