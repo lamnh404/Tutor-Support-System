@@ -6,7 +6,7 @@ import Home from './pages/Homepage/Home'
 import { useContext } from 'react'
 import { type User } from './context/userContext.tsx'
 import { ToastContainer } from 'react-toastify'
-import { UserProvider, userContext } from '~/context/userContext.tsx'
+import { userContext } from '~/context/userContext.tsx'
 
 interface ProtectedRouteProps {
   user: User | null
@@ -21,6 +21,7 @@ function App() {
   const location = useLocation()
   const { user } = useContext(userContext)
 
+
   // const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
   // const username = localStorage.getItem('user')
 
@@ -29,7 +30,7 @@ function App() {
 
   return (
     // <userContext.Provider value={{ user, setUser }}>
-    <UserProvider>
+    <>
       {showHeader && <Header />}
       <main className={showHeader ? 'mt-[71px]' : ''}>
         <Routes>
@@ -46,7 +47,7 @@ function App() {
         </Routes>
       </main>
       <ToastContainer position="top-right" autoClose={3000} />
-    </UserProvider>
+    </>
     // </userContext.Provider>
   )
 }

@@ -1,6 +1,5 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-// import { MOCK_USERS } from './mockdata'
 import { useForm, Controller } from 'react-hook-form'
 import { Form, Input, Button, Alert } from 'antd'
 import {
@@ -12,38 +11,30 @@ import FieldErrorAlert from '~/components/Form/FieldErrorAlert.tsx'
 import { userContext } from '~/context/userContext.tsx'
 import { toast } from 'react-toastify'
 import { userLoginAPI } from '~/apis/userAPI'
-import { type User } from '~/context/userContext'
 import { AxiosError } from 'axios'
+import { type LoginResponse } from '~/context/userContext'
 
 type LoginFormData = {
-  username: string;
-  password: string;
-};
+  username: string
+  password: string
+}
 
 const Login: React.FC = () => {
-
   const { handleSubmit, control, formState: { errors } } = useForm<LoginFormData>()
   const [selectedRole, setSelectedRole] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
-  const { user, setUser } = useContext(userContext)
+  const { login } = useContext(userContext)
+
   const handleRoleSelection = (role: string) => {
     setSelectedRole(role)
     setError(null)
   }
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('user', JSON.stringify(user))
-    } else {
-      localStorage.removeItem('user')
-    }
-  }, [user])
 
   const handleLogin = async (data: LoginFormData) => {
-
     const { username, password } = data
     try {
-      const res = await toast.promise<User>(
+      const res = await toast.promise<LoginResponse>(
         userLoginAPI(username, password),
         {
           pending: 'Đang đăng nhập...',
@@ -51,9 +42,9 @@ const Login: React.FC = () => {
           error: 'Đăng nhập thất bại!'
         }
       )
-      setUser(res)
+      // console.log(res)
+      login(res.user, res.accessToken )
       setError(null)
-      // console.log(res) // Đây là response.data từ API
       navigate('/')
     } catch (err: unknown) {
       if (err instanceof AxiosError) {

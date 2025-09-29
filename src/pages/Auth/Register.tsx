@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm, Controller } from 'react-hook-form'
 import { Form, Input, Button, Alert } from 'antd'
@@ -10,7 +10,7 @@ import {
   EMAIL_RULE_MESSAGE
 } from '~/utils/validators.ts'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert.tsx'
-import { userContext } from '~/context/userContext.tsx'
+// import { userContext } from '~/context/userContext.tsx'
 import { toast } from 'react-toastify'
 import { userRegisterAPI } from '~/apis/userAPI'
 import { type User } from '~/context/userContext'
@@ -27,7 +27,7 @@ const Register: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
-  const { setUser } = useContext(userContext)
+  // const { login } = useContext(userContext)
 
   const handleRoleSelection = (role: string) => {
     setSelectedRole(role)
@@ -45,9 +45,8 @@ const Register: React.FC = () => {
           error: 'Đăng ký thất bại!'
         }
       )
-      setUser(res)
       setError(null)
-      navigate('/')
+      navigate('/login')
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
         setError(err?.response?.data?.message)
