@@ -7,7 +7,6 @@ import { useContext } from 'react'
 import { type User } from './context/userContext.tsx'
 import { ToastContainer } from 'react-toastify'
 import { userContext } from '~/context/userContext.tsx'
-
 interface ProtectedRouteProps {
   user: User | null
 }
@@ -26,7 +25,7 @@ function App() {
   // const username = localStorage.getItem('user')
 
   // show header only on specific routes
-  const showHeader = ['/', '/login', '/register'].includes(location.pathname)
+  const showHeader = !['/404'].includes(location.pathname)
 
   return (
     // <userContext.Provider value={{ user, setUser }}>
@@ -43,7 +42,8 @@ function App() {
           <Route path='/login' element={<Auth />} />
           <Route path='/register' element={<Auth />} />
           <Route path="/" element={<Home />} />
-          <Route path="*" element={<NotFound />} />
+          <Route path="/404" element={<NotFound />} />
+          <Route path="*" element={<Navigate to="/404" replace/> }/>
         </Routes>
       </main>
       <ToastContainer position="top-right" autoClose={3000} />
