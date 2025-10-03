@@ -9,7 +9,7 @@ import { userContext } from '~/context/userContext'
 import type { MenuProps } from 'antd'
 import { Dropdown, Avatar } from 'antd'
 import { useNavigate } from 'react-router-dom'
-
+import { userLogoutAPI } from '~/apis/userAPI'
 
 export default function Header() {
   const [isOpenNoti, setIsOpenNoti] = useState(false)
@@ -24,6 +24,7 @@ export default function Header() {
   const { user, logout } = useContext(userContext)
   // console.log(user)
   const handleLogout = () => {
+    userLogoutAPI(true)
     logout()
     navigate('/login')
   }
