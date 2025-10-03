@@ -9,6 +9,8 @@ import { userContext } from '~/context/userContext'
 import type { MenuProps } from 'antd'
 import { Dropdown, Avatar } from 'antd'
 import { useNavigate } from 'react-router-dom'
+
+
 export default function Header() {
   const [isOpenNoti, setIsOpenNoti] = useState(false)
   const navigate = useNavigate()
@@ -19,11 +21,10 @@ export default function Header() {
     'Thông báo 4',
     'Thông báo 5'
   ]
-  const { user, setUser } = useContext(userContext)
+  const { user, logout } = useContext(userContext)
+  // console.log(user)
   const handleLogout = () => {
-    setUser(null)
-    localStorage.removeItem('user')
-    localStorage.removeItem('isLoggedIn')
+    logout()
     navigate('/login')
   }
   const items: MenuProps['items'] = [
@@ -42,7 +43,7 @@ export default function Header() {
 
   return (
     <nav className="mb-0 px-10 bg-[#0388B4] border-b border-white h-[71px] items-stretch
-                    fixed top-0 left-0 right-0 z-10 flex flex-row justify-start box-border">
+                    fixed top-0 left-0 right-0 z-20 flex flex-row justify-start box-border">
       <div className="w-full h-full flex items-center justify-between box-border">
         <Link
           to="/"
@@ -54,7 +55,7 @@ export default function Header() {
         {user? (
           <>
             <div className="">
-              Welcome, {user.name}
+              Welcome, {user.firstName} {user.lastName}
             </div>
             <div className="h-full flex ml-auto pl-0 pb-0 box-border relative">
               <div className="h-full flex items-center mr-[5px]">
@@ -81,10 +82,10 @@ export default function Header() {
               <div className="h-full flex items-center ml-4 mr-2">
                 <Dropdown menu={{ items }} trigger={['click']}>
                   <div className="cursor-pointer flex items-center gap-2">
-                    <Avatar src={user?.avatarUrl} alt={user?.name}>
-                      {user?.name?.[0] ?? 'U'}
+                    <Avatar src={user?.avatarUrl} alt={user?.firstName}>
+                      {user?.firstName?.[0] ?? 'U'}
                     </Avatar>
-                    <span>{user?.name ?? 'Guest'}</span>
+                    <span>{user?.firstName ?? 'Guest'}</span>
                   </div>
                 </Dropdown>
               </div>
