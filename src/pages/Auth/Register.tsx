@@ -41,8 +41,8 @@ const Register: React.FC = () => {
         userRegisterAPI(email, password),
         {
           pending: 'Đang tạo tài khoản...',
-          success: 'Đăng ký thành công!',
-          error: 'Đăng ký thất bại!'
+          success: 'Đăng ký thành công!'
+          // error: 'Đăng ký thất bại!'
         }
       )
       setError(null)
@@ -143,7 +143,7 @@ const Register: React.FC = () => {
               </Form.Item>
 
               <Form.Item>
-                <Button type="primary" htmlType="submit" block size="large" className="mb-3 py-3 text-lg">
+                <Button type="primary" htmlType="submit" block size="large" className="mb-3 py-3 text-lg interceptor-loading">
                   Đăng ký
                 </Button>
                 <Button block size="large" className="py-3 text-lg" onClick={() => setSelectedRole(null)}>

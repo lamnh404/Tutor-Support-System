@@ -26,7 +26,7 @@ export const userRegisterAPI = async (email: string, password: string) => {
 }
 
 export const userLogoutAPI = async (showSuccessMessage: boolean) => {
-  const res = await authorizedAxiosInstance.delete(`${API_ROOT}/api/auth/logout`)
+  const res = await authorizedAxiosInstance.post(`${API_ROOT}/api/auth/logout`)
   if (showSuccessMessage) {
     toast.success('Đăng xuất thành công!')
   }
@@ -34,6 +34,6 @@ export const userLogoutAPI = async (showSuccessMessage: boolean) => {
 }
 
 export const refreshTokenAPI = async () => {
-  const res = await authorizedAxiosInstance.post('${API_ROOT}/api/auth/refresh-token')
+  const res = await authorizedAxiosInstance.post(`${API_ROOT}/api/auth/refresh`)
   return res.data
 }

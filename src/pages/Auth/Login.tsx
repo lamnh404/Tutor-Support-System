@@ -11,7 +11,7 @@ import FieldErrorAlert from '~/components/Form/FieldErrorAlert.tsx'
 import { userContext } from '~/context/userContext.tsx'
 import { toast } from 'react-toastify'
 import { userLoginAPI } from '~/apis/userAPI'
-import { AxiosError } from 'axios'
+// import { AxiosError } from 'axios'
 import { type User } from '~/context/userContext'
 
 type LoginFormData = {
@@ -31,29 +31,23 @@ const Login: React.FC = () => {
     setError(null)
   }
 
-  const handleLogin = async (data: LoginFormData) => {
+  const handleLogin = (data: LoginFormData) => {
     const { username, password } = data
-    try {
-      const res = await toast.promise<User>(
-        userLoginAPI(username, password),
-        {
-          pending: 'Đang đăng nhập...',
-          success: 'Đăng nhập thành công!',
-          error: 'Đăng nhập thất bại!'
-        }
-      )
-      console.log(res)
-      login(res )
+    toast.promise<User>(
+      userLoginAPI(username, password),
+      {
+        pending: 'Đang đăng nhập...',
+        success: 'Đăng nhập thành công!'
+        // error: 'Đăng nhập thất bại!'
+      }
+    ).then(res => {
+      // console.log(res)
+      login(res)
       setError(null)
       navigate('/')
-    } catch (err: unknown) {
-      if (err instanceof AxiosError) {
-        setError(err?.response?.data?.message)
-      } else {
-        setError('Unknown error occurred')
-      }
-    }
+    })
   }
+
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100 p-6 text-lg">
@@ -125,7 +119,7 @@ const Login: React.FC = () => {
               </Form.Item>
 
               <Form.Item>
-                <Button type="primary" htmlType="submit" block size="large" className="mb-3 py-3 text-lg">
+                <Button type="primary" htmlType="submit" block size="large" className="mb-3 py-3 text-lg interceptor-loading">
                   Đăng nhập
                 </Button>
                 <Button block size="large" className="mb-3 py-3 text-lg" onClick={() => setSelectedRole(null)}>
