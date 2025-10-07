@@ -3,6 +3,7 @@ import { Routes, Route, useLocation, Outlet, Navigate } from 'react-router-dom'
 import Auth from '~/pages/Auth/Auth'
 import NotFound from '~/pages/404/NotFound'
 import Home from './pages/Homepage/Home'
+import StudentDashboard from './pages/StudentDashboard/StudentDashboard.tsx'
 import { useContext } from 'react'
 import { type User } from './context/userContext.tsx'
 import { ToastContainer } from 'react-toastify'
@@ -26,6 +27,7 @@ function App() {
 
   // show header only on specific routes
   const showHeader = !['/404'].includes(location.pathname)
+  const showHeader = !['/404'].includes(location.pathname)
 
   return (
     // <userContext.Provider value={{ user, setUser }}>
@@ -33,11 +35,12 @@ function App() {
       {showHeader && <Header />}
       <main className={showHeader ? 'mt-[71px]' : ''}>
         <Routes>
-          <Route element={<ProtectedRoute user={user}/>}>
-            <Route path="/student/*" element={<div>Student Dashboard</div>} />
+          <Route element={<ProtectedRoute user={user} />}>
+            <Route path="/student/*" element={<StudentDashboard />} />
             <Route path="/lecturer/*" element={<div>Lecturer Dashboard</div>} />
             <Route path="/admin/*" element={<div>Admin Dashboard</div>} />
             <Route path="/settings" element={<div>Settings Page</div>} />
+            <Route path="/dashboard" element={<StudentDashboard />} />
           </Route>
           <Route path='/login' element={<Auth />} />
           <Route path='/register' element={<Auth />} />

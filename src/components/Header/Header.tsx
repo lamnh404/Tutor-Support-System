@@ -21,6 +21,11 @@ export default function Header() {
     'Thông báo 4',
     'Thông báo 5'
   ]
+  // will delete later
+  // const { login } = useContext(userContext)
+  // end will delete later
+
+
   const { user, logout } = useContext(userContext)
   // console.log(user)
   const handleLogout = () => {
@@ -52,12 +57,33 @@ export default function Header() {
         >
           <img src="/logoBK.png" alt="Logo" className="max-h-[35px] align-middle overflow-clip" />
         </Link>
+        {user && (
+          <div className="h-full flex items-center space-x-2">
+            <Link to="/">
+              <button className="bg-[#0388B4] text-white py-4 px-3 rounded-xl text-lg hover:bg-[#045a77] transition-colors">
+                Trang Chủ
+              </button>
+            </Link>
+            <Link to="/student">
+              <button className="bg-[#0388B4] text-white py-4 px-3 rounded-xl text-lg hover:bg-[#045a77] transition-colors">
+                Trang Cá Nhân
+              </button>
+            </Link>
+            <Link to="/dashboard">
+              <button className="bg-[#0388B4] text-white py-4 px-3 rounded-xl text-lg hover:bg-[#045a77] transition-colors">
+                Bảng Điều Khiển
+              </button>
+            </Link>
+            <Link to="/library">
+              <button className="bg-[#0388B4] text-white py-4 px-3 rounded-xl text-lg hover:bg-[#045a77] transition-colors">
+                Thư Viện
+              </button>
+            </Link>
+          </div>
+        )}
 
         {user? (
           <>
-            <div className="">
-              Welcome, {user.firstName} {user.lastName}
-            </div>
             <div className="h-full flex ml-auto pl-0 pb-0 box-border relative">
               <div className="h-full flex items-center mr-[5px]">
                 {/* Bọc icon + badge trong relative */}
@@ -101,6 +127,21 @@ export default function Header() {
                 <Button
                   type="text"
                   className="!text-white !text-lg leading-none hover:!border-black"
+                  //testing purposes, remove later
+                  // onClick={() => {const mockUser = {
+                  //   name: 'Test Sinh Viên',
+                  //   role: ['student'],
+                  //   avatarUrl: 'https://hips.hearstapps.com/hmg-prod/images/cristiano-ronaldo-of-portugal-during-the-uefa-nations-news-photo-1748359673.pjpeg?crop=0.610xw:0.917xh;0.317xw,0.0829xh&resize=640:*',
+                  //   username: 'student1',
+                  //   password: 'password123',
+                  //   firstName: 'Kim',
+                  //   lastName: 'Ri Cha'
+                  // }
+                  // login(mockUser)
+                  // localStorage.setItem('user', JSON.stringify(mockUser))
+                  // localStorage.setItem('isLoggedIn', 'true')
+                  // navigate('/student')}}
+                  //end testing purposes
                 >
                 Đăng nhập
                 </Button>
