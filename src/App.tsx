@@ -2,7 +2,7 @@ import Header from '~/components/Header/Header'
 import { Routes, Route, useLocation, Outlet, Navigate } from 'react-router-dom'
 import Auth from '~/pages/Auth/Auth'
 import NotFound from '~/pages/404/NotFound'
-import Home from './pages/Homepage/Home'
+import Hub from './pages/Hub/Hub.tsx'
 import StudentDashboard from './pages/StudentDashboard/StudentDashboard.tsx'
 import { useContext } from 'react'
 import { type User } from './context/userContext.tsx'
@@ -36,7 +36,7 @@ function App() {
           </Route>
           <Route path='/login' element={<Auth />} />
           <Route path='/register' element={<Auth />} />
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Hub />} />
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<Navigate to="/404" replace/> }/>
         </Routes>
