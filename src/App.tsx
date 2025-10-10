@@ -20,17 +20,9 @@ const ProtectedRoute = ({ user }: ProtectedRouteProps) => {
 function App() {
   const location = useLocation()
   const { user } = useContext(userContext)
-
-
-  // const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
-  // const username = localStorage.getItem('user')
-
-  // show header only on specific routes
-  const showHeader = !['/404'].includes(location.pathname)
   const showHeader = !['/404'].includes(location.pathname)
 
   return (
-    // <userContext.Provider value={{ user, setUser }}>
     <>
       {showHeader && <Header />}
       <main className={showHeader ? 'mt-[71px]' : ''}>
@@ -51,7 +43,6 @@ function App() {
       </main>
       <ToastContainer position="top-right" autoClose={3000} />
     </>
-    // </userContext.Provider>
   )
 }
 
