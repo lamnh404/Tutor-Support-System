@@ -1,6 +1,6 @@
 // TutorData.tsx
 
-export type Department = 'Khoa Học Và Kĩ Thuật Máy Tính' | 'Điện - Điện Tử' | 'Cơ Khí' | 'Kỹ Thuật Hóa Học' | 'Kinh Tế';
+export type Department = 'Khoa Học Và Kĩ Thuật Máy Tính' | 'Điện - Điện Tử' | 'Cơ Khí' | 'Kỹ Thuật Hóa Học' | 'Kinh Tế' | 'All';
 
 export interface Tutor {
   id: string;
