@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import TutorCard from './TutorCard'
 import { initialTutors, type Tutor, sortTutors, getUniqueDepartments, getUniqueExpertise, type SortKey, type Department } from './TutorData'
@@ -9,17 +10,55 @@ const Spinner = () => (
   </div>
 )
 
+interface CustomDropdownProps {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  options: string[];
+  getOptionLabel?: (option: string) => string;
+}
+
+const CustomDropdown: React.FC<CustomDropdownProps> = ({ id, label, value, onChange, options, getOptionLabel }) => (
+  <div className="relative">
+    <label htmlFor={id} className="sr-only">{label}</label>
+    <select
+      id={id}
+      className="block w-full appearance-none rounded-lg border-gray-300 bg-white py-2.5 pl-3 pr-10 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+      value={value}
+      onChange={onChange}
+    >
+      {options.map(option => (
+        <option key={option} value={option}>
+          {getOptionLabel ? getOptionLabel(option) : option}
+        </option>
+      ))}
+    </select>
+    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+      </svg>
+    </div>
+  </div>
+)
+
 const TutorSearchPage: React.FC = () => {
   const PAGE_SIZE = 10
+  const [searchParams, setSearchParams] = useSearchParams()
 
-  const [selectedDepartment, setSelectedDepartment] = useState<Department | 'All'>('All')
-  const [selectedExpertise, setSelectedExpertise] = useState('All')
-  const [sortOption, setSortOption] = useState('rating_avg-desc')
+  const [selectedDepartment, setSelectedDepartment] = useState<Department | 'All'>(
+    () => (searchParams.get('department') as Department) || 'All'
+  )
+  const [selectedExpertise, setSelectedExpertise] = useState(
+    () => searchParams.get('expertise') || 'All'
+  )
+  const [sortOption, setSortOption] = useState(
+    () => searchParams.get('sort') || 'rating_avg-desc'
+  )
 
   const [filteredTutors, setFilteredTutors] = useState<Tutor[]>([])
   const [displayedTutors, setDisplayedTutors] = useState<Tutor[]>([])
   const [hasMore, setHasMore] = useState(true)
-
   const [availableExpertise, setAvailableExpertise] = useState<string[]>([])
 
   const uniqueDepartments = ['All', ...getUniqueDepartments(initialTutors)]
@@ -27,29 +66,43 @@ const TutorSearchPage: React.FC = () => {
   useEffect(() => {
     const expertises = getUniqueExpertise(initialTutors, selectedDepartment)
     setAvailableExpertise(['All', ...expertises])
-    setSelectedExpertise('All')
-  }, [selectedDepartment])
+
+    if (!expertises.includes(selectedExpertise) && selectedExpertise !== 'All') {
+      setSelectedExpertise('All')
+    }
+  }, [selectedDepartment, selectedExpertise])
 
   useEffect(() => {
+    const departmentFromUrl = (searchParams.get('department') as Department) || 'All'
+    const expertiseFromUrl = searchParams.get('expertise') || 'All'
+    const sortFromUrl = searchParams.get('sort') || 'rating_avg-desc'
+
     let updatedTutors = [...initialTutors]
 
-    if (selectedDepartment !== 'All') {
-      updatedTutors = updatedTutors.filter(tutor => tutor.department === selectedDepartment)
+    if (departmentFromUrl !== 'All') {
+      updatedTutors = updatedTutors.filter(tutor => tutor.department === departmentFromUrl)
+    }
+    if (expertiseFromUrl !== 'All') {
+      updatedTutors = updatedTutors.filter(tutor => tutor.expertise.includes(expertiseFromUrl))
     }
 
-    if (selectedExpertise !== 'All') {
-      updatedTutors = updatedTutors.filter(tutor =>
-        tutor.expertise.includes(selectedExpertise)
-      )
-    }
-
-    const [key, order] = sortOption.split('-') as [SortKey, 'asc' | 'desc']
+    const [key, order] = sortFromUrl.split('-') as [SortKey, 'asc' | 'desc']
     updatedTutors = sortTutors(updatedTutors, key, order)
 
     setFilteredTutors(updatedTutors)
     setDisplayedTutors(updatedTutors.slice(0, PAGE_SIZE))
     setHasMore(updatedTutors.length > PAGE_SIZE)
-  }, [selectedDepartment, selectedExpertise, sortOption])
+  }, [searchParams])
+
+  const handleSearch = () => {
+    const params: { [key: string]: string } = {}
+
+    if (selectedDepartment !== 'All') params.department = selectedDepartment
+    if (selectedExpertise !== 'All') params.expertise = selectedExpertise
+    if (sortOption !== 'rating_avg-desc') params.sort = sortOption
+
+    setSearchParams(params, { replace: true })
+  }
 
   const fetchMoreData = () => {
     if (displayedTutors.length >= filteredTutors.length) {
@@ -59,38 +112,6 @@ const TutorSearchPage: React.FC = () => {
     const nextTutors = filteredTutors.slice(displayedTutors.length, displayedTutors.length + PAGE_SIZE)
     setDisplayedTutors(prevTutors => [...prevTutors, ...nextTutors])
   }
-
-  interface CustomDropdownProps {
-    id: string;
-    label: string;
-    value: string;
-    onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-    options: string[];
-    getOptionLabel?: (option: string) => string;
-  }
-
-  const CustomDropdown: React.FC<CustomDropdownProps> = ({ id, label, value, onChange, options, getOptionLabel }) => (
-    <div className="relative">
-      <label htmlFor={id} className="sr-only">{label}</label>
-      <select
-        id={id}
-        className="block w-full appearance-none rounded-lg border-gray-300 bg-white py-2.5 pl-3 pr-10 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-        value={value}
-        onChange={onChange}
-      >
-        {options.map(option => (
-          <option key={option} value={option}>
-            {getOptionLabel ? getOptionLabel(option) : option}
-          </option>
-        ))}
-      </select>
-      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-          <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-        </svg>
-      </div>
-    </div>
-  )
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -130,6 +151,14 @@ const TutorSearchPage: React.FC = () => {
                   }
                 }}
               />
+            </div>
+            <div className="mt-4">
+              <button
+                onClick={handleSearch}
+                className="w-full bg-indigo-600 text-white font-semibold py-2.5 px-4 rounded-lg hover:bg-indigo-700 transition-colors shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Tìm kiếm
+              </button>
             </div>
           </div>
         </div>
