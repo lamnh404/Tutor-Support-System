@@ -40,7 +40,7 @@ function App() {
           <Route path='/register' element={<Auth />} />
           <Route path="/" element={<Home />} />
           <Route path="/404" element={<NotFound />} />
-          <Route path="*" element={<Navigate to="/404" replace/> }/>
+          {/*<Route path="*" element={<Navigate to="/404" replace/> }/>*/}
         </Routes>
       </main>
       <ToastContainer position="top-right" autoClose={3000} />
