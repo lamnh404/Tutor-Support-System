@@ -1,76 +1,65 @@
-// TutorSearchPage.tsx
 import React, { useState, useEffect } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import TutorCard from './TutorCard'
 import { initialTutors, type Tutor, sortTutors, getUniqueDepartments, getUniqueExpertise, type SortKey, type Department } from './TutorData'
 
-// --- COMPONENT NHỎ CHO HIỆU ỨNG TẢI ---
 const Spinner = () => (
   <div className="flex justify-center items-center py-8">
     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
   </div>
 )
 
-// --- COMPONENT CHÍNH ---
 const TutorSearchPage: React.FC = () => {
-  const PAGE_SIZE = 20
+  const PAGE_SIZE = 10
 
-  // === State Management ===
-  // State cho các bộ lọc
   const [selectedDepartment, setSelectedDepartment] = useState<Department | 'All'>('All')
   const [selectedExpertise, setSelectedExpertise] = useState('All')
   const [sortOption, setSortOption] = useState('rating_avg-desc')
 
-  // State cho danh sách gia sư
-  const [filteredTutors, setFilteredTutors] = useState<Tutor[]>([]) // Danh sách đầy đủ đã được lọc
-  const [displayedTutors, setDisplayedTutors] = useState<Tutor[]>([]) // Danh sách đang hiển thị trên màn hình
-  const [hasMore, setHasMore] = useState(true) // Cờ cho infinite scroll
+  const [filteredTutors, setFilteredTutors] = useState<Tutor[]>([])
+  const [displayedTutors, setDisplayedTutors] = useState<Tutor[]>([])
+  const [hasMore, setHasMore] = useState(true)
 
-  // State cho dropdown phụ thuộc
   const [availableExpertise, setAvailableExpertise] = useState<string[]>([])
 
   const uniqueDepartments = ['All', ...getUniqueDepartments(initialTutors)]
 
-  // === Logic Hooks ===
-  // Effect để cập nhật danh sách chuyên môn khi khoa thay đổi
   useEffect(() => {
     const expertises = getUniqueExpertise(initialTutors, selectedDepartment)
     setAvailableExpertise(['All', ...expertises])
-    setSelectedExpertise('All') // Reset lựa chọn chuyên môn
+    setSelectedExpertise('All')
   }, [selectedDepartment])
 
-  // Effect chính để lọc và sắp xếp lại toàn bộ danh sách khi bộ lọc thay đổi
   useEffect(() => {
     let updatedTutors = [...initialTutors]
 
     if (selectedDepartment !== 'All') {
       updatedTutors = updatedTutors.filter(tutor => tutor.department === selectedDepartment)
     }
+
     if (selectedExpertise !== 'All') {
-      updatedTutors = updatedTutors.filter(tutor => tutor.expertise === selectedExpertise)
+      updatedTutors = updatedTutors.filter(tutor =>
+        tutor.expertise.includes(selectedExpertise)
+      )
     }
 
     const [key, order] = sortOption.split('-') as [SortKey, 'asc' | 'desc']
     updatedTutors = sortTutors(updatedTutors, key, order)
 
-    setFilteredTutors(updatedTutors) // Cập nhật danh sách đầy đủ
-    setDisplayedTutors(updatedTutors.slice(0, PAGE_SIZE)) // Hiển thị trang đầu tiên
-    setHasMore(updatedTutors.length > PAGE_SIZE) // Kiểm tra xem có cần scroll không
+    setFilteredTutors(updatedTutors)
+    setDisplayedTutors(updatedTutors.slice(0, PAGE_SIZE))
+    setHasMore(updatedTutors.length > PAGE_SIZE)
   }, [selectedDepartment, selectedExpertise, sortOption])
 
-  // Hàm để tải thêm dữ liệu cho infinite scroll
   const fetchMoreData = () => {
     if (displayedTutors.length >= filteredTutors.length) {
       setHasMore(false)
       return
     }
-
-    // Tải thêm 20 gia sư tiếp theo
     const nextTutors = filteredTutors.slice(displayedTutors.length, displayedTutors.length + PAGE_SIZE)
     setDisplayedTutors(prevTutors => [...prevTutors, ...nextTutors])
   }
 
-  // --- COMPONENT CHO DROPDOWN ĐÃ ĐƯỢC THIẾT KẾ LẠI ---
   interface CustomDropdownProps {
     id: string;
     label: string;
@@ -106,8 +95,7 @@ const TutorSearchPage: React.FC = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        {/* --- THANH LỌC DÍNH (STICKY) --- */}
-        <div className="sticky top-[71px] z-10 bg-gray-50 mb-8">
+        <div className="sticky top-[71px] z-10 bg-gray-50 py-4 mb-8">
           <div className="bg-white p-4 rounded-xl shadow-md border border-gray-200">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <CustomDropdown
@@ -146,7 +134,6 @@ const TutorSearchPage: React.FC = () => {
           </div>
         </div>
 
-        {/* --- DANH SÁCH GIA SƯ VỚI INFINITE SCROLL --- */}
         <InfiniteScroll
           dataLength={displayedTutors.length}
           next={fetchMoreData}
@@ -164,7 +151,6 @@ const TutorSearchPage: React.FC = () => {
           ))}
         </InfiniteScroll>
 
-        {/* Thông báo khi không có kết quả nào ngay từ đầu */}
         {filteredTutors.length === 0 && !hasMore && (
           <div className="text-center py-16">
             <h3 className="text-2xl font-semibold text-gray-700">Không tìm thấy kết quả</h3>
