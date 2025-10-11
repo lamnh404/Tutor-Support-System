@@ -9,8 +9,8 @@ export const initialProfile: Tutor[] = [
     department: 'Điện - Điện Tử',
     expertise: ['CAD/CAM', 'Điện Tử Viễn Thông'],
     rating_count: 8,
-    rating_avg: 4.8,
-    currMentee: 3,
+    rating_avg: 4.9,
+    currMentee: 7,
     maxMentee: 8,
     description: 'Giảng viên chuyên ngành vi mạch. Có hơn 8 năm kinh nghiệm trong nghiên cứu và phát triển các hệ thống âm nhạc bằng vi mạch.'
   }

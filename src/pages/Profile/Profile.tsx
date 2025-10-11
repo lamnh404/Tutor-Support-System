@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useParams, Navigate, useNavigate} from 'react-router-dom'
+import { useParams, Navigate, useNavigate } from 'react-router-dom'
 import { initialProfile } from '~/pages/Profile/ProfileData.tsx'
 import { type Tutor } from '~/pages/TutorSearch/TutorData.tsx'
 import { mockReviews, type Review } from '~/components/Review/mockReviews.tsx'
@@ -13,8 +13,7 @@ import {
   CalendarOutlined,
   GlobalOutlined,
   ClockCircleOutlined,
-  FireOutlined,
-  SafetyCertificateOutlined,
+  FireTwoTone,
   HeartOutlined,
   HeartFilled,
   ShareAltOutlined,
@@ -43,7 +42,12 @@ const Profile: React.FC = () => {
     2: 1,
     1: 1
   }
-
+  const RankingColor = (rating: number) => {
+    if (rating >= 4.5) return { text: 'Đánh giá cao', bg_color: 'gold' }
+    if (rating >= 3.5) return { text: 'Đánh giá vừa', bg_color: 'blue' }
+    return { text: 'Đánh giá thấp', bg_color:'red' }
+  }
+  const { text, bg_color } = RankingColor(userProfile.rating_avg)
   const tabItems: TabsProps['items'] = [
     {
       key: 'about',
@@ -52,7 +56,7 @@ const Profile: React.FC = () => {
         <div className="prose max-w-none">
           <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-xl mb-6">
             <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              👋 About Me
+              👋 Giới thiệu
             </h3>
             <p className="text-gray-700 leading-relaxed mb-4 text-base">
               {userProfile?.description}
@@ -70,17 +74,17 @@ const Profile: React.FC = () => {
 
           <Divider />
 
-          <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            💡 Teaching Philosophy
+          <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">💡
+            Nguyên tắc giảng dạy
           </h3>
           <div className="grid md:grid-cols-2 gap-4">
             {[
-              { icon: '🎯', text: 'Personalized lesson plans based on individual goals and learning styles' },
-              { icon: '🚀', text: 'Interactive and engaging teaching methods that keep students motivated' },
-              { icon: '💼', text: 'Focus on practical application and real-world scenarios' },
-              { icon: '📊', text: 'Continuous feedback and progress tracking' },
-              { icon: '🤝', text: 'Supportive environment that encourages questions and growth' },
-              { icon: '⭐', text: 'Proven track record of student success and satisfaction' }
+              { icon: '🎯', text: 'Kế hoạch bài học được cá nhân hóa dựa trên mục tiêu và phong cách học tập của từng cá nhân' },
+              { icon: '🚀', text: 'Phương pháp giảng dạy tương tác và hấp dẫn giúp học sinh luôn có động lực' },
+              { icon: '💼', text: 'Tập trung vào ứng dụng thực tế và các tình huống thực tế' },
+              { icon: '📊', text: 'Phản hồi liên tục và theo dõi tiến độ' },
+              { icon: '🤝', text: 'Môi trường hỗ trợ khuyến khích đặt câu hỏi và phát triển' },
+              { icon: '⭐', text: 'Thành tích đã được chứng minh về sự thành công và sự hài lòng của sinh viên' }
             ].map((item, index) => (
               <div key={index} className="flex items-start gap-3 p-4 bg-white rounded-lg border-2 border-gray-100 hover:border-blue-200 hover:shadow-md transition-all">
                 <span className="text-2xl">{item.icon}</span>
@@ -93,11 +97,11 @@ const Profile: React.FC = () => {
     },
     {
       key: 'reviews',
-      label: <span className="flex items-center gap-2"><StarFilled /> Reviews ({mockReviews.length})</span>,
+      label: <span className="flex items-center gap-2"><StarFilled />Đánh giá ({mockReviews.length})</span>,
       children: (
         <>
           <div className="mb-6">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">What My Students Say</h3>
+            {/*<h3 className="text-2xl font-bold text-gray-900 mb-6">What My Students Say</h3>*/}
 
             {/* Enhanced Rating Overview */}
             <div className="bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 p-6 rounded-xl mb-6">
@@ -167,30 +171,30 @@ const Profile: React.FC = () => {
           </div>
         </>
       )
-    },
-    {
-      key: 'schedule',
-      label: <span className="flex items-center gap-2"><CalendarOutlined /> Schedule</span>,
-      children: (
-        <div className="text-center py-16">
-          <div className="inline-block p-8 bg-gradient-to-br from-blue-50 to-purple-50 rounded-full mb-6">
-            <CalendarOutlined className="text-7xl text-blue-500" />
-          </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-3">Schedule Your First Lesson</h3>
-          <p className="text-gray-600 mb-8 max-w-md mx-auto">
-            View {userProfile?.firstName}'s available time slots and book a lesson that fits your schedule perfectly
-          </p>
-          <Button
-            type="primary"
-            size="large"
-            icon={<CalendarOutlined />}
-            className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0 px-8 h-12 text-base font-medium"
-          >
-            View Available Times
-          </Button>
-        </div>
-      )
     }
+    // {
+    //   key: 'schedule',
+    //   label: <span className="flex items-center gap-2"><CalendarOutlined /> Schedule</span>,
+    //   children: (
+    //     <div className="text-center py-16">
+    //       <div className="inline-block p-8 bg-gradient-to-br from-blue-50 to-purple-50 rounded-full mb-6">
+    //         <CalendarOutlined className="text-7xl text-blue-500" />
+    //       </div>
+    //       <h3 className="text-2xl font-bold text-gray-900 mb-3">Schedule Your First Lesson</h3>
+    //       <p className="text-gray-600 mb-8 max-w-md mx-auto">
+    //         View {userProfile?.firstName}'s available time slots and book a lesson that fits your schedule perfectly
+    //       </p>
+    //       <Button
+    //         type="primary"
+    //         size="large"
+    //         icon={<CalendarOutlined />}
+    //         className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0 px-8 h-12 text-base font-medium"
+    //       >
+    //         View Available Times
+    //       </Button>
+    //     </div>
+    //   )
+    // }
   ]
 
 
@@ -243,7 +247,7 @@ const Profile: React.FC = () => {
 
           <div className="relative flex flex-col md:flex-row gap-6 pt-4">
             <div className="flex flex-col items-center md:items-start z-10">
-              <Badge.Ribbon text="Top Rated" color="gold">
+              <Badge.Ribbon text={text} color={bg_color}>
                 <Avatar
                   size={180}
                   src={userProfile.avatarUrl}
@@ -258,16 +262,16 @@ const Profile: React.FC = () => {
                     {userProfile.rating_avg.toFixed(1)}
                   </div>
                   <Rate disabled defaultValue={userProfile.rating_avg} allowHalf className="text-sm" />
-                  <div className="text-xs text-gray-600 mt-1">{userProfile.rating_count} reviews</div>
+                  <div className="text-xs text-gray-600 mt-1">{userProfile.rating_count} lượt đánh giá</div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs">
-                    <span className="text-gray-600">Response time:</span>
-                    <span className="font-semibold text-green-600">~1 hour</span>
+                    <span className="text-gray-600">Thời gian phản hồi:</span>
+                    <span className="font-semibold text-green-600">~1 tiếng</span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-gray-600">Success rate:</span>
-                    <span className="font-semibold text-blue-600">98%</span>
+                    <span className="text-gray-600">Tỉ lệ thành công:</span>
+                    <span className="font-semibold text-blue-600">38%</span>
                   </div>
                 </div>
               </div>
@@ -279,14 +283,14 @@ const Profile: React.FC = () => {
                   icon={<MessageOutlined />}
                   className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 border-0"
                 >
-                  Send Message
+                  Gởi tin nhắn
                 </Button>
                 <Button
                   size="large"
                   icon={<CalendarOutlined />}
                   className="w-full border-2 border-blue-500 text-blue-600 hover:bg-blue-50"
                 >
-                  Book Lesson
+                  Đặt lịch học
                 </Button>
               </div>
             </div>
@@ -300,55 +304,51 @@ const Profile: React.FC = () => {
                       {userProfile.lastName} {userProfile.firstName}
                     </h1>
                     {isHighDemand && (
-                      <Tooltip title="High demand tutor">
-                        <Badge count={<FireOutlined className="text-orange-500" />} />
+                      <Tooltip title="Gia sư này đang rất được săn đón!">
+                        <Badge count={<FireTwoTone twoToneColor="#eb2f96" />} />
                       </Tooltip>
                     )}
                   </div>
 
                   <div className="flex flex-wrap items-center gap-3 mb-3">
                     <Tag icon={<CheckCircleFilled />} color="blue" className="px-3 py-1">
-                      Verified Professional
+                      Đã xác minh
                     </Tag>
-                    <Tag icon={<SafetyCertificateOutlined />} color="green" className="px-3 py-1">
-                      Background Checked
-                    </Tag>
+                    {/*<Tag icon={<SafetyCertificateOutlined />} color="green" className="px-3 py-1">*/}
+                    {/*  Background Checked*/}
+                    {/*</Tag>*/}
                   </div>
 
                   <div className="flex items-center gap-2 mb-2 text-gray-700">
                     <BookOutlined />
-                    <span className="font-medium">Certified OET trainer / PLAB2 and ESL tutor for all ages</span>
+                    <span className="font-medium">IELTS 8.0</span>
                   </div>
 
                   <div className="flex items-center gap-2 text-gray-600">
                     <GlobalOutlined />
-                    <span>Speaks: English (Native) • Tagalog (Native) • Spanish (Beginner)</span>
+                    <span>Ngôn ngữ: Tiếng Việt</span>
                   </div>
                 </div>
               </div>
 
-              {/* Enhanced Stats Grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                <div className="bg-gradient-to-br from-yellow-50 to-orange-100 p-4 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <StarFilled className="text-yellow-500 text-xl" />
-                    <span className="text-2xl font-bold text-gray-800">{userProfile.rating_avg.toFixed(1)}</span>
-                  </div>
-                  <p className="text-xs text-gray-600">{userProfile.rating_count} reviews</p>
-                  <div className="mt-2 h-1 bg-yellow-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-yellow-500 rounded-full" style={{ width: '95%' }}></div>
-                  </div>
-                </div>
+                {/*<div className="bg-gradient-to-br from-yellow-50 to-orange-100 p-4 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">*/}
+                {/*  <div className="flex items-center gap-2 mb-1">*/}
+                {/*    <StarFilled className="text-yellow-500 text-xl" />*/}
+                {/*    <span className="text-2xl font-bold text-gray-800">{userProfile.rating_avg.toFixed(1)}</span>*/}
+                {/*  </div>*/}
+                {/*  <p className="text-xs text-gray-600">{userProfile.rating_count} reviews</p>*/}
+                {/*  <div className="mt-2 h-1 bg-yellow-200 rounded-full overflow-hidden">*/}
+                {/*    <div className="h-full bg-yellow-500 rounded-full" style={{ width: '95%' }}></div>*/}
+                {/*  </div>*/}
+                {/*</div>*/}
 
                 <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
                   <div className="flex items-center gap-2 mb-1">
                     <TeamOutlined className="text-blue-500 text-xl" />
                     <span className="text-2xl font-bold text-gray-800">{userProfile.currMentee}</span>
                   </div>
-                  <p className="text-xs text-gray-600">Active students</p>
-                  <div className="mt-2 h-1 bg-blue-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-500 rounded-full" style={{ width: '70%' }}></div>
-                  </div>
+                  <p className="text-xs text-gray-600">Học sinh hiện tại</p>
                 </div>
 
                 <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-4 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
@@ -356,34 +356,29 @@ const Profile: React.FC = () => {
                     <BookOutlined className="text-green-500 text-xl" />
                     <span className="text-2xl font-bold text-gray-800">500+</span>
                   </div>
-                  <p className="text-xs text-gray-600">Lessons completed</p>
-                  <div className="mt-2 h-1 bg-green-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-green-500 rounded-full" style={{ width: '100%' }}></div>
-                  </div>
+                  <p className="text-xs text-gray-600">Buổi học</p>
                 </div>
 
                 <div className="bg-gradient-to-br from-purple-50 to-pink-100 p-4 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
                   <div className="flex items-center gap-2 mb-1">
                     <TrophyOutlined className="text-purple-500 text-xl" />
-                    <span className="text-2xl font-bold text-gray-800">7 yrs</span>
+                    <span className="text-2xl font-bold text-gray-800">7 năm</span>
                   </div>
-                  <p className="text-xs text-gray-600">Teaching experience</p>
-                  <div className="mt-2 h-1 bg-purple-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-purple-500 rounded-full" style={{ width: '85%' }}></div>
-                  </div>
+                  <p className="text-xs text-gray-600">Kinh nghiệm giảng dạy</p>
                 </div>
               </div>
 
               {/* Expertise Tags with Enhanced Design */}
               <div className="mb-4">
                 <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                  <span>🎯</span> Specializations
+                  <span>🎯</span> Chuyên ngành
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {userProfile.expertise.map((skill, index) => (
                     <Tag
                       key={index}
-                      className="px-4 py-2 text-sm border-2 border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 hover:border-blue-300 transition-all cursor-pointer"
+                      color="blue"
+                      className="cursor-pointer"
                     >
                       {skill}
                     </Tag>
@@ -396,10 +391,10 @@ const Profile: React.FC = () => {
                 <div className="flex justify-between items-center mb-3">
                   <div className="flex items-center gap-2">
                     <ClockCircleOutlined className="text-lg text-blue-600" />
-                    <span className="text-sm font-semibold text-gray-700">Current Availability</span>
+                    <span className="text-sm font-semibold text-gray-700">Số lượng còn trống</span>
                   </div>
                   <span className="text-sm font-bold text-gray-800">
-                    {userProfile.maxMentee - userProfile.currMentee} / {userProfile.maxMentee} spots open
+                    {userProfile.maxMentee - userProfile.currMentee} / {userProfile.maxMentee} chỗ
                   </span>
                 </div>
                 <Progress
@@ -413,8 +408,8 @@ const Profile: React.FC = () => {
                 />
                 {isHighDemand && (
                   <div className="flex items-center gap-2 text-xs text-orange-600 font-medium mt-2">
-                    <FireOutlined />
-                    <span>High demand! Book soon to secure your spot</span>
+                    <FireTwoTone twoToneColor="#eb2f96" />
+                    <span> Gần hết slot</span>
                   </div>
                 )}
               </div>
