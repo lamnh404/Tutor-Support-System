@@ -9,6 +9,8 @@ import { userContext } from '~/context/userContext'
 import type { MenuProps } from 'antd'
 import { Dropdown, Avatar } from 'antd'
 import { useNavigate } from 'react-router-dom'
+import { userLogoutAPI } from '~/apis/userAPI'
+
 export default function Header() {
   const [isOpenNoti, setIsOpenNoti] = useState(false)
   const navigate = useNavigate()
@@ -19,11 +21,16 @@ export default function Header() {
     'Thông báo 4',
     'Thông báo 5'
   ]
-  const { user, setUser } = useContext(userContext)
+  // will delete later
+  // const { login } = useContext(userContext)
+  // end will delete later
+
+
+  const { user, logout } = useContext(userContext)
+  // console.log(user)
   const handleLogout = () => {
-    setUser(null)
-    localStorage.removeItem('user')
-    localStorage.removeItem('isLoggedIn')
+    userLogoutAPI(true)
+    logout()
     navigate('/login')
   }
   const items: MenuProps['items'] = [
@@ -42,7 +49,7 @@ export default function Header() {
 
   return (
     <nav className="mb-0 px-10 bg-[#0388B4] border-b border-white h-[71px] items-stretch
-                    fixed top-0 left-0 right-0 z-10 flex flex-row justify-start box-border">
+                    fixed top-0 left-0 right-0 z-20 flex flex-row justify-start box-border">
       <div className="w-full h-full flex items-center justify-between box-border">
         <Link
           to="/"
@@ -50,12 +57,33 @@ export default function Header() {
         >
           <img src="/logoBK.png" alt="Logo" className="max-h-[35px] align-middle overflow-clip" />
         </Link>
+        {user && (
+          <div className="h-full flex items-center space-x-2 cursor-pointer">
+            <Link to="/">
+              <button className="bg-[#0388B4] text-white py-4 px-3 rounded-xl text-lg hover:bg-[#045a77] transition-colors">
+                Trang Chủ
+              </button>
+            </Link>
+            <Link to="/student">
+              <button className="bg-[#0388B4] text-white py-4 px-3 rounded-xl text-lg hover:bg-[#045a77] transition-colors cursor-pointer">
+                Trang Cá Nhân
+              </button>
+            </Link>
+            <Link to="/dashboard">
+              <button className="bg-[#0388B4] text-white py-4 px-3 rounded-xl text-lg hover:bg-[#045a77] transition-colors cursor-pointer">
+                Bảng Điều Khiển
+              </button>
+            </Link>
+            <Link to="/library">
+              <button className="bg-[#0388B4] text-white py-4 px-3 rounded-xl text-lg hover:bg-[#045a77] transition-colors cursor-pointer">
+                Thư Viện
+              </button>
+            </Link>
+          </div>
+        )}
 
         {user? (
           <>
-            <div className="">
-              Welcome, {user.name}
-            </div>
             <div className="h-full flex ml-auto pl-0 pb-0 box-border relative">
               <div className="h-full flex items-center mr-[5px]">
                 {/* Bọc icon + badge trong relative */}
@@ -81,10 +109,10 @@ export default function Header() {
               <div className="h-full flex items-center ml-4 mr-2">
                 <Dropdown menu={{ items }} trigger={['click']}>
                   <div className="cursor-pointer flex items-center gap-2">
-                    <Avatar src={user?.avatarUrl} alt={user?.name}>
-                      {user?.name?.[0] ?? 'U'}
+                    <Avatar src={user?.avatarUrl} alt={user?.firstName}>
+                      {user?.firstName?.[0] ?? 'U'}
                     </Avatar>
-                    <span>{user?.name ?? 'Guest'}</span>
+                    <span>{user?.firstName ?? 'Guest'}</span>
                   </div>
                 </Dropdown>
               </div>
@@ -99,6 +127,21 @@ export default function Header() {
                 <Button
                   type="text"
                   className="!text-white !text-lg leading-none hover:!border-black"
+                  //testing purposes, remove later
+                  // onClick={() => {const mockUser = {
+                  //   name: 'Test Sinh Viên',
+                  //   role: ['student'],
+                  //   avatarUrl: 'https://hips.hearstapps.com/hmg-prod/images/cristiano-ronaldo-of-portugal-during-the-uefa-nations-news-photo-1748359673.pjpeg?crop=0.610xw:0.917xh;0.317xw,0.0829xh&resize=640:*',
+                  //   username: 'student1',
+                  //   password: 'password123',
+                  //   firstName: 'Kim',
+                  //   lastName: 'Ri Cha'
+                  // }
+                  // login(mockUser)
+                  // localStorage.setItem('user', JSON.stringify(mockUser))
+                  // localStorage.setItem('isLoggedIn', 'true')
+                  // navigate('/student')}}
+                  //end testing purposes
                 >
                 Đăng nhập
                 </Button>
