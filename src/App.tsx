@@ -11,6 +11,7 @@ import { userContext } from '~/context/userContext.tsx'
 import TutorSearchPage from './pages/TutorSearch/TutorSearch.tsx'
 import Profile from '~/pages/Profile/Profile.tsx'
 import ScrollToTop from '~/components/ScrollToTop/ScrollToTop.tsx'
+import Setting from '~/pages/Setting/Settings.tsx'
 
 interface ProtectedRouteProps {
   user: User | null
@@ -36,7 +37,7 @@ function App() {
             <Route path="/student/*" element={ <StudentDashboard /> } />
             <Route path="/lecturer/*" element={ <div>Lecturer Dashboard</div> } />
             <Route path="/admin/*" element={ <div>Admin Dashboard</div> } />
-            <Route path="/settings" element={ <div>Settings Page</div> } />
+            <Route path="/settings" element={ <Setting /> } />
             <Route path="/dashboard" element={ <TutorSearchPage /> } />
           </Route>
           <Route path='/:id' element={ <Profile />} />

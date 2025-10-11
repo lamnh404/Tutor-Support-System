@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import Login from './Login'
 import Register from './Register.tsx'
 import { userContext } from '~/context/userContext'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 
 function Auth() {
   const location = useLocation()
@@ -11,12 +11,11 @@ function Auth() {
   const isRegister = location.pathname === '/register'
   const { user } = useContext(userContext)
   const navigate = useNavigate()
-  // console.log(location)
-  // console.log(user)
-  if (user) {
-    navigate('/dashboard', { replace: true })
-  }
-
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard', { replace: true })
+    }
+  }, [navigate, user])
   return (
     <>
       {isLogin && <Login />}
