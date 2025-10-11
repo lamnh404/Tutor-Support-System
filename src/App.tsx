@@ -9,9 +9,8 @@ import { type User } from './context/userContext.tsx'
 import { ToastContainer } from 'react-toastify'
 import { userContext } from '~/context/userContext.tsx'
 import TutorSearchPage from './pages/TutorSearch/TutorSearch.tsx'
-// import Home from '~/pages/Homepage/Home'
 import Profile from '~/pages/Profile/Profile.tsx'
-
+import ScrollToTop from '~/components/ScrollToTop/ScrollToTop.tsx'
 
 interface ProtectedRouteProps {
   user: User | null
@@ -29,6 +28,7 @@ function App() {
 
   return (
     <>
+      <ScrollToTop />
       {showHeader && <Header />}
       <main className={showHeader ? 'mt-[71px]' : ''}>
         <Routes>

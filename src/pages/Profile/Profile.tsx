@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { Navigate, useParams } from 'react-router-dom'
-// import { userProfileAPI } from '~/apis/userAPI'
+import { useParams, Navigate, useNavigate} from 'react-router-dom'
 import { initialProfile } from '~/pages/Profile/ProfileData.tsx'
 import { type Tutor } from '~/pages/TutorSearch/TutorData.tsx'
 import { mockReviews, type Review } from '~/components/Review/mockReviews.tsx'
@@ -21,14 +20,13 @@ import {
   ShareAltOutlined,
   MoreOutlined
 } from '@ant-design/icons'
-import { Card, Avatar, Button, Tag, Progress, Tabs, Rate, Divider, Tooltip, Badge } from 'antd'
-import type { TabsProps } from 'antd'
+import { Card, Avatar, Button, Tag, Progress, Tabs, Rate, Divider, Tooltip, Badge, message, type TabsProps } from 'antd'
 
 const Profile: React.FC = () => {
   const { id } = useParams()
   const [activeTab, setActiveTab] = useState('about')
   const [isFavorite, setIsFavorite] = useState(false)
-
+  const navigate = useNavigate()
 
   const userProfile: Tutor | undefined = initialProfile.find(profile => profile.id === id)
 
@@ -38,8 +36,6 @@ const Profile: React.FC = () => {
 
   const availabilityPercentage = ((userProfile.maxMentee - userProfile.currMentee) / userProfile.maxMentee) * 100
   const isHighDemand = userProfile.currMentee / userProfile.maxMentee > 0.7
-
-  // Calculate rating distribution for visual display
   const ratingDistribution = {
     5: 85,
     4: 10,
@@ -48,7 +44,6 @@ const Profile: React.FC = () => {
     1: 1
   }
 
-  // Tab items configuration
   const tabItems: TabsProps['items'] = [
     {
       key: 'about',
@@ -60,7 +55,7 @@ const Profile: React.FC = () => {
               👋 About Me
             </h3>
             <p className="text-gray-700 leading-relaxed mb-4 text-base">
-              {userProfile.description}
+              {userProfile?.description}
             </p>
             <p className="text-gray-700 leading-relaxed mb-4 text-base">
               Welcome to my OET preparation and ESL classes! 🎓 With almost 7 years of experience helping
@@ -109,10 +104,10 @@ const Profile: React.FC = () => {
               <div className="flex flex-col md:flex-row gap-8 items-center">
                 <div className="text-center">
                   <div className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-orange-600">
-                    {userProfile.rating_avg.toFixed(1)}
+                    {userProfile?.rating_avg.toFixed(1)}
                   </div>
-                  <Rate disabled defaultValue={userProfile.rating_avg} allowHalf className="text-3xl my-2" />
-                  <p className="text-gray-600 font-medium">Based on {userProfile.rating_count} reviews</p>
+                  <Rate disabled defaultValue={userProfile?.rating_avg} allowHalf className="text-3xl my-2" />
+                  <p className="text-gray-600 font-medium">Based on {userProfile?.rating_count} reviews</p>
                 </div>
 
                 <div className="flex-1 w-full">
@@ -183,7 +178,7 @@ const Profile: React.FC = () => {
           </div>
           <h3 className="text-2xl font-bold text-gray-900 mb-3">Schedule Your First Lesson</h3>
           <p className="text-gray-600 mb-8 max-w-md mx-auto">
-            View {userProfile.firstName}'s available time slots and book a lesson that fits your schedule perfectly
+            View {userProfile?.firstName}'s available time slots and book a lesson that fits your schedule perfectly
           </p>
           <Button
             type="primary"
@@ -198,14 +193,18 @@ const Profile: React.FC = () => {
     }
   ]
 
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 py-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Top Action Bar */}
         <div className="flex justify-between items-center mb-4">
           <Button
-            type="text"
-            onClick={() => <Navigate to='/dashboard' replace/>}
+            type="primary"
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+              navigate('/dashboard')
+            }}
             className="text-gray-600 hover:text-gray-900"
           >
             ← Quay lại tìm gia sư
@@ -218,8 +217,20 @@ const Profile: React.FC = () => {
                 onClick={() => setIsFavorite(!isFavorite)}
               />
             </Tooltip>
-            <Tooltip title="Chia sẻ hồ sơ">
-              <Button shape="circle" icon={<ShareAltOutlined />} />
+            <Tooltip title="Share profile">
+              <Button
+                shape="circle"
+                icon={<ShareAltOutlined />}
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(window.location.href)
+                    message.success('Copied link to clipboard!')
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                  } catch (error) {
+                    message.error('Failed to copy link.')
+                  }
+                }}
+              />
             </Tooltip>
             <Button shape="circle" icon={<MoreOutlined />} />
           </div>
@@ -231,7 +242,6 @@ const Profile: React.FC = () => {
           <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-10"></div>
 
           <div className="relative flex flex-col md:flex-row gap-6 pt-4">
-            {/* Avatar Section with Badge */}
             <div className="flex flex-col items-center md:items-start z-10">
               <Badge.Ribbon text="Top Rated" color="gold">
                 <Avatar
@@ -399,7 +409,7 @@ const Profile: React.FC = () => {
                     '100%': availabilityPercentage > 50 ? '#95de64' : availabilityPercentage > 20 ? '#ffc53d' : '#ff7875'
                   }}
                   showInfo={false}
-                  size={[0, 10]}
+                  className="mb-2"
                 />
                 {isHighDemand && (
                   <div className="flex items-center gap-2 text-xs text-orange-600 font-medium mt-2">
