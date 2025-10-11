@@ -1,79 +1,171 @@
 // TutorData.tsx
 
-// Define a specific type for the allowed faculty strings for better type safety.
-export type Faculty = 'Khoa Học Và Kĩ Thuật Máy Tính' | 'Điện - Điện Tử' | 'Cơ Khí';
+export type Department = 'Khoa Học Và Kĩ Thuật Máy Tính' | 'Điện - Điện Tử' | 'Cơ Khí' | 'Kỹ Thuật Hóa Học' | 'Kinh Tế';
 
-// Define the main Tutor interface.
 export interface Tutor {
   id: string;
-  name: string;
-  image: string;
-  faculty: Faculty;
-  rating: number;
+  firstName: string;
+  lastName: string;
+  avatarUrl: string;
+  department: Department;
+  expertise: string;
+  rating_count: number;
+  rating_avg: number;
+  currMentee: number;
+  maxMentee: number;
   description: string;
 }
 
-// Define the keys that can be used for sorting.
-export type SortKey = 'name' | 'rating' | 'faculty';
+// Cập nhật SortKey để chỉ bao gồm các lựa chọn mong muốn
+export type SortKey = 'firstName' | 'rating_avg';
 
 export const initialTutors: Tutor[] = [
   {
     id: '1',
-    name: 'Nguyễn Văn A',
-    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2788&q=80',
-    faculty: 'Khoa Học Và Kĩ Thuật Máy Tính',
-    rating: 4.9,
-    description: 'Chuyên gia về thuật toán và cấu trúc dữ liệu. Có kinh nghiệm giảng dạy cho sinh viên năm 1 và 2.'
+    firstName: 'Si',
+    lastName: 'Lê Minh',
+    avatarUrl: 'https://fcb-abj-pre.s3.amazonaws.com/img/jugadors/MESSI.jpg',
+    department: 'Kinh Tế',
+    expertise: 'Kinh Tế Lượng',
+    rating_count: 3,
+    rating_avg: 5.0,
+    currMentee: 8,
+    maxMentee: 15,
+    description: 'Có 1 World Cup và 8 Quả Bóng Vàng. Chuyên gia kinh tế lượng và phân tích dữ liệu kinh doanh.'
   },
   {
     id: '2',
-    name: 'Trần Thị B',
-    image: 'https://images.unsplash.com/photo-1502823403499-6ccfcf20f692?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80',
-    faculty: 'Điện - Điện Tử',
-    rating: 4.8,
-    description: 'Giảng viên chuyên ngành vi mạch và hệ thống nhúng. Hướng dẫn sinh viên làm đồ án tốt nghiệp.'
+    firstName: 'Hiếc',
+    lastName: 'Lê Sang',
+    avatarUrl: 'https://upload.wikimedia.org/wikipedia/commons/1/1a/Faker_2020_interview.jpg',
+    department: 'Khoa Học Và Kĩ Thuật Máy Tính',
+    expertise: 'Lập Trình Game',
+    rating_count: 12,
+    rating_avg: 4.9,
+    currMentee: 5,
+    maxMentee: 10,
+    description: '4 Cúp Chung Kết Thế Giới. Chuyên gia lập trình game với hơn 10 năm kinh nghiệm trong ngành công nghiệp game AAA.'
   },
   {
     id: '3',
-    name: 'Lê Minh C',
-    image: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80',
-    faculty: 'Cơ Khí',
-    rating: 4.7,
-    description: 'Kỹ sư cơ khí chế tạo máy với 10 năm kinh nghiệm. Hỗ trợ các môn học về CAD/CAM và sức bền vật liệu.'
+    firstName: 'Tùng',
+    lastName: 'Nguyễn Thanh',
+    avatarUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7zEEISvcs1XuhHOPNI0aUElsa46Fmv5NLDg&s',
+    department: 'Điện - Điện Tử',
+    expertise: 'Vi mạch & Hệ thống nhúng',
+    rating_count: 8,
+    rating_avg: 4.8,
+    currMentee: 3,
+    maxMentee: 8,
+    description: 'Giảng viên chuyên ngành vi mạch. Có hơn 8 năm kinh nghiệm trong nghiên cứu và phát triển các hệ thống âm nhạc bằng vi mạch.'
   },
   {
     id: '4',
-    name: 'Phạm Thu D',
-    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29329?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80',
-    faculty: 'Khoa Học Và Kĩ Thuật Máy Tính',
-    rating: 5.0,
-    description: 'Chuyên gia về phát triển web full-stack với React và Node.js. Đam mê chia sẻ kiến thức thực tế.'
+    firstName: 'Giản',
+    lastName: 'Đơn Văn',
+    avatarUrl: 'https://gamesettings.com/wp-content/uploads/2021/12/s1mple-profile-picture.jpeg',
+    department: 'Cơ Khí',
+    expertise: 'CAD/CAM & Sức bền vật liệu',
+    rating_count: 5,
+    rating_avg: 4.7,
+    currMentee: 2,
+    maxMentee: 5,
+    description: 'Giúp các môn như giải tích, xác suất, thống kê, cơ học, nhiệt động lực học trở nên dễ hiểu và thú vị hơn.'
   },
   {
     id: '5',
-    name: 'Hoàng Quốc V',
-    image: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2960&q=80',
-    faculty: 'Điện - Điện Tử',
-    rating: 4.6,
-    description: 'Nghiên cứu sinh chuyên ngành xử lý tín hiệu số. Có thể dạy các môn toán cao cấp và lý thuyết mạch.'
+    firstName: 'Thạch',
+    lastName: 'Phạm Ngọc',
+    avatarUrl: 'https://scontent.fsgn14-1.fna.fbcdn.net/v/t39.30808-6/537309535_3157162737779473_3340922358978200204_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=aa7b47&_nc_eui2=AeH5XpOoxC9QseWZpzzBcHCe_FzX0vQpx1L8XNfS9CnHUv7UssAgrSKZpyXmZd-JWkabKvsct3CsBGVIvTW6I0XN&_nc_ohc=VxidwA1IV_oQ7kNvwG0Knzj&_nc_oc=AdmrGMompROezchNn-XVDVuHUiK0oSx5n9Pbh9gcApwE3JlVL_tn6jqhvR_U498EqNM&_nc_zt=23&_nc_ht=scontent.fsgn14-1.fna&_nc_gid=ndojlwshQZaH2m1woq--KA&oh=00_AfeXLvovFoVyfSumI_F86nSyQqpFjQfACGmyH04I3QMgdw&oe=68EF8EFB',
+    department: 'Điện - Điện Tử',
+    expertise: 'Điện Tử Viễn Thông',
+    rating_count: 36,
+    rating_avg: 5.0,
+    currMentee: 3,
+    maxMentee: 8,
+    description: 'Mùa sau là mùa của chúng ta. Nghỉ học đi làm streamer full time.'
+  },
+  {
+    id: '6',
+    firstName: 'Thịnh',
+    lastName: 'Phạm Sơn',
+    avatarUrl: 'https://valo2asia.com/wp-content/uploads/2023/03/DSC00001-Edit-scaled-e1679474299336-1170x918.jpg',
+    department: 'Khoa Học Và Kĩ Thuật Máy Tính',
+    expertise: 'Lập Trình Web',
+    rating_count: 10,
+    rating_avg: 4.6,
+    currMentee: 4,
+    maxMentee: 8,
+    description: 'Chuyên gia về lập trình web với nhiều năm kinh nghiệm trong ngành.'
+  },
+  {
+    id: '7',
+    firstName: 'Bạch',
+    lastName: 'Trần Văn',
+    avatarUrl: 'https://dailytheology.org/wp-content/uploads/2013/08/heisenberg-breaking-bad.jpg?w=590',
+    department: 'Kỹ Thuật Hóa Học',
+    expertise: 'Hóa Dược',
+    rating_count: 15,
+    rating_avg: 4.5,
+    currMentee: 6,
+    maxMentee: 12,
+    description: 'Chuyên gia trong lĩnh vực hóa dược với nhiều năm kinh nghiệm nghiên cứu và phát triển thuốc.'
+  },
+  {
+    id: '8',
+    firstName: 'Độ',
+    lastName: 'Phùng Thanh',
+    avatarUrl: 'https://image.theinfluencer.vn/files/2023/4/imgs/file-1682306109865.jpg???',
+    department: 'Kinh Tế',
+    expertise: 'Kinh Tế Lượng',
+    rating_count: 20,
+    rating_avg: 4.4,
+    currMentee: 7,
+    maxMentee: 14,
+    description: 'Hướng dẫn cách bán khô gà trên mạng xã hội.'
+  },
+  {
+    id: '9',
+    firstName: 'Độ',
+    lastName: 'Phùng Thanh',
+    avatarUrl: 'https://image.theinfluencer.vn/files/2023/4/imgs/file-1682306109865.jpg???',
+    department: 'Kinh Tế',
+    expertise: 'Kinh Tế Lượng',
+    rating_count: 20,
+    rating_avg: 4.4,
+    currMentee: 15,
+    maxMentee: 15,
+    description: 'Hướng dẫn cách bán khô gà trên mạng xã hội.'
   }
 ]
 
-// Helper function to sort tutors based on a key and order.
+// Hàm sắp xếp đã được đơn giản hóa theo SortKey
 export const sortTutors = (tutors: Tutor[], key: SortKey, order: 'asc' | 'desc' = 'asc'): Tutor[] => {
   return [...tutors].sort((a, b) => {
     let comparison = 0
-    if (key === 'name' || key === 'faculty') {
-      comparison = a[key].localeCompare(b[key])
-    } else if (key === 'rating') {
+    if (key === 'firstName') {
+      comparison = a.firstName.localeCompare(b.firstName)
+    } else if (key === 'rating_avg') {
       comparison = a[key] - b[key]
     }
     return order === 'asc' ? comparison : -comparison
   })
 }
 
-// Helper function to get unique faculty names for the filter dropdown.
-export const getUniqueFaculties = (tutors: Tutor[]): Faculty[] => {
-  const faculties = tutors.map(tutor => tutor.faculty)
-  return Array.from(new Set(faculties))
+// Lấy danh sách các khoa duy nhất
+export const getUniqueDepartments = (tutors: Tutor[]): Department[] => {
+  const departments = tutors.map(tutor => tutor.department)
+  return Array.from(new Set(departments))
+}
+
+// === HÀM MỚI ===
+// Lấy danh sách chuyên môn duy nhất, có thể lọc theo khoa đã chọn
+export const getUniqueExpertise = (tutors: Tutor[], department: Department | 'All'): string[] => {
+  let filteredTutors = tutors
+  // Nếu một khoa cụ thể được chọn, lọc gia sư theo khoa đó trước
+  if (department !== 'All') {
+    filteredTutors = tutors.filter(tutor => tutor.department === department)
+  }
+  const expertises = filteredTutors.map(tutor => tutor.expertise)
+  return Array.from(new Set(expertises))
 }
