@@ -2,14 +2,17 @@ import Header from '~/components/Header/Header'
 import { Routes, Route, useLocation, Outlet, Navigate } from 'react-router-dom'
 import Auth from '~/pages/Auth/Auth'
 import NotFound from '~/pages/404/NotFound'
-// import Hub from './pages/Hub/Hub.tsx'
+import Hub from './pages/Hub/Hub.tsx'
 import StudentDashboard from './pages/StudentDashboard/StudentDashboard.tsx'
 import { useContext } from 'react'
 import { type User } from './context/userContext.tsx'
 import { ToastContainer } from 'react-toastify'
 import { userContext } from '~/context/userContext.tsx'
 import TutorSearchPage from './pages/TutorSearch/TutorSearch.tsx'
-import Home from '~/pages/Homepage/Home'
+import Profile from '~/pages/Profile/Profile.tsx'
+import ScrollToTop from '~/components/ScrollToTop/ScrollToTop.tsx'
+import Setting from '~/pages/Setting/Settings.tsx'
+
 interface ProtectedRouteProps {
   user: User | null
 }
@@ -26,21 +29,23 @@ function App() {
 
   return (
     <>
+      <ScrollToTop />
       {showHeader && <Header />}
       <main className={showHeader ? 'mt-[71px]' : ''}>
         <Routes>
           <Route element={<ProtectedRoute user={user} />}>
-            <Route path="/student/*" element={<StudentDashboard />} />
-            <Route path="/lecturer/*" element={<div>Lecturer Dashboard</div>} />
-            <Route path="/admin/*" element={<div>Admin Dashboard</div>} />
-            <Route path="/settings" element={<div>Settings Page</div>} />
-            <Route path="/dashboard" element={<TutorSearchPage />} />
+            <Route path="/student/*" element={ <StudentDashboard /> } />
+            <Route path="/lecturer/*" element={ <div>Lecturer Dashboard</div> } />
+            <Route path="/admin/*" element={ <div>Admin Dashboard</div> } />
+            <Route path="/settings" element={ <Setting /> } />
+            <Route path="/dashboard" element={ <TutorSearchPage /> } />
           </Route>
-          <Route path='/login' element={<Auth />} />
-          <Route path='/register' element={<Auth />} />
-          <Route path="/" element={<Home />} />
-          <Route path="/404" element={<NotFound />} />
-          <Route path="*" element={<Navigate to="/404" replace/> }/>
+          <Route path='/:id' element={ <Profile />} />
+          <Route path='/login' element={ <Auth />} />
+          <Route path='/register' element={ <Auth />} />
+          <Route path="/" element={ <Hub />} />
+          <Route path="/404" element={ <NotFound />} />
+          {/*<Route path="*" element={<Navigate to="/404" replace/> }/>*/}
         </Routes>
       </main>
       <ToastContainer position="top-right" autoClose={3000} />

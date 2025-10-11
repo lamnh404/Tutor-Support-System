@@ -1,5 +1,6 @@
 import React from 'react'
 import { type Tutor } from './TutorData'
+import { Link } from 'react-router-dom'
 
 interface TutorCardProps {
   tutor: Tutor;
@@ -72,9 +73,11 @@ const TutorCard: React.FC<TutorCardProps> = ({ tutor }) => {
           >
             {isFull ? 'Đã đầy' : 'Gửi yêu cầu kết nối'}
           </button>
-          <button className="w-full bg-white text-gray-700 font-semibold py-3 px-4 rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors shadow-sm">
+          <Link to={`/${tutor.id}`}>
+            <button className="w-full bg-white text-gray-700 font-semibold py-3 px-4 rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors shadow-sm">
             Xem hồ sơ
-          </button>
+            </button>
+          </Link>
         </div>
       </div>
     </div>

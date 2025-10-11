@@ -37,7 +37,7 @@ const Register: React.FC = () => {
   const handleRegister = async (data: RegisterFormData) => {
     const { email, password } = data
     try {
-      const res = await toast.promise<User>(
+      await toast.promise<User>(
         userRegisterAPI(email, password),
         {
           pending: 'Đang tạo tài khoản...',
