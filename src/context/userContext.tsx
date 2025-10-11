@@ -1,21 +1,23 @@
 import React, { createContext, useState } from 'react'
 
 export interface User {
-  username: string
+  email: string
   firstName: string
   lastName: string
-  role: string[]
+  roles: string[]
   avatarUrl?: string
 }
 
 interface UserContextType {
   user: User | null
+  setUser: React.Dispatch<React.SetStateAction<User | null>>
   login: (user: User) => void
   logout: () => void
 }
 
 const defaultContext: UserContextType = {
   user: null,
+  setUser: () => {},
   login: () => {},
   logout: () => {}
 }
@@ -39,7 +41,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   return (
-    <userContext.Provider value={{ user, login, logout }}>
+    <userContext.Provider value={{ user, setUser, login, logout }}>
       {children}
     </userContext.Provider>
   )
