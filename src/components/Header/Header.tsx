@@ -58,24 +58,24 @@ export default function Header() {
           <img src="/logoBK.png" alt="Logo" className="max-h-[35px] align-middle overflow-clip" />
         </Link>
         {user && (
-          <div className="h-full flex items-center space-x-2">
+          <div className="h-full flex items-center space-x-2 cursor-pointer">
             <Link to="/">
               <button className="bg-[#0388B4] text-white py-4 px-3 rounded-xl text-lg hover:bg-[#045a77] transition-colors">
                 Trang Chủ
               </button>
             </Link>
             <Link to="/student">
-              <button className="bg-[#0388B4] text-white py-4 px-3 rounded-xl text-lg hover:bg-[#045a77] transition-colors">
+              <button className="bg-[#0388B4] text-white py-4 px-3 rounded-xl text-lg hover:bg-[#045a77] transition-colors cursor-pointer">
                 Trang Cá Nhân
               </button>
             </Link>
             <Link to="/dashboard">
-              <button className="bg-[#0388B4] text-white py-4 px-3 rounded-xl text-lg hover:bg-[#045a77] transition-colors">
+              <button className="bg-[#0388B4] text-white py-4 px-3 rounded-xl text-lg hover:bg-[#045a77] transition-colors cursor-pointer">
                 Bảng Điều Khiển
               </button>
             </Link>
             <Link to="/library">
-              <button className="bg-[#0388B4] text-white py-4 px-3 rounded-xl text-lg hover:bg-[#045a77] transition-colors">
+              <button className="bg-[#0388B4] text-white py-4 px-3 rounded-xl text-lg hover:bg-[#045a77] transition-colors cursor-pointer">
                 Thư Viện
               </button>
             </Link>

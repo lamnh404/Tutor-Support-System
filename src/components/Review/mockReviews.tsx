@@ -1,4 +1,13 @@
-const mockReviews = [
+export interface Review {
+  id: string
+  studentName: string
+  date: string
+  rating: number
+  comment: string
+  avatar: string | null
+}
+
+export const mockReviews : Review[] = [
   {
     id: '1',
     studentName: 'beyza',
@@ -32,4 +41,3 @@ const mockReviews = [
     avatar: null
   }
 ]
-export const mockReviews
