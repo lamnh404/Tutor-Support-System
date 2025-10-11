@@ -1,123 +1,176 @@
-// TutorSearch.tsx
+// TutorSearchPage.tsx
 import React, { useState, useEffect } from 'react'
+import InfiniteScroll from 'react-infinite-scroll-component'
 import TutorCard from './TutorCard'
-import { initialTutors, type Tutor, sortTutors, getUniqueFaculties, type SortKey } from './TutorData'
+import { initialTutors, type Tutor, sortTutors, getUniqueDepartments, getUniqueExpertise, type SortKey, type Department } from './TutorData'
 
+// --- COMPONENT NHỎ CHO HIỆU ỨNG TẢI ---
+const Spinner = () => (
+  <div className="flex justify-center items-center py-8">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+  </div>
+)
+
+// --- COMPONENT CHÍNH ---
 const TutorSearchPage: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedFaculty, setSelectedFaculty] = useState('All')
-  const [sortOption, setSortOption] = useState('rating-desc')
-  const [filteredTutors, setFilteredTutors] = useState<Tutor[]>([])
+  const PAGE_SIZE = 20
 
-  const uniqueFaculties = ['All', ...getUniqueFaculties(initialTutors)]
+  // === State Management ===
+  // State cho các bộ lọc
+  const [selectedDepartment, setSelectedDepartment] = useState<Department | 'All'>('All')
+  const [selectedExpertise, setSelectedExpertise] = useState('All')
+  const [sortOption, setSortOption] = useState('rating_avg-desc')
 
+  // State cho danh sách gia sư
+  const [filteredTutors, setFilteredTutors] = useState<Tutor[]>([]) // Danh sách đầy đủ đã được lọc
+  const [displayedTutors, setDisplayedTutors] = useState<Tutor[]>([]) // Danh sách đang hiển thị trên màn hình
+  const [hasMore, setHasMore] = useState(true) // Cờ cho infinite scroll
+
+  // State cho dropdown phụ thuộc
+  const [availableExpertise, setAvailableExpertise] = useState<string[]>([])
+
+  const uniqueDepartments = ['All', ...getUniqueDepartments(initialTutors)]
+
+  // === Logic Hooks ===
+  // Effect để cập nhật danh sách chuyên môn khi khoa thay đổi
+  useEffect(() => {
+    const expertises = getUniqueExpertise(initialTutors, selectedDepartment)
+    setAvailableExpertise(['All', ...expertises])
+    setSelectedExpertise('All') // Reset lựa chọn chuyên môn
+  }, [selectedDepartment])
+
+  // Effect chính để lọc và sắp xếp lại toàn bộ danh sách khi bộ lọc thay đổi
   useEffect(() => {
     let updatedTutors = [...initialTutors]
 
-    if (searchTerm) {
-      updatedTutors = updatedTutors.filter(
-        (tutor) =>
-          tutor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          tutor.description.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+    if (selectedDepartment !== 'All') {
+      updatedTutors = updatedTutors.filter(tutor => tutor.department === selectedDepartment)
     }
-
-    if (selectedFaculty !== 'All') {
-      updatedTutors = updatedTutors.filter(
-        (tutor) => tutor.faculty === selectedFaculty
-      )
+    if (selectedExpertise !== 'All') {
+      updatedTutors = updatedTutors.filter(tutor => tutor.expertise === selectedExpertise)
     }
 
     const [key, order] = sortOption.split('-') as [SortKey, 'asc' | 'desc']
     updatedTutors = sortTutors(updatedTutors, key, order)
 
-    setFilteredTutors(updatedTutors)
-  }, [searchTerm, selectedFaculty, sortOption])
+    setFilteredTutors(updatedTutors) // Cập nhật danh sách đầy đủ
+    setDisplayedTutors(updatedTutors.slice(0, PAGE_SIZE)) // Hiển thị trang đầu tiên
+    setHasMore(updatedTutors.length > PAGE_SIZE) // Kiểm tra xem có cần scroll không
+  }, [selectedDepartment, selectedExpertise, sortOption])
+
+  // Hàm để tải thêm dữ liệu cho infinite scroll
+  const fetchMoreData = () => {
+    if (displayedTutors.length >= filteredTutors.length) {
+      setHasMore(false)
+      return
+    }
+
+    // Tải thêm 20 gia sư tiếp theo
+    const nextTutors = filteredTutors.slice(displayedTutors.length, displayedTutors.length + PAGE_SIZE)
+    setDisplayedTutors(prevTutors => [...prevTutors, ...nextTutors])
+  }
+
+  // --- COMPONENT CHO DROPDOWN ĐÃ ĐƯỢC THIẾT KẾ LẠI ---
+  interface CustomDropdownProps {
+    id: string;
+    label: string;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+    options: string[];
+    getOptionLabel?: (option: string) => string;
+  }
+
+  const CustomDropdown: React.FC<CustomDropdownProps> = ({ id, label, value, onChange, options, getOptionLabel }) => (
+    <div className="relative">
+      <label htmlFor={id} className="sr-only">{label}</label>
+      <select
+        id={id}
+        className="block w-full appearance-none rounded-lg border-gray-300 bg-white py-2.5 pl-3 pr-10 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+        value={value}
+        onChange={onChange}
+      >
+        {options.map(option => (
+          <option key={option} value={option}>
+            {getOptionLabel ? getOptionLabel(option) : option}
+          </option>
+        ))}
+      </select>
+      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+        </svg>
+      </div>
+    </div>
+  )
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        {/* === PHẦN TÌM KIẾM VÀ BỘ LỌC ĐÃ ĐƯỢC THIẾT KẾ LẠI === */}
-        <div className="bg-white p-6 rounded-xl shadow-lg mb-8 border border-gray-200">
-          <div className="flex flex-col md:flex-row md:items-center gap-4">
-
-            {/* Search Input with Icon */}
-            <div className="relative flex-grow">
-              <label htmlFor="search" className="sr-only">Tìm kiếm</label>
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <input
-                type="text"
-                id="search"
-                placeholder="Tìm kiếm theo tên, mô tả..."
-                className="block w-full rounded-lg border-gray-300 pl-10 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        {/* --- THANH LỌC DÍNH (STICKY) --- */}
+        <div className="sticky top-[71px] z-10 bg-gray-50 mb-8">
+          <div className="bg-white p-4 rounded-xl shadow-md border border-gray-200">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <CustomDropdown
+                id="department"
+                label="Lọc theo khoa"
+                value={selectedDepartment}
+                onChange={(e) => setSelectedDepartment(e.target.value as Department | 'All')}
+                options={uniqueDepartments}
+                getOptionLabel={(opt) => opt === 'All' ? 'Tất cả các khoa' : opt}
               />
-            </div>
-
-            {/* Filters Group */}
-            <div className="flex flex-col sm:flex-row gap-4 md:flex-shrink-0">
-              {/* Faculty Dropdown */}
-              <div className="flex-grow sm:w-48">
-                <label htmlFor="faculty" className="sr-only">Khoa</label>
-                <select
-                  id="faculty"
-                  className="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5"
-                  value={selectedFaculty}
-                  onChange={(e) => setSelectedFaculty(e.target.value)}
-                  aria-label="Lọc theo khoa"
-                >
-                  {uniqueFaculties.map((faculty) => (
-                    <option key={faculty} value={faculty}>{faculty === 'All' ? 'Tất cả các khoa' : faculty}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Sort Dropdown */}
-              <div className="flex-grow sm:w-56">
-                <label htmlFor="sort" className="sr-only">Sắp xếp theo</label>
-                <select
-                  id="sort"
-                  className="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5"
-                  value={sortOption}
-                  onChange={(e) => setSortOption(e.target.value)}
-                  aria-label="Sắp xếp kết quả"
-                >
-                  <option value="rating-desc">Đánh giá (Cao đến thấp)</option>
-                  <option value="rating-asc">Đánh giá (Thấp đến cao)</option>
-                  <option value="name-asc">Tên (A-Z)</option>
-                  <option value="name-desc">Tên (Z-A)</option>
-                </select>
-              </div>
+              <CustomDropdown
+                id="expertise"
+                label="Lọc theo chuyên môn"
+                value={selectedExpertise}
+                onChange={(e) => setSelectedExpertise(e.target.value)}
+                options={availableExpertise}
+                getOptionLabel={(opt) => opt === 'All' ? 'Tất cả chuyên môn' : opt}
+              />
+              <CustomDropdown
+                id="sort"
+                label="Sắp xếp theo"
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value)}
+                options={['rating_avg-desc', 'rating_avg-asc', 'firstName-asc', 'firstName-desc']}
+                getOptionLabel={(opt) => {
+                  switch (opt) {
+                  case 'rating_avg-desc': return 'Đánh giá (Cao nhất)'
+                  case 'rating_avg-asc': return 'Đánh giá (Thấp nhất)'
+                  case 'firstName-asc': return 'Tên (A-Z)'
+                  case 'firstName-desc': return 'Tên (Z-A)'
+                  default: return ''
+                  }
+                }}
+              />
             </div>
           </div>
         </div>
-        {/* === KẾT THÚC PHẦN THIẾT KẾ LẠI === */}
 
-        {/* Results Info */}
-        <div className="mb-6 px-2">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-800">
-                Tìm thấy {filteredTutors.length} gia sư
-          </h2>
-        </div>
-
-        {/* Results Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredTutors.length > 0 ? (
-            filteredTutors.map((tutor) => (
-              <TutorCard key={tutor.id} tutor={tutor} />
-            ))
-          ) : (
-            <div className="col-span-full text-center py-16">
-              <h3 className="text-2xl font-semibold text-gray-700">Không tìm thấy kết quả</h3>
-              <p className="text-gray-500 mt-2">Vui lòng thử lại với từ khóa hoặc bộ lọc khác.</p>
+        {/* --- DANH SÁCH GIA SƯ VỚI INFINITE SCROLL --- */}
+        <InfiniteScroll
+          dataLength={displayedTutors.length}
+          next={fetchMoreData}
+          hasMore={hasMore}
+          loader={<Spinner />}
+          endMessage={
+            <div className="text-center py-8">
+              <p className="text-gray-500">Bạn đã xem hết tất cả kết quả.</p>
             </div>
-          )}
-        </div>
+          }
+          className="space-y-6"
+        >
+          {displayedTutors.map((tutor) => (
+            <TutorCard key={tutor.id} tutor={tutor} />
+          ))}
+        </InfiniteScroll>
+
+        {/* Thông báo khi không có kết quả nào ngay từ đầu */}
+        {filteredTutors.length === 0 && !hasMore && (
+          <div className="text-center py-16">
+            <h3 className="text-2xl font-semibold text-gray-700">Không tìm thấy kết quả</h3>
+            <p className="text-gray-500 mt-2">Vui lòng thử lại với bộ lọc khác.</p>
+          </div>
+        )}
       </main>
     </div>
   )
