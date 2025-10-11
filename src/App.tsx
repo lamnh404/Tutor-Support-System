@@ -10,6 +10,9 @@ import { ToastContainer } from 'react-toastify'
 import { userContext } from '~/context/userContext.tsx'
 import TutorSearchPage from './pages/TutorSearch/TutorSearch.tsx'
 import Home from '~/pages/Homepage/Home'
+import Profile from '~/pages/Profile/Profile.tsx'
+
+
 interface ProtectedRouteProps {
   user: User | null
 }
@@ -36,6 +39,7 @@ function App() {
             <Route path="/settings" element={<div>Settings Page</div>} />
             <Route path="/dashboard" element={<TutorSearchPage />} />
           </Route>
+          <Route path='/:id' element={<Profile />}/>
           <Route path='/login' element={<Auth />} />
           <Route path='/register' element={<Auth />} />
           <Route path="/" element={<Home />} />
