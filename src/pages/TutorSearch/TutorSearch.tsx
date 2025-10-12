@@ -116,7 +116,7 @@ const TutorSearchPage: React.FC = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        <div className="top-[71px] z-10 bg-gray-50 py-4 mb-8">
+        <div className="sticky top-[71px] z-10 bg-gray-50 py-4 mb-8">
           <div className="bg-white p-4 rounded-xl shadow-md border border-gray-200">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <CustomDropdown
@@ -143,8 +143,8 @@ const TutorSearchPage: React.FC = () => {
                 options={['rating_avg-desc', 'rating_avg-asc', 'firstName-asc', 'firstName-desc']}
                 getOptionLabel={(opt) => {
                   switch (opt) {
-                  case 'rating_avg-desc': return 'Đánh giá (Cao nhất)'
-                  case 'rating_avg-asc': return 'Đánh giá (Thấp nhất)'
+                  case 'rating_avg-desc': return 'Đánh giá (Cao-Thấp)'
+                  case 'rating_avg-asc': return 'Đánh giá (Thấp-Cao)'
                   case 'firstName-asc': return 'Tên (A-Z)'
                   case 'firstName-desc': return 'Tên (Z-A)'
                   default: return ''
@@ -155,7 +155,7 @@ const TutorSearchPage: React.FC = () => {
             <div className="mt-4">
               <button
                 onClick={handleSearch}
-                className="w-full bg-indigo-600 text-white font-semibold py-2.5 px-4 rounded-lg hover:bg-indigo-700 transition-colors shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="w-full bg-indigo-600 text-white font-semibold py-2.5 px-4 rounded-lg cursor-pointer hover:bg-indigo-700 transition-colors shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 Tìm kiếm
               </button>
