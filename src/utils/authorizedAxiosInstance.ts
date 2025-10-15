@@ -4,6 +4,14 @@ import { interceptorLoadingElements } from '~/utils/formatters'
 import { userLogoutAPI } from '~/apis/userAPI'
 import { refreshTokenAPI } from '~/apis/userAPI'
 
+let logoutFn: (() => void) | null = null
+let navigateFn: ((path: string) => void) | null = null
+
+export const setupAxiosInterceptors = (logout: () => void, navigate: (path: string) => void) => {
+  logoutFn = logout
+  navigateFn = navigate
+}
+
 type RefreshResponse = {
   accessToken: string
   refreshToken: string
@@ -43,6 +51,8 @@ const handleTokenRefresh = async (originalRequest: AxiosRequestConfig) => {
         return data
       } catch (err) {
         await userLogoutAPI(false)
+        if (logoutFn) logoutFn()
+        if (navigateFn) navigateFn('/login')
         throw err
       } finally {
         refreshTokenPromise = null
@@ -65,6 +75,9 @@ authorizedAxiosInstance.interceptors.response.use((res) => {
   if (error?.response?.status === 401) {
     // toast.error(error?.response?.data?.errors?.[0]?.message)
     await userLogoutAPI(false)
+    if (logoutFn) logoutFn()
+    if (navigateFn) navigateFn('/login')
+
   }
 
   const originalRequests = error.config

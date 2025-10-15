@@ -3,7 +3,10 @@ import { useSearchParams } from 'react-router-dom'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import TutorCard from './TutorCard'
 import { initialTutors, type Tutor, sortTutors, getUniqueDepartments, getUniqueExpertise, type SortKey, type Department } from './TutorData'
+import tutorSearchAPI from '~/apis/TutorSearchAPI'
 
+
+// await tutorSearchAPI()
 const Spinner = () => (
   <div className="flex justify-center items-center py-8">
     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
@@ -43,6 +46,8 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({ id, label, value, onCha
 )
 
 const TutorSearchPage: React.FC = () => {
+  // const result = tutorSearchAPI('lalala')
+  // console.log(result)
   const PAGE_SIZE = 10
   const [searchParams, setSearchParams] = useSearchParams()
 

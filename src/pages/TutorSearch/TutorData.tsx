@@ -1,6 +1,6 @@
 // TutorData.tsx
 
-export type Department = 'Khoa Học Và Kĩ Thuật Máy Tính' | 'Điện - Điện Tử' | 'Cơ Khí' | 'Kỹ Thuật Hóa Học' | 'Kinh Tế' | 'All';
+export type Department = 'Khoa Học Máy Tính' | 'Kĩ Thuật Máy Tính' | 'Điện - Điện Tử' | 'Cơ Khí' | 'Kỹ Thuật Hóa Học' | 'All';
 
 export interface Tutor {
   id: string;
@@ -24,7 +24,7 @@ export const initialTutors: Tutor[] = [
     firstName: 'Si',
     lastName: 'Lê Minh',
     avatarUrl: 'https://fcb-abj-pre.s3.amazonaws.com/img/jugadors/MESSI.jpg',
-    department: 'Kinh Tế',
+    department: 'Khoa Học Máy Tính',
     expertise: ['Kinh Tế Lượng', 'Phân Tích Dữ Liệu'],
     rating_count: 3,
     rating_avg: 5.0,
@@ -37,7 +37,7 @@ export const initialTutors: Tutor[] = [
     firstName: 'Hiếc',
     lastName: 'Lê Sang',
     avatarUrl: 'https://upload.wikimedia.org/wikipedia/commons/1/1a/Faker_2020_interview.jpg',
-    department: 'Khoa Học Và Kĩ Thuật Máy Tính',
+    department: 'Khoa Học Máy Tính',
     expertise: ['Lập Trình Game', 'Phân Tích Dữ Liệu'],
     rating_count: 12,
     rating_avg: 4.9,
@@ -89,8 +89,8 @@ export const initialTutors: Tutor[] = [
     firstName: 'Thịnh',
     lastName: 'Phạm Sơn',
     avatarUrl: 'https://valo2asia.com/wp-content/uploads/2023/03/DSC00001-Edit-scaled-e1679474299336-1170x918.jpg',
-    department: 'Khoa Học Và Kĩ Thuật Máy Tính',
-    expertise: ['Điện Tử Viễn Thông', 'Hóa Dược'],
+    department: 'Kĩ Thuật Máy Tính',
+    expertise: ['Vi mạch'],
     rating_count: 10,
     rating_avg: 4.6,
     currMentee: 4,
@@ -112,32 +112,6 @@ export const initialTutors: Tutor[] = [
   },
   {
     id: '8',
-    firstName: 'Tuấn',
-    lastName: 'Trịnh Trần Phương',
-    avatarUrl: 'https://kenh14cdn.com/203336854389633024/2025/9/29/j97-1759158947118-17591589473691681361215.png',
-    department: 'Kinh Tế',
-    expertise: ['Kinh Tế Lượng', 'Tài Chính Cá Nhân'],
-    rating_count: 27,
-    rating_avg: 4.9,
-    currMentee: 13,
-    maxMentee: 14,
-    description: 'Hướng dẫn cách kiếm 5 triệu mỗi tháng. Chuyên gia quản lý tài chính cá nhân và đầu tư thông minh.'
-  },
-  {
-    id: '9',
-    firstName: 'Độ',
-    lastName: 'Phùng Thanh',
-    avatarUrl: 'https://image.theinfluencer.vn/files/2023/4/imgs/file-1682306109865.jpg???',
-    department: 'Kinh Tế',
-    expertise: ['Tài Chính Cá Nhân', 'Cơ Học'],
-    rating_count: 20,
-    rating_avg: 4.4,
-    currMentee: 15,
-    maxMentee: 15,
-    description: 'Hướng dẫn cách bán khô gà trên mạng xã hội.'
-  },
-  {
-    id: '10',
     firstName: 'Đỗ',
     lastName: 'Ri Văn',
     avatarUrl: 'https://mira.vn/upload/images/cristiano-ronaldo-al-nassr.jpg',
@@ -150,7 +124,7 @@ export const initialTutors: Tutor[] = [
     description: 'Nghệ thuật tỉa cỏ.'
   },
   {
-    id: '11',
+    id: '9',
     firstName: 'Bê',
     lastName: 'Minh Bắp',
     avatarUrl: 'https://img.a.transfermarkt.technology/portrait/big/342229-1682683695.jpg?lm=1',

@@ -3,7 +3,7 @@ import { Routes, Route, useLocation, Outlet, Navigate } from 'react-router-dom'
 import Auth from '~/pages/Auth/Auth'
 import NotFound from '~/pages/404/NotFound'
 import StudentDashboard from './pages/StudentDashboard/StudentDashboard.tsx'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { type User } from './context/userContext.tsx'
 import { ToastContainer } from 'react-toastify'
 import { userContext } from '~/context/userContext.tsx'
@@ -13,6 +13,8 @@ import ScrollToTop from '~/components/ScrollToTop/ScrollToTop.tsx'
 import Home from '~/pages/Homepage/Home.tsx'
 import Setting from '~/pages/Setting/Settings.tsx'
 import LibraryPage from './pages/Library/LibraryPage.tsx'
+import { useNavigate } from 'react-router-dom'
+import { setupAxiosInterceptors } from '~/utils/authorizedAxiosInstance.ts'
 
 interface ProtectedRouteProps {
   user: User | null
@@ -25,8 +27,13 @@ const ProtectedRoute = ({ user }: ProtectedRouteProps) => {
 
 function App() {
   const location = useLocation()
-  const { user } = useContext(userContext)
+  const { user, logout } = useContext(userContext)
   const showHeader = !['/404'].includes(location.pathname)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    setupAxiosInterceptors(logout, navigate)
+  }, [logout, navigate])
 
   return (
     <>
