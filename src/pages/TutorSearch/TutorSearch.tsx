@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import TutorCard from './TutorCard'
 import { initialTutors, type Tutor, sortTutors, getUniqueDepartments, getUniqueExpertise, type SortKey, type Department } from './TutorData'
-import tutorSearchAPI from '~/apis/TutorSearchAPI'
+import tutorSearchAPI, { type tutorSearchParams } from '~/apis/TutorSearchAPI'
 
 
 // await tutorSearchAPI()
@@ -46,8 +46,26 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({ id, label, value, onCha
 )
 
 const TutorSearchPage: React.FC = () => {
-  // const result = tutorSearchAPI('lalala')
-  // console.log(result)
+  // useEffect(() => {
+  //   const fetchTutors = async () => {
+  //     try {
+  //       const result = await tutorSearchAPI({
+  //         department: 'CS',
+  //         expertise: 'MOBILE_DEVELOPMENT',
+  //         sort: 'rating-descending',
+  //         page: 1,
+  //         pageSize: 10
+  //       })
+  //       console.log(result) // ✅ see actual result
+  //     } catch (err) {
+  //       console.error('Error fetching tutors:', err)
+  //     }
+  //   }
+  //
+  //   fetchTutors()
+  // }, [])
+
+
   const PAGE_SIZE = 10
   const [searchParams, setSearchParams] = useSearchParams()
 
