@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom' // 1. Import useLocation
 import { Button } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell } from '@fortawesome/free-solid-svg-icons'
@@ -25,9 +25,9 @@ export default function Header() {
   // const { login } = useContext(userContext)
   // end will delete later
 
-
   const { user, logout } = useContext(userContext)
-  // console.log(user)
+  const { pathname } = useLocation() // 2. Get the current path
+
   const handleLogout = () => {
     userLogoutAPI(true)
     logout()
@@ -47,6 +47,10 @@ export default function Header() {
     }
   ]
 
+  const baseStyle = 'text-white py-4 px-3 rounded-xl text-lg transition-colors cursor-pointer'
+  const activeStyle = 'bg-[#044CC8]'
+  const inactiveStyle = 'bg-[#0388B4] hover:bg-[#045a77]'
+
   return (
     <nav className="mb-0 px-10 bg-[#0388B4] border-b border-white h-[71px] items-stretch
                     fixed top-0 left-0 right-0 z-20 flex flex-row justify-start box-border">
@@ -60,22 +64,23 @@ export default function Header() {
         {user && (
           <div className="h-full flex items-center space-x-2 cursor-pointer">
             <Link to="/">
-              <button className="bg-[#0388B4] text-white py-4 px-3 rounded-xl text-lg hover:bg-[#045a77] transition-colors">
+              {/* 4. Apply conditional style */}
+              <button className={`${baseStyle} ${pathname === '/' ? activeStyle : inactiveStyle}`}>
                 Trang Chủ
               </button>
             </Link>
             <Link to="/student">
-              <button className="bg-[#0388B4] text-white py-4 px-3 rounded-xl text-lg hover:bg-[#045a77] transition-colors cursor-pointer">
+              <button className={`${baseStyle} ${pathname.startsWith('/student') ? activeStyle : inactiveStyle}`}>
                 Trang Cá Nhân
               </button>
             </Link>
             <Link to="/dashboard">
-              <button className="bg-[#0388B4] text-white py-4 px-3 rounded-xl text-lg hover:bg-[#045a77] transition-colors cursor-pointer">
+              <button className={`${baseStyle} ${pathname.startsWith('/dashboard') ? activeStyle : inactiveStyle}`}>
                 Bảng Điều Khiển
               </button>
             </Link>
             <Link to="/library">
-              <button className="bg-[#0388B4] text-white py-4 px-3 rounded-xl text-lg hover:bg-[#045a77] transition-colors cursor-pointer">
+              <button className={`${baseStyle} ${pathname.startsWith('/library') ? activeStyle : inactiveStyle}`}>
                 Thư Viện
               </button>
             </Link>
@@ -86,12 +91,10 @@ export default function Header() {
           <>
             <div className="h-full flex ml-auto pl-0 pb-0 box-border relative">
               <div className="h-full flex items-center mr-[5px]">
-                {/* Bọc icon + badge trong relative */}
                 <div className="relative cursor-pointer"
                   onClick={() => setIsOpenNoti(!isOpenNoti)}
                 >
                   <FontAwesomeIcon icon={faBell} className="text-2xl text-gray-700" />
-                  {/* Badge số lượng */}
                   <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">
                     {notifications.length}
                   </span>

@@ -1,23 +1,28 @@
 import React from 'react'
-import { type Tutor, type Department } from './TutorData'
+import { type Tutor } from './TutorData'
 import { Link } from 'react-router-dom'
+import {
+  type DepartmentCode,
+  DEPARTMENTS, // Import the array of department objects
+  EXPERTISES // Import the array of expertise objects
+} from './TutorDefinitions'
 
 interface TutorCardProps {
   tutor: Tutor;
 }
 
-const getDepartmentColors = (department: Department) => {
-  switch (department) {
-  case 'Khoa Học Và Kĩ Thuật Máy Tính':
+const getDepartmentColors = (departmentCode: DepartmentCode) => {
+  switch (departmentCode) {
+  case 'CS':
     return { tagBg: 'bg-blue-100', tagText: 'text-blue-800' }
-  case 'Điện - Điện Tử':
+  case 'CE':
+    return { tagBg: 'bg-cyan-100', tagText: 'text-cyan-800' }
+  case 'EE':
     return { tagBg: 'bg-amber-100', tagText: 'text-amber-800' }
-  case 'Cơ Khí':
-    return { tagBg: 'bg-green-100', tagText: 'text-green-800' }
-  case 'Kỹ Thuật Hóa Học':
-    return { tagBg: 'bg-red-100', tagText: 'text-red-800' }
-  case 'Kinh Tế':
-    return { tagBg: 'bg-purple-100', tagText: 'text-purple-800' }
+  case 'ME':
+    return { tagBg: 'bg-slate-100', tagText: 'text-slate-800' }
+  case 'CH':
+    return { tagBg: 'bg-teal-100', tagText: 'text-teal-800' }
   default:
     return { tagBg: 'bg-gray-100', tagText: 'text-gray-800' }
   }
@@ -35,6 +40,14 @@ const TutorCard: React.FC<TutorCardProps> = ({ tutor }) => {
   }
 
   const colors = getDepartmentColors(tutor.department)
+
+  // Find the Vietnamese name for the department
+  const departmentName = DEPARTMENTS.find(d => d.code === tutor.department)?.name || tutor.department
+
+  // Find the Vietnamese names for the expertise list
+  const expertiseNames = tutor.expertise.map(code => {
+    return EXPERTISES.find(e => e.code === code)?.name || code
+  }).join(', ')
 
   return (
     <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 flex flex-col md:flex-row items-start gap-6 w-full transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-200/50">
@@ -54,13 +67,13 @@ const TutorCard: React.FC<TutorCardProps> = ({ tutor }) => {
         </div>
 
         <span className={`self-start inline-flex items-center px-3 py-1 text-xs font-semibold ${colors.tagBg} ${colors.tagText} rounded-full mb-4`}>
-          {tutor.department}
+          {departmentName}
         </span>
 
         <div className="space-y-3 mb-4">
           <div className="flex items-center text-gray-600 text-sm">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18s-3.332.477-4.5 1.253" /></svg>
-            <p className="font-medium">{tutor.expertise.join(', ')}</p>
+            <p className="font-medium">{expertiseNames}</p>
           </div>
 
           <div className="flex items-center text-gray-600 text-sm">
@@ -68,6 +81,7 @@ const TutorCard: React.FC<TutorCardProps> = ({ tutor }) => {
             <p className={`font-bold ${menteeColorClass}`}>
               {tutor.currMentee} / {tutor.maxMentee}
             </p>
+            <span className="ml-1 font-medium">mentees</span>
           </div>
         </div>
 
@@ -93,7 +107,7 @@ const TutorCard: React.FC<TutorCardProps> = ({ tutor }) => {
             {isFull ? 'Đã đầy' : 'Gửi yêu cầu kết nối'}
           </button>
           <Link
-            to={`/${tutor.id}`}
+            to={`/tutor/${tutor.id}`}
             className="w-full text-center bg-white cursor-pointer text-gray-700 font-semibold py-3 px-4 rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors shadow-sm"
           >
             Xem hồ sơ

@@ -2,8 +2,15 @@ import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import TutorCard from './TutorCard'
-import { initialTutors, type Tutor, sortTutors, getUniqueDepartments, getUniqueExpertise, type SortKey, type Department } from './TutorData'
-import tutorSearchAPI, { type tutorSearchParams } from '~/apis/TutorSearchAPI'
+import { initialTutors, type Tutor, sortTutors, type SortKey } from './TutorData'
+import {
+  DEPARTMENTS,
+  EXPERTISES,
+  DEPARTMENT_EXPERTISE_MAP,
+  type DepartmentCode,
+  type ExpertiseCode
+} from './TutorDefinitions'
+// import tutorSearchAPI, { type tutorSearchParams } from '~/apis/TutorSearchAPI'
 
 
 // await tutorSearchAPI()
@@ -69,11 +76,11 @@ const TutorSearchPage: React.FC = () => {
   const PAGE_SIZE = 10
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const [selectedDepartment, setSelectedDepartment] = useState<Department | 'All'>(
-    () => (searchParams.get('department') as Department) || 'All'
+  const [selectedDepartment, setSelectedDepartment] = useState<DepartmentCode | 'All'>(
+    () => (searchParams.get('department') as DepartmentCode) || 'All'
   )
-  const [selectedExpertise, setSelectedExpertise] = useState(
-    () => searchParams.get('expertise') || 'All'
+  const [selectedExpertise, setSelectedExpertise] = useState<ExpertiseCode | 'All'>(
+    () => (searchParams.get('expertise') as ExpertiseCode) || 'All'
   )
   const [sortOption, setSortOption] = useState(
     () => searchParams.get('sort') || 'rating_avg-desc'
@@ -82,22 +89,34 @@ const TutorSearchPage: React.FC = () => {
   const [filteredTutors, setFilteredTutors] = useState<Tutor[]>([])
   const [displayedTutors, setDisplayedTutors] = useState<Tutor[]>([])
   const [hasMore, setHasMore] = useState(true)
-  const [availableExpertise, setAvailableExpertise] = useState<string[]>([])
 
-  const uniqueDepartments = ['All', ...getUniqueDepartments(initialTutors)]
+  // SỬA 1: Khai báo kiểu dữ liệu đúng cho state
+  const [availableExpertise, setAvailableExpertise] = useState<{ code: ExpertiseCode; name: string }[]>(EXPERTISES)
+
+  // SỬA 2: Lấy danh sách khoa từ mảng DEPARTMENTS đã import
+  const uniqueDepartments = ['All', ...DEPARTMENTS.map(d => d.code)]
 
   useEffect(() => {
-    const expertises = getUniqueExpertise(initialTutors, selectedDepartment)
-    setAvailableExpertise(['All', ...expertises])
+    if (selectedDepartment === 'All') {
+      setAvailableExpertise(EXPERTISES)
+    } else {
+      const relevantExpertiseCodes = DEPARTMENT_EXPERTISE_MAP[selectedDepartment]
+      const relevantExpertises = EXPERTISES.filter(exp => relevantExpertiseCodes.includes(exp.code))
+      setAvailableExpertise(relevantExpertises)
+    }
 
-    if (!expertises.includes(selectedExpertise) && selectedExpertise !== 'All') {
+    if (
+      selectedExpertise !== 'All' &&
+      selectedDepartment !== 'All' &&
+      !DEPARTMENT_EXPERTISE_MAP[selectedDepartment].includes(selectedExpertise as ExpertiseCode) // Thêm ép kiểu an toàn
+    ) {
       setSelectedExpertise('All')
     }
   }, [selectedDepartment, selectedExpertise])
 
   useEffect(() => {
-    const departmentFromUrl = (searchParams.get('department') as Department) || 'All'
-    const expertiseFromUrl = searchParams.get('expertise') || 'All'
+    const departmentFromUrl: DepartmentCode | 'All' = (searchParams.get('department') as DepartmentCode) || 'All'
+    const expertiseFromUrl: ExpertiseCode | 'All' = (searchParams.get('expertise') as ExpertiseCode) || 'All'
     const sortFromUrl = searchParams.get('sort') || 'rating_avg-desc'
 
     let updatedTutors = [...initialTutors]
@@ -106,10 +125,10 @@ const TutorSearchPage: React.FC = () => {
       updatedTutors = updatedTutors.filter(tutor => tutor.department === departmentFromUrl)
     }
     if (expertiseFromUrl !== 'All') {
-      updatedTutors = updatedTutors.filter(tutor => tutor.expertise.includes(expertiseFromUrl))
+      updatedTutors = updatedTutors.filter(tutor => tutor.expertise.includes(expertiseFromUrl as ExpertiseCode)) // Thêm ép kiểu an toàn
     }
 
-    const [key, order] = sortFromUrl.split('-') as [SortKey, 'asc' | 'desc']
+    const [key, order] = sortFromUrl.split('-') as [SortKey, 'asc', 'desc']
     updatedTutors = sortTutors(updatedTutors, key, order)
 
     setFilteredTutors(updatedTutors)
@@ -146,17 +165,21 @@ const TutorSearchPage: React.FC = () => {
                 id="department"
                 label="Lọc theo khoa"
                 value={selectedDepartment}
-                onChange={(e) => setSelectedDepartment(e.target.value as Department | 'All')}
+                onChange={(e) => setSelectedDepartment(e.target.value as DepartmentCode | 'All')}
                 options={uniqueDepartments}
-                getOptionLabel={(opt) => opt === 'All' ? 'Tất cả các khoa' : opt}
+                getOptionLabel={(code) =>
+                  code === 'All' ? 'Tất cả các khoa' : DEPARTMENTS.find(d => d.code === code)?.name || ''
+                }
               />
               <CustomDropdown
                 id="expertise"
                 label="Lọc theo chuyên môn"
                 value={selectedExpertise}
-                onChange={(e) => setSelectedExpertise(e.target.value)}
-                options={availableExpertise}
-                getOptionLabel={(opt) => opt === 'All' ? 'Tất cả chuyên môn' : opt}
+                onChange={(e) => setSelectedExpertise(e.target.value as ExpertiseCode | 'All')}
+                options={['All', ...availableExpertise.map(e => e.code)]}
+                getOptionLabel={(code) =>
+                  code === 'All' ? 'Tất cả chuyên môn' : EXPERTISES.find(e => e.code === code)?.name || ''
+                }
               />
               <CustomDropdown
                 id="sort"
@@ -192,9 +215,11 @@ const TutorSearchPage: React.FC = () => {
           hasMore={hasMore}
           loader={<Spinner />}
           endMessage={
-            <div className="text-center py-8">
-              <p className="text-gray-500">Bạn đã xem hết tất cả kết quả.</p>
-            </div>
+            filteredTutors.length > 0 && (
+              <div className="text-center py-8">
+                <p className="text-gray-500">Bạn đã xem hết tất cả kết quả.</p>
+              </div>
+            )
           }
           className="space-y-6"
         >
