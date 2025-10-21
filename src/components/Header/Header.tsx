@@ -74,6 +74,11 @@ export default function Header() {
                 Trang Cá Nhân
               </button>
             </Link>
+            <Link to="/tutorlist">
+              <button className={`${baseStyle} ${pathname.startsWith('/tutorlist') ? activeStyle : inactiveStyle}`}>
+                Các gia sư của tôi
+              </button>
+            </Link>
             <Link to="/dashboard">
               <button className={`${baseStyle} ${pathname.startsWith('/dashboard') ? activeStyle : inactiveStyle}`}>
                 Bảng Điều Khiển
