@@ -2,7 +2,6 @@ import Header from '~/components/Header/Header'
 import { Routes, Route, useLocation, Outlet, Navigate } from 'react-router-dom'
 import Auth from '~/pages/Auth/Auth'
 import NotFound from '~/pages/404/NotFound'
-import StudentDashboard from './pages/StudentDashboard/StudentDashboard.tsx'
 import { useContext, useEffect } from 'react'
 import { type User } from './context/userContext.tsx'
 import { ToastContainer } from 'react-toastify'
@@ -42,9 +41,6 @@ function App() {
       <main className={showHeader ? 'mt-[71px]' : ''}>
         <Routes>
           <Route element={<ProtectedRoute user={user} />}>
-            <Route path="/student/*" element={ <StudentDashboard /> } />
-            <Route path="/lecturer/*" element={ <div>Lecturer Dashboard</div> } />
-            <Route path="/admin/*" element={ <div>Admin Dashboard</div> } />
             <Route path="/settings" element={ <Setting /> } />
             <Route path="/dashboard" element={ <TutorSearchPage /> } />
             <Route path="/library" element={ <LibraryPage /> } />

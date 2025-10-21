@@ -166,7 +166,7 @@ export const initialTutors: Tutor[] = [
   }
 ]
 
-export const sortTutors = (tutors: Tutor[], key: SortKey, order: 'asc' | 'desc' = 'asc'): Tutor[] => {
+export const sortTutors = (tutors: Tutor[], key: SortKey, order: 'ascending' | 'descending' = 'ascending'): Tutor[] => {
   return [...tutors].sort((a, b) => {
     let comparison = 0
     if (key === 'firstName') {
@@ -174,6 +174,6 @@ export const sortTutors = (tutors: Tutor[], key: SortKey, order: 'asc' | 'desc' 
     } else if (key === 'rating_avg') {
       comparison = a[key] - b[key]
     }
-    return order === 'asc' ? comparison : -comparison
+    return order === 'ascending' ? comparison : -comparison
   })
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import TutorCard from './TutorCard'
-import { initialTutors, type Tutor, sortTutors, type SortKey } from './TutorData'
+import { type Tutor } from './TutorData'
 import {
   DEPARTMENTS,
   EXPERTISES,
@@ -10,8 +10,8 @@ import {
   type DepartmentCode,
   type ExpertiseCode
 } from './TutorDefinitions'
-// import tutorSearchAPI, { type tutorSearchParams } from '~/apis/TutorSearchAPI'
-
+import tutorSearchAPI, { type tutorSearchParams } from '~/apis/TutorSearchAPI'
+import { toast } from 'react-toastify'
 
 // await tutorSearchAPI()
 const Spinner = () => (
@@ -52,27 +52,12 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({ id, label, value, onCha
   </div>
 )
 
+async function fetchTutors(params: tutorSearchParams): Promise<Tutor[]> {
+  const result = await tutorSearchAPI(params)
+  return result.data
+}
+
 const TutorSearchPage: React.FC = () => {
-  // useEffect(() => {
-  //   const fetchTutors = async () => {
-  //     try {
-  //       const result = await tutorSearchAPI({
-  //         department: 'CS',
-  //         expertise: 'MOBILE_DEVELOPMENT',
-  //         sort: 'rating-descending',
-  //         page: 1,
-  //         pageSize: 10
-  //       })
-  //       console.log(result) // ✅ see actual result
-  //     } catch (err) {
-  //       console.error('Error fetching tutors:', err)
-  //     }
-  //   }
-  //
-  //   fetchTutors()
-  // }, [])
-
-
   const PAGE_SIZE = 10
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -82,8 +67,11 @@ const TutorSearchPage: React.FC = () => {
   const [selectedExpertise, setSelectedExpertise] = useState<ExpertiseCode | 'All'>(
     () => (searchParams.get('expertise') as ExpertiseCode) || 'All'
   )
+
+  const [currentPage, setCurrentPage] = useState(1)
+  const [loading, setLoading] = useState(true)
   const [sortOption, setSortOption] = useState(
-    () => searchParams.get('sort') || 'rating_avg-desc'
+    () => searchParams.get('sort') || 'rating-descending'
   )
 
   const [filteredTutors, setFilteredTutors] = useState<Tutor[]>([])
@@ -115,50 +103,91 @@ const TutorSearchPage: React.FC = () => {
   }, [selectedDepartment, selectedExpertise])
 
   useEffect(() => {
-    const departmentFromUrl: DepartmentCode | 'All' = (searchParams.get('department') as DepartmentCode) || 'All'
-    const expertiseFromUrl: ExpertiseCode | 'All' = (searchParams.get('expertise') as ExpertiseCode) || 'All'
-    const sortFromUrl = searchParams.get('sort') || 'rating_avg-desc'
+    const departmentFromUrl: DepartmentCode | 'All' =
+      (searchParams.get('department') as DepartmentCode | null) ?? 'All'
+    const expertiseFromUrl: ExpertiseCode | 'All' =
+      (searchParams.get('expertise') as ExpertiseCode | null) ?? 'All'
+    const sortFromUrl = searchParams.get('sort') || 'rating-descending'
 
-    let updatedTutors = [...initialTutors]
-
-    if (departmentFromUrl !== 'All') {
-      updatedTutors = updatedTutors.filter(tutor => tutor.department === departmentFromUrl)
+    const params: tutorSearchParams = {
+      department: departmentFromUrl !== 'All' ? departmentFromUrl : undefined,
+      expertise: expertiseFromUrl !== 'All' ? expertiseFromUrl : undefined,
+      sort: sortFromUrl,
+      pageSize: PAGE_SIZE
     }
-    if (expertiseFromUrl !== 'All') {
-      updatedTutors = updatedTutors.filter(tutor => tutor.expertise.includes(expertiseFromUrl as ExpertiseCode)) // Thêm ép kiểu an toàn
+
+    const fetchData = async () => {
+      setLoading(true)
+
+      try {
+        const data = await fetchTutors(params)
+        if (!data || !Array.isArray(data)) {
+          setFilteredTutors([])
+          setDisplayedTutors([])
+          setHasMore(false)
+          return
+        }
+
+        setFilteredTutors(data)
+        setDisplayedTutors(data.slice(0, PAGE_SIZE))
+        setHasMore(data.length === PAGE_SIZE)
+        // console.log(hasMore)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
+        toast.error('Không thể tải danh sách gia sư. Vui lòng thử lại sau.')
+        setFilteredTutors([])
+        setDisplayedTutors([])
+        setHasMore(false)
+      } finally {
+        setLoading(false)
+      }
     }
 
-    const [key, order] = sortFromUrl.split('-') as [SortKey, 'asc', 'desc']
-    updatedTutors = sortTutors(updatedTutors, key, order)
 
-    setFilteredTutors(updatedTutors)
-    setDisplayedTutors(updatedTutors.slice(0, PAGE_SIZE))
-    setHasMore(updatedTutors.length > PAGE_SIZE)
+    fetchData().then(
+      () => {
+        // console.log('Tutors fetched successfully')
+      }
+    )
   }, [searchParams])
+
 
   const handleSearch = () => {
     const params: { [key: string]: string } = {}
 
     if (selectedDepartment !== 'All') params.department = selectedDepartment
     if (selectedExpertise !== 'All') params.expertise = selectedExpertise
-    if (sortOption !== 'rating_avg-desc') params.sort = sortOption
-
+    if (sortOption !== 'rating-descending') params.sort = sortOption
     setSearchParams(params, { replace: true })
   }
 
-  const fetchMoreData = () => {
-    if (displayedTutors.length >= filteredTutors.length) {
-      setHasMore(false)
-      return
+  const fetchMoreData = async () => {
+    console.log('Fetching more data')
+    if (loading) return
+    setLoading(true)
+    try {
+      const data = await fetchTutors({
+        department: selectedDepartment !== 'All' ? selectedDepartment : undefined,
+        expertise: selectedExpertise !== 'All' ? selectedExpertise : undefined,
+        sort: sortOption,
+        page: currentPage,
+        pageSize: PAGE_SIZE
+      })
+
+      setDisplayedTutors(data)
+      setCurrentPage(currentPage + 1)
+      setHasMore(data.length === PAGE_SIZE)
+    } catch (error) {
+      console.error('Error loading tutors:', error)
+    } finally {
+      setLoading(false)
     }
-    const nextTutors = filteredTutors.slice(displayedTutors.length, displayedTutors.length + PAGE_SIZE)
-    setDisplayedTutors(prevTutors => [...prevTutors, ...nextTutors])
   }
 
   return (
     <div className="bg-gray-50 min-h-screen">
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        <div className="sticky top-[71px] z-10 bg-gray-50 py-4 mb-8">
+        <div className="top-[71px] z-10 bg-gray-50 py-4 mb-8">
           <div className="bg-white p-4 rounded-xl shadow-md border border-gray-200">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <CustomDropdown
@@ -186,13 +215,13 @@ const TutorSearchPage: React.FC = () => {
                 label="Sắp xếp theo"
                 value={sortOption}
                 onChange={(e) => setSortOption(e.target.value)}
-                options={['rating_avg-desc', 'rating_avg-asc', 'firstName-asc', 'firstName-desc']}
+                options={['rating-descending', 'rating-ascending', 'firstName-ascending', 'firstName-descending']}
                 getOptionLabel={(opt) => {
                   switch (opt) {
-                  case 'rating_avg-desc': return 'Đánh giá (Cao-Thấp)'
-                  case 'rating_avg-asc': return 'Đánh giá (Thấp-Cao)'
-                  case 'firstName-asc': return 'Tên (A-Z)'
-                  case 'firstName-desc': return 'Tên (Z-A)'
+                  case 'rating-descending': return 'Đánh giá (Cao-Thấp)'
+                  case 'rating-ascending': return 'Đánh giá (Thấp-Cao)'
+                  case 'firstName-ascending': return 'Tên (A-Z)'
+                  case 'firstName-descending': return 'Tên (Z-A)'
                   default: return ''
                   }
                 }}
@@ -208,32 +237,36 @@ const TutorSearchPage: React.FC = () => {
             </div>
           </div>
         </div>
-
-        <InfiniteScroll
-          dataLength={displayedTutors.length}
-          next={fetchMoreData}
-          hasMore={hasMore}
-          loader={<Spinner />}
-          endMessage={
-            filteredTutors.length > 0 && (
-              <div className="text-center py-8">
-                <p className="text-gray-500">Bạn đã xem hết tất cả kết quả.</p>
-              </div>
-            )
-          }
-          className="space-y-6"
-        >
-          {displayedTutors.map((tutor) => (
-            <TutorCard key={tutor.id} tutor={tutor} />
-          ))}
-        </InfiniteScroll>
-
-        {filteredTutors.length === 0 && !hasMore && (
+        {loading ? (
+          <Spinner />
+        ) : (filteredTutors?.length ?? 0) === 0 ? (
           <div className="text-center py-16">
-            <h3 className="text-2xl font-semibold text-gray-700">Không tìm thấy kết quả</h3>
-            <p className="text-gray-500 mt-2">Vui lòng thử lại với bộ lọc khác.</p>
+            <h3 className="text-2xl font-semibold text-gray-700">
+              Không tìm thấy kết quả
+            </h3>
+            <p className="text-gray-500 mt-2">
+              Vui lòng thử lại với bộ lọc khác.
+            </p>
           </div>
+        ) : (
+          <InfiniteScroll
+            dataLength={displayedTutors.length}
+            next={fetchMoreData}
+            hasMore={hasMore}
+            loader={<Spinner />}
+            endMessage={
+              <div className="text-center py-8 text-gray-500">
+                Bạn đã xem hết tất cả kết quả.
+              </div>
+            }
+            className="space-y-6"
+          >
+            {displayedTutors.map((tutor) => (
+              <TutorCard key={tutor.id} tutor={tutor} />
+            ))}
+          </InfiniteScroll>
         )}
+
       </main>
     </div>
   )
