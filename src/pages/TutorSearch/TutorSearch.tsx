@@ -162,11 +162,15 @@ const TutorSearchPage: React.FC = () => {
   }
 
   const fetchMoreData = async () => {
-    console.log('Fetching more data')
-    if (loading) return
+    if (loading || !hasMore) {
+      return
+    }
+
+    console.log(`Fetching page ${currentPage}...`)
     setLoading(true)
+
     try {
-      const data = await fetchTutors({
+      const newData = await fetchTutors({
         department: selectedDepartment !== 'All' ? selectedDepartment : undefined,
         expertise: selectedExpertise !== 'All' ? selectedExpertise : undefined,
         sort: sortOption,
@@ -174,11 +178,12 @@ const TutorSearchPage: React.FC = () => {
         pageSize: PAGE_SIZE
       })
 
-      setDisplayedTutors(data)
-      setCurrentPage(currentPage + 1)
-      setHasMore(data.length === PAGE_SIZE)
+      setDisplayedTutors(prevTutors => [...prevTutors, ...newData])
+      setCurrentPage(prevPage => prevPage + 1)
+      setHasMore(newData.length === PAGE_SIZE)
+
     } catch (error) {
-      console.error('Error loading tutors:', error)
+      console.error('Error loading more tutors:', error)
     } finally {
       setLoading(false)
     }
