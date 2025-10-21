@@ -172,7 +172,11 @@ const TutorSearchPage: React.FC = () => {
         pageSize: PAGE_SIZE
       })
 
-      setDisplayedTutors(prevTutors => [...prevTutors, ...newData])
+      setDisplayedTutors(prevTutors => {
+        const existingIds = new Set(prevTutors.map(tutor => tutor.id))
+        const uniqueNewData = newData.filter(tutor => !existingIds.has(tutor.id))
+        return [...prevTutors, ...uniqueNewData]
+      })
       setCurrentPage(prevPage => prevPage + 1)
       setHasMore(newData.length === PAGE_SIZE)
 
