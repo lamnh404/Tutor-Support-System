@@ -69,19 +69,17 @@ const TutorSearchPage: React.FC = () => {
   )
 
   const [currentPage, setCurrentPage] = useState(1)
-  const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
   const [sortOption, setSortOption] = useState(
     () => searchParams.get('sort') || 'rating-descending'
   )
 
-  const [filteredTutors, setFilteredTutors] = useState<Tutor[]>([])
   const [displayedTutors, setDisplayedTutors] = useState<Tutor[]>([])
   const [hasMore, setHasMore] = useState(true)
 
-  // SỬA 1: Khai báo kiểu dữ liệu đúng cho state
   const [availableExpertise, setAvailableExpertise] = useState<{ code: ExpertiseCode; name: string }[]>(EXPERTISES)
 
-  // SỬA 2: Lấy danh sách khoa từ mảng DEPARTMENTS đã import
   const uniqueDepartments = ['All', ...DEPARTMENTS.map(d => d.code)]
 
   useEffect(() => {
@@ -96,12 +94,13 @@ const TutorSearchPage: React.FC = () => {
     if (
       selectedExpertise !== 'All' &&
       selectedDepartment !== 'All' &&
-      !DEPARTMENT_EXPERTISE_MAP[selectedDepartment].includes(selectedExpertise as ExpertiseCode) // Thêm ép kiểu an toàn
+      !DEPARTMENT_EXPERTISE_MAP[selectedDepartment].includes(selectedExpertise as ExpertiseCode)
     ) {
       setSelectedExpertise('All')
     }
   }, [selectedDepartment, selectedExpertise])
 
+  // Effect for initial data fetch and refetch on search param change
   useEffect(() => {
     const departmentFromUrl: DepartmentCode | 'All' =
       (searchParams.get('department') as DepartmentCode | null) ?? 'All'
@@ -113,42 +112,37 @@ const TutorSearchPage: React.FC = () => {
       department: departmentFromUrl !== 'All' ? departmentFromUrl : undefined,
       expertise: expertiseFromUrl !== 'All' ? expertiseFromUrl : undefined,
       sort: sortFromUrl,
+      page: 1,
       pageSize: PAGE_SIZE
     }
 
     const fetchData = async () => {
-      setLoading(true)
+      setIsInitialLoading(true)
+      setLoadingMore(false)
+      setCurrentPage(1)
+      setDisplayedTutors([])
+      setHasMore(true)
 
       try {
         const data = await fetchTutors(params)
         if (!data || !Array.isArray(data)) {
-          setFilteredTutors([])
           setDisplayedTutors([])
           setHasMore(false)
           return
         }
-
-        setFilteredTutors(data)
-        setDisplayedTutors(data.slice(0, PAGE_SIZE))
+        setDisplayedTutors(data)
         setHasMore(data.length === PAGE_SIZE)
-        // console.log(hasMore)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        setCurrentPage(2)
       } catch (error) {
         toast.error('Không thể tải danh sách gia sư. Vui lòng thử lại sau.')
-        setFilteredTutors([])
         setDisplayedTutors([])
         setHasMore(false)
       } finally {
-        setLoading(false)
+        setIsInitialLoading(false)
       }
     }
 
-
-    fetchData().then(
-      () => {
-        // console.log('Tutors fetched successfully')
-      }
-    )
+    fetchData()
   }, [searchParams])
 
 
@@ -162,12 +156,12 @@ const TutorSearchPage: React.FC = () => {
   }
 
   const fetchMoreData = async () => {
-    if (loading || !hasMore) {
+    if (loadingMore || !hasMore) {
       return
     }
 
     console.log(`Fetching page ${currentPage}...`)
-    setLoading(true)
+    setLoadingMore(true)
 
     try {
       const newData = await fetchTutors({
@@ -184,8 +178,9 @@ const TutorSearchPage: React.FC = () => {
 
     } catch (error) {
       console.error('Error loading more tutors:', error)
+      setHasMore(false)
     } finally {
-      setLoading(false)
+      setLoadingMore(false)
     }
   }
 
@@ -242,9 +237,10 @@ const TutorSearchPage: React.FC = () => {
             </div>
           </div>
         </div>
-        {loading ? (
+
+        {isInitialLoading ? (
           <Spinner />
-        ) : (filteredTutors?.length ?? 0) === 0 ? (
+        ) : displayedTutors.length === 0 ? (
           <div className="text-center py-16">
             <h3 className="text-2xl font-semibold text-gray-700">
               Không tìm thấy kết quả
