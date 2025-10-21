@@ -72,13 +72,14 @@ authorizedAxiosInstance.interceptors.response.use((res) => {
 }
 , async (error) => {
   interceptorLoadingElements(false)
-  if (error?.response?.status === 401) {
-    // toast.error(error?.response?.data?.errors?.[0]?.message)
-    await userLogoutAPI(false)
-    if (logoutFn) logoutFn()
-    if (navigateFn) navigateFn('/login')
-
-  }
+  // if (error?.response?.status === 401) {
+  //   // toast.error(error?.response?.data?.errors?.[0]?.message)
+  //   await userLogoutAPI(false)
+  //   if (logoutFn) logoutFn()
+  //   if (navigateFn) navigateFn('/login')
+  //   return null
+  //
+  // }
 
   const originalRequests = error.config
   // console.log('Original request: ', originalRequests)
@@ -86,10 +87,12 @@ authorizedAxiosInstance.interceptors.response.use((res) => {
     return handleTokenRefresh(originalRequests)
   }
   let errorMessage = error?.message
-  if (error.response?.data?.message) {
-    errorMessage = error.response?.data?.message
+  if (error.response?.data?.title) {
+    errorMessage = error.response?.data?.title
+    toast.error(errorMessage)
+    return Promise.reject(error)
   }
-
+  console.error(error)
   if (errorMessage=='Network Error') errorMessage = 'Lỗi mạng - Vui lòng kiểm tra kết nối của bạn hoặc thử lại sau.'
   else if (errorMessage=='timeout of 180000 ms exceeded') errorMessage = 'Hết thời gian chờ phản hồi từ máy chủ - Vui lòng thử lại sau.'
   else if (errorMessage=='Request failed with status code 500') errorMessage = 'Lỗi máy chủ nội bộ - Vui lòng thử lại sau.'
@@ -98,8 +101,8 @@ authorizedAxiosInstance.interceptors.response.use((res) => {
   else if (errorMessage=='Request failed with status code 401') errorMessage = 'Phiên đăng nhập đã hết hạn hoặc bạn chưa đăng nhập. Vui lòng đăng nhập lại.'
   else if (errorMessage=='Request failed with status code 400') errorMessage = 'Yêu cầu không hợp lệ - Vui lòng kiểm tra và thử lại.'
   else errorMessage = 'Lỗi không xác định - Vui lòng thử lại sau.'
-  if (error?.response?.status!==410)
-    toast.error(errorMessage)
+
+  toast.error(errorMessage)
 
   return Promise.reject(error)
 })
