@@ -14,7 +14,8 @@ import Setting from '~/pages/Setting/Settings.tsx'
 import LibraryPage from './pages/Library/LibraryPage.tsx'
 import { useNavigate } from 'react-router-dom'
 import { setupAxiosInterceptors } from '~/utils/authorizedAxiosInstance.ts'
-
+import TutorCommunityPlatform from '~/pages/Course/TutorCommunityPlatform.tsx'
+import AnimationBackground from '~/components/AnimationBackground/AnimationBackground.tsx'
 interface ProtectedRouteProps {
   user: User | null
 }
@@ -37,6 +38,7 @@ function App() {
   return (
     <>
       <ScrollToTop />
+      <AnimationBackground />
       {showHeader && <Header />}
       <main className={showHeader ? 'mt-[71px]' : ''}>
         <Routes>
@@ -44,8 +46,9 @@ function App() {
             <Route path="/settings" element={ <Setting /> } />
             <Route path="/dashboard" element={ <TutorSearchPage /> } />
             <Route path="/library" element={ <LibraryPage /> } />
+            <Route path='/:id' element={ <Profile />} />
+            <Route path='/course/:id' element={ <TutorCommunityPlatform/>} />
           </Route>
-          <Route path='/:id' element={ <Profile />} />
           <Route path='/login' element={ <Auth />} />
           <Route path='/register' element={ <Auth />} />
           <Route path="/" element={ <Home />} />

@@ -133,6 +133,7 @@ const TutorSearchPage: React.FC = () => {
         setDisplayedTutors(data)
         setHasMore(data.length === PAGE_SIZE)
         setCurrentPage(2)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         toast.error('Không thể tải danh sách gia sư. Vui lòng thử lại sau.')
         setDisplayedTutors([])
@@ -217,13 +218,13 @@ const TutorSearchPage: React.FC = () => {
                 label="Sắp xếp theo"
                 value={sortOption}
                 onChange={(e) => setSortOption(e.target.value)}
-                options={['rating-descending', 'rating-ascending', 'firstName-ascending', 'firstName-descending']}
+                options={['rating-descending', 'rating-ascending', 'lastName-ascending', 'lastName-descending']}
                 getOptionLabel={(opt) => {
                   switch (opt) {
                   case 'rating-descending': return 'Đánh giá (Cao-Thấp)'
                   case 'rating-ascending': return 'Đánh giá (Thấp-Cao)'
-                  case 'firstName-ascending': return 'Tên (A-Z)'
-                  case 'firstName-descending': return 'Tên (Z-A)'
+                  case 'lastName-ascending': return 'Tên (A-Z)'
+                  case 'lastName-descending': return 'Tên (Z-A)'
                   default: return ''
                   }
                 }}
