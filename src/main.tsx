@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.tsx'
 import { UserProvider } from './context/userContext.tsx'
+// import { StrictMode } from "react";
 
 createRoot(document.getElementById('root')!).render(
   // <StrictMode>

@@ -10,7 +10,7 @@ const Library: React.FC = () => {
           Sinh viên và tutor có thể truy cập, chia sẻ tài liệu, sách, và giáo trình liên quan đến buổi học; từ đó tăng tính hỗ trợ học tập, bảo đảm nguồn học liệu chính thống và đồng bộ với cơ sở dữ liệu tài nguyên học tập của toàn trường.
         </p>
         <Link to="/library">
-          <button className="bg-white text-blue-600 font-bold py-3 px-8 rounded-full text-lg hover:bg-gray-100 transition-colors">
+          <button className="bg-white text-blue-600 font-bold py-3 px-8 rounded-full text-lg hover:bg-gray-100 transition-colors cursor-pointer">
             Thư viện
           </button>
         </Link>
