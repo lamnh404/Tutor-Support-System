@@ -159,8 +159,6 @@ const TutorSearchPage: React.FC = () => {
     if (loadingMore || !hasMore) {
       return
     }
-
-    console.log(`Fetching page ${currentPage}...`)
     setLoadingMore(true)
 
     try {
@@ -174,14 +172,14 @@ const TutorSearchPage: React.FC = () => {
 
       setDisplayedTutors(prevTutors => {
         const existingIds = new Set(prevTutors.map(tutor => tutor.id))
-        const uniqueNewData = newData.filter(tutor => !existingIds.has(tutor.id))
+        const uniqueNewData =newData? newData.filter(tutor => !existingIds.has(tutor.id)) : []
         return [...prevTutors, ...uniqueNewData]
       })
       setCurrentPage(prevPage => prevPage + 1)
-      setHasMore(newData.length === PAGE_SIZE)
+      setHasMore(newData && newData.length === PAGE_SIZE)
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error('Error loading more tutors:', error)
       setHasMore(false)
     } finally {
       setLoadingMore(false)

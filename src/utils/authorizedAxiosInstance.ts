@@ -83,8 +83,14 @@ authorizedAxiosInstance.interceptors.response.use((res) => {
 
   const originalRequests = error.config
   // console.log('Original request: ', originalRequests)
-  if (error.response?.status === 410 && originalRequests) {
+  if (error.response?.status === 401 && error?.response?.data?.isExpired && originalRequests) {
     return handleTokenRefresh(originalRequests)
+  }
+  else if (error.response?.status === 401) {
+    await userLogoutAPI(false)
+    if (logoutFn) logoutFn()
+    if (navigateFn) navigateFn('/login')
+    return Promise.reject(error)
   }
   let errorMessage = error?.message
   if (error.response?.data?.title) {
