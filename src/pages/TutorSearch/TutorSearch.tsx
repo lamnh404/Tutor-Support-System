@@ -218,13 +218,13 @@ const TutorSearchPage: React.FC = () => {
                 label="Sắp xếp theo"
                 value={sortOption}
                 onChange={(e) => setSortOption(e.target.value)}
-                options={['rating-descending', 'rating-ascending', 'lastName-ascending', 'lastName-descending']}
+                options={['rating-descending', 'rating-ascending', 'firstName-ascending', 'firstName-descending']}
                 getOptionLabel={(opt) => {
                   switch (opt) {
                   case 'rating-descending': return 'Đánh giá (Cao-Thấp)'
                   case 'rating-ascending': return 'Đánh giá (Thấp-Cao)'
-                  case 'lastName-ascending': return 'Tên (A-Z)'
-                  case 'lastName-descending': return 'Tên (Z-A)'
+                  case 'firstName-ascending': return 'Tên (A-Z)'
+                  case 'firstName-descending': return 'Tên (Z-A)'
                   default: return ''
                   }
                 }}
