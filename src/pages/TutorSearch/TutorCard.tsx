@@ -107,7 +107,7 @@ const TutorCard: React.FC<TutorCardProps> = ({ tutor }) => {
             {isFull ? 'Đã đầy' : 'Gửi yêu cầu kết nối'}
           </button>
           <Link
-            to={`/tutor/${tutor.id}`}
+            to={`/${tutor.id}`}
             className="w-full text-center bg-white cursor-pointer text-gray-700 font-semibold py-3 px-4 rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors shadow-sm"
           >
             Xem hồ sơ

@@ -61,15 +61,15 @@ const Profile: React.FC = () => {
             <p className="text-gray-700 leading-relaxed mb-4 text-base">
               {userProfile?.description}
             </p>
-            <p className="text-gray-700 leading-relaxed mb-4 text-base">
-              Welcome to my OET preparation and ESL classes! 🎓 With almost 7 years of experience helping
-              medical professionals like doctors, ophthalmologists, nurses, physiotherapists, and dentists ace the
-              OET, I'm confident I can help you too!
-            </p>
-            <p className="text-gray-700 leading-relaxed text-base">
-              My approach is fun, engaging, and tailored to each student's unique needs. 🎯 I love teaching kids
-              and adults alike, creating an environment where learning feels natural and enjoyable.
-            </p>
+            {/*<p className="text-gray-700 leading-relaxed mb-4 text-base">*/}
+            {/*  Welcome to my OET preparation and ESL classes! 🎓 With almost 7 years of experience helping*/}
+            {/*  medical professionals like doctors, ophthalmologists, nurses, physiotherapists, and dentists ace the*/}
+            {/*  OET, I'm confident I can help you too!*/}
+            {/*</p>*/}
+            {/*<p className="text-gray-700 leading-relaxed text-base">*/}
+            {/*  My approach is fun, engaging, and tailored to each student's unique needs. 🎯 I love teaching kids*/}
+            {/*  and adults alike, creating an environment where learning feels natural and enjoyable.*/}
+            {/*</p>*/}
           </div>
 
           <Divider />
