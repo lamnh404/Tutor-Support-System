@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useParams, Navigate, useNavigate } from 'react-router-dom'
-import { initialProfile } from '~/pages/Profile/ProfileData.tsx'
+import { initialProfile } from '~/pages/TutorProfile/ProfileData.tsx'
 import { type Tutor } from '~/pages/TutorSearch/TutorData.tsx'
 import { mockReviews, type Review } from '~/components/Review/mockReviews.tsx'
 import {
