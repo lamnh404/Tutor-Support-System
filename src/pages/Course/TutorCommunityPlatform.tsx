@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react'
+import React, { useState, ChangeEvent, useContext } from 'react'
 
 import {
   Calendar, Clock, Video, MapPin, Edit, Trash2, Plus, Check, X,
@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 import toast from 'react-hot-toast'
 
-import type { ActiveTab, DocumentType, DocumentCategory, Document,
+import type { DocumentType, DocumentCategory, Document,
   Assignment, DayOfWeek, AvailabilityType, SessionStatus, Session,
   Availability, NewDocumentState, NewAssignmentState, NewAvailabilityState } from '~/pages/Course/TypeDefinition.ts'
 
@@ -25,8 +25,14 @@ import { isTutor, getFullName } from '~/pages/Course/utils'
 
 import Header from '~/pages/Course/Header.tsx'
 
+import Tab from '~/pages/Course/Tab.tsx'
+
+import { ActiveTabContext } from '~/context/activeTabContext'
+
+
 const TutorCommunityPlatform: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<ActiveTab>('documents')
+  const { activeTab } = useContext(ActiveTabContext)
+  // const [activeTab, setActiveTab] = useState<ActiveTab>('documents')
   const [showUploadModal, setShowUploadModal] = useState<boolean>(false)
   const [showAssignmentModal, setShowAssignmentModal] = useState<boolean>(false)
   const [showAvailabilityModal, setShowAvailabilityModal] = useState<boolean>(false)
@@ -194,14 +200,11 @@ const TutorCommunityPlatform: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 relative overflow-hidden">
+    <div className="min-h-screen  relative overflow-hidden">
       {/* Header */}
-
       <Header tutor={ mockUserData }/>
-
-
       {/* Navigation */}
-      <div className="relative bg-white/70 backdrop-blur-md border-b border-indigo-100">
+      <div className="relative backdrop-blur-md  border-indigo-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-2 overflow-x-auto">
             {[
@@ -210,27 +213,28 @@ const TutorCommunityPlatform: React.FC = () => {
               { id: 'sessions', label: 'Buổi tư vấn', icon: Users, gradient: 'from-green-500 to-emerald-500' },
               { id: 'availability', label: 'Lịch trống', icon: Calendar, gradient: 'from-orange-500 to-red-500' }
             ].map(tab => (
-              <motion.button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as ActiveTab)}
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                className={`relative py-4 px-4 font-medium text-sm flex items-center space-x-2 transition-all whitespace-nowrap cursor-pointer ${
-                  activeTab === tab.id
-                    ? 'text-indigo-600'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                <tab.icon className="w-5 h-5" />
-                <span>{tab.label}</span>
-                {activeTab === tab.id && (
-                  <motion.div
-                    layoutId="activeTab"
-                    className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${tab.gradient} rounded-t-full`}
-                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                  />
-                )}
-              </motion.button>
+              <Tab key={tab.id} tab={tab} />
+              //   <motion.button
+              //     key={tab.id}
+              //     onClick={() => setActiveTab(tab.id as ActiveTab)}
+              //     whileHover={{ y: -2 }}
+              //     whileTap={{ scale: 0.98 }}
+              //     className={`relative py-4 px-4 font-medium text-sm flex items-center space-x-2 transition-all whitespace-nowrap cursor-pointer ${
+              //       activeTab === tab.id
+              //         ? 'text-indigo-600'
+              //         : 'text-gray-500 hover:text-gray-700'
+              //     }`}
+              //   >
+              //     <tab.icon className="w-5 h-5" />
+              //     <span>{tab.label}</span>
+              //     {activeTab === tab.id && (
+              //       <motion.div
+              //         layoutId="activeTab"
+              //         className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${tab.gradient} rounded-t-full`}
+              //         transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              //       />
+              //     )}
+              //   </motion.button>
             ))}
           </div>
         </div>

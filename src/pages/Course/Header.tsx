@@ -10,7 +10,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ tutor }) => {
   return (
-    <div className="relative bg-white/80 backdrop-blur-md border-b-2 border-indigo-100 shadow-lg">
+    <div className="relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
         <div className="flex items-center space-x-4">
           <motion.div
