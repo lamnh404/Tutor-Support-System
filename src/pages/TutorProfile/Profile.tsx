@@ -269,10 +269,6 @@ const Profile: React.FC = () => {
                     <span className="text-gray-600">Thời gian phản hồi:</span>
                     <span className="font-semibold text-green-600">~1 tiếng</span>
                   </div>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-gray-600">Tỉ lệ thành công:</span>
-                    <span className="font-semibold text-blue-600">38%</span>
-                  </div>
                 </div>
               </div>
 
@@ -318,16 +314,6 @@ const Profile: React.FC = () => {
                     {/*  Background Checked*/}
                     {/*</Tag>*/}
                   </div>
-
-                  <div className="flex items-center gap-2 mb-2 text-gray-700">
-                    <BookOutlined />
-                    <span className="font-medium">IELTS 8.0</span>
-                  </div>
-
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <GlobalOutlined />
-                    <span>Ngôn ngữ: Tiếng Việt</span>
-                  </div>
                 </div>
               </div>
 
@@ -350,15 +336,6 @@ const Profile: React.FC = () => {
                   </div>
                   <p className="text-xs text-gray-600">Học sinh hiện tại</p>
                 </div>
-
-                <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-4 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <BookOutlined className="text-green-500 text-xl" />
-                    <span className="text-2xl font-bold text-gray-800">500+</span>
-                  </div>
-                  <p className="text-xs text-gray-600">Buổi học</p>
-                </div>
-
                 <div className="bg-gradient-to-br from-purple-50 to-pink-100 p-4 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
                   <div className="flex items-center gap-2 mb-1">
                     <TrophyOutlined className="text-purple-500 text-xl" />
