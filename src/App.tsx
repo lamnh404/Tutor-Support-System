@@ -3,9 +3,9 @@ import { Routes, Route, useLocation, Outlet, Navigate } from 'react-router-dom'
 import Auth from '~/pages/Auth/Auth'
 import NotFound from '~/pages/404/NotFound'
 import { useContext, useEffect } from 'react'
-import { type User } from './context/userContext.tsx'
+import { type User } from './context/User/userContext.tsx'
 import { ToastContainer } from 'react-toastify'
-import { userContext } from '~/context/userContext.tsx'
+import { userContext } from '~/context/User/userContext.tsx'
 import TutorSearchPage from '~/pages/TutorSearch/TutorSearch.tsx'
 import Profile from '~/pages/TutorProfile/Profile.tsx'
 import ScrollToTop from '~/components/ScrollToTop/ScrollToTop.tsx'
@@ -16,7 +16,8 @@ import { useNavigate } from 'react-router-dom'
 import { setupAxiosInterceptors } from '~/utils/authorizedAxiosInstance.ts'
 import TutorCommunityPlatform from '~/pages/Course/TutorCommunityPlatform.tsx'
 import AnimationBackground from '~/components/AnimationBackground/AnimationBackground.tsx'
-import { ActiveTabContextProvider } from '~/context/activeTabContext.tsx'
+import { ActiveTabContextProvider } from '~/context/CourseContext/ActiveTabContext.tsx'
+
 interface ProtectedRouteProps {
   user: User | null
 }

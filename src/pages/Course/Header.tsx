@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { Mail } from 'lucide-react'
-import type { User } from '~/context/userContext'
+import type { User } from '~/context/User/userContext.tsx'
 import { getInitials, getFullName } from '~/pages/Course/utils.ts'
 
 interface HeaderProps {

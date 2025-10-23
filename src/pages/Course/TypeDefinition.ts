@@ -1,3 +1,5 @@
+import * as react from 'react'
+import type { LucideProps } from 'lucide-react'
 
 
 export type ActiveTab = 'documents' | 'assignments' | 'sessions' | 'availability';
@@ -87,4 +89,11 @@ export interface NewAvailabilityState {
   startTime: string;
   endTime: string;
   type: AvailabilityType;
+}
+
+export interface Tab{
+  id: ActiveTab
+  label: string
+  icon: react.ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & react.RefAttributes<SVGSVGElement>>
+  gradient: string
 }

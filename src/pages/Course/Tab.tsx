@@ -1,19 +1,12 @@
 import React, { useContext } from 'react'
-import { ActiveTabContext } from '~/context/activeTabContext'
-import { type ActiveTab } from '~/pages/Course/TypeDefinition.ts'
-import * as react from 'react'
-import type { LucideProps } from 'lucide-react'
+import { ActiveTabContext } from '~/context/CourseContext/ActiveTabContext.tsx'
+import type { ActiveTab, Tab } from '~/pages/Course/TypeDefinition.ts'
 
 interface TabProps {
-  tab: {
-    id: ActiveTab
-    label: string
-    icon: react.ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & react.RefAttributes<SVGSVGElement>>
-    gradient: string
-  }
+  tab: Tab
 }
 
-const Tab: React.FC<TabProps> = ({ tab }) => {
+const TabCard: React.FC<TabProps> = ({ tab }) => {
   const { activeTab, setActiveTab } = useContext(ActiveTabContext)
   const Icon = tab.icon
 
@@ -32,4 +25,4 @@ const Tab: React.FC<TabProps> = ({ tab }) => {
   )
 }
 
-export default Tab
+export default TabCard

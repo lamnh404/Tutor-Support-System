@@ -1,4 +1,4 @@
-import type { User } from '~/context/userContext'
+import type { User } from '~/context/User/userContext.tsx'
 import type {Assignment, Availability, Document, Session} from "~/pages/Course/TypeDefinition.ts";
 
 export const mockUserData: User = {
