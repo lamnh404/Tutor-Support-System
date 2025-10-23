@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom'
 import { setupAxiosInterceptors } from '~/utils/authorizedAxiosInstance.ts'
 import TutorCommunityPlatform from '~/pages/Course/TutorCommunityPlatform.tsx'
 import AnimationBackground from '~/components/AnimationBackground/AnimationBackground.tsx'
+import TutorList from '~/pages/TutorList/TutorList.tsx'
 interface ProtectedRouteProps {
   user: User | null
 }
@@ -48,6 +49,7 @@ function App() {
             <Route path="/library" element={ <LibraryPage /> } />
             <Route path='/:id' element={ <Profile />} />
             <Route path='/course/:id' element={ <TutorCommunityPlatform/>} />
+            <Route path='/mytutors' element={ <TutorList />} />
           </Route>
           <Route path='/login' element={ <Auth />} />
           <Route path='/register' element={ <Auth />} />
