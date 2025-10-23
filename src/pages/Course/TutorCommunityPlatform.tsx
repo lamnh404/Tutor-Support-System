@@ -1,290 +1,29 @@
 import React, { useState, ChangeEvent } from 'react'
+
 import {
   Calendar, Clock, Video, MapPin, Edit, Trash2, Plus, Check, X,
   Mail, Search, Upload, Download,
   BookOpen, FileText, Users, Star, Eye, MoreVertical
 } from 'lucide-react'
+
 import { motion, AnimatePresence } from 'framer-motion'
+
 import toast from 'react-hot-toast'
-import type { User } from '~/context/userContext.tsx'
-// --- Type Definitions ---
 
-type DocumentType = 'video' | 'pdf' | 'document' | 'link';
-type DocumentCategory = 'Bài giảng' | 'Tài liệu' | 'Thông báo';
+import type { ActiveTab, DocumentType, DocumentCategory, Document,
+  Assignment, DayOfWeek, AvailabilityType, SessionStatus, Session,
+  Availability, NewDocumentState, NewAssignmentState, NewAvailabilityState } from '~/pages/Course/TypeDefinition.ts'
 
-interface Document {
-  id: number;
-  title: string;
-  type: DocumentType;
-  category: DocumentCategory;
-  uploadDate: string;
-  size?: string;
-  views: number;
-  downloads?: number;
-  author: string;
-  description?: string;
-  url?: string;
-}
+import { daysOfWeek } from '~/pages/Course/TypeDefinition'
 
-type AssignmentStatus = 'active' | 'upcoming' | 'closed';
+import { mockUserData, mockDocuments, mockAssignments, mockAvailability, mockSessions } from '~/pages/Course/mockData.ts'
 
-interface Assignment {
-  id: number;
-  title: string;
-  description: string;
-  dueDate: string;
-  status: AssignmentStatus;
-  submissions: number;
-  totalStudents: number;
-  points: number;
-  createdDate: string;
-}
+import { gridItemVariants, gridContainerVariants,
+  tabContentVariants, modalBackdropVariants, modalPanelVariants } from '~/pages/Course/Config'
 
-type AvailabilityType = 'both' | 'online' | 'in-person';
-type DayOfWeek = 'Thứ Hai' | 'Thứ Ba' | 'Thứ Tư' | 'Thứ Năm' | 'Thứ Sáu' | 'Thứ Bảy' | 'Chủ Nhật';
+import { isTutor, getFullName } from '~/pages/Course/utils'
 
-interface Availability {
-  id: number;
-  day: DayOfWeek;
-  startTime: string;
-  endTime: string;
-  type: AvailabilityType;
-}
-
-type SessionType = 'online' | 'in-person';
-type SessionStatus = 'confirmed' | 'pending' | 'completed' | 'cancelled';
-
-interface Session {
-  id: number;
-  studentName: string;
-  studentEmail: string;
-  date: string;
-  time: string;
-  duration: number;
-  type: SessionType;
-  status: SessionStatus;
-  topic: string;
-  meetingLink?: string;
-  location?: string;
-  notes: string;
-}
-
-const mockUserData: User = {
-  email: 'cong.nguyen@hcmut.edu.vn',
-  firstName: 'Công',
-  lastName: 'Nguyễn Thành',
-  roles: ['TUTOR'],
-  avatarUrl: undefined
-}
-
-const mockDocuments: Document[] = [
-  {
-    id: 1,
-    title: 'Công nghệ Phần mềm (CO3001)_Video',
-    type: 'video',
-    category: 'Bài giảng',
-    uploadDate: '2025-10-15',
-    size: '1.2 GB',
-    views: 234,
-    downloads: 145,
-    author: 'Nguyễn Thành Công',
-    description: 'Video bài giảng đầy đủ cho môn Công nghệ Phần mềm'
-  },
-  {
-    id: 2,
-    title: 'SE_Course Syllabus',
-    type: 'pdf',
-    category: 'Tài liệu',
-    uploadDate: '2025-10-10',
-    size: '2.5 MB',
-    views: 456,
-    downloads: 234,
-    author: 'Nguyễn Thành Công',
-    description: 'Đề cương chi tiết môn học'
-  },
-  {
-    id: 3,
-    title: 'Course Planning',
-    type: 'link',
-    category: 'Tài liệu',
-    uploadDate: '2025-10-10',
-    views: 189,
-    author: 'Nguyễn Thành Công',
-    url: 'https://planning.example.com'
-  },
-  {
-    id: 4,
-    title: 'Thông báo - Blended Learning',
-    type: 'document',
-    category: 'Thông báo',
-    uploadDate: '2025-09-24',
-    size: '850 KB',
-    views: 345,
-    downloads: 123,
-    author: 'Nguyễn Thành Công'
-  }
-]
-
-const mockAssignments: Assignment[] = [
-  {
-    id: 1,
-    title: 'Bài tập 1: Phân tích yêu cầu',
-    description: 'Phân tích và viết tài liệu yêu cầu cho hệ thống quản lý thư viện',
-    dueDate: '2025-10-30',
-    status: 'active',
-    submissions: 23,
-    totalStudents: 45,
-    points: 100,
-    createdDate: '2025-10-15'
-  },
-  {
-    id: 2,
-    title: 'Bài tập 2: Thiết kế UML',
-    description: 'Vẽ các biểu đồ UML cho hệ thống',
-    dueDate: '2025-11-15',
-    status: 'upcoming',
-    submissions: 0,
-    totalStudents: 45,
-    points: 100,
-    createdDate: '2025-10-20'
-  }
-]
-
-const mockAvailability: Availability[] = [
-  { id: 1, day: 'Thứ Hai', startTime: '09:00', endTime: '12:00', type: 'both' },
-  { id: 2, day: 'Thứ Hai', startTime: '14:00', endTime: '17:00', type: 'online' },
-  { id: 3, day: 'Thứ Tư', startTime: '10:00', endTime: '15:00', type: 'in-person' },
-  { id: 4, day: 'Thứ Sáu', startTime: '09:00', endTime: '13:00', type: 'both' }
-]
-
-const mockSessions: Session[] = [
-  {
-    id: 1,
-    studentName: 'Nguyễn Văn A',
-    studentEmail: 'a.nguyen@student.hcmut.edu.vn',
-    date: '2025-10-24',
-    time: '10:00',
-    duration: 60,
-    type: 'online',
-    status: 'confirmed',
-    topic: 'Tư vấn đồ án giữa kỳ',
-    meetingLink: 'https://meet.google.com/abc-defg-hij',
-    notes: ''
-  },
-  {
-    id: 2,
-    studentName: 'Trần Thị B',
-    studentEmail: 'b.tran@student.hcmut.edu.vn',
-    date: '2025-10-24',
-    time: '14:00',
-    duration: 45,
-    type: 'in-person',
-    status: 'confirmed',
-    topic: 'Hỏi đáp bài tập',
-    location: 'H6-301',
-    notes: ''
-  },
-  {
-    id: 3,
-    studentName: 'Lê Văn C',
-    studentEmail: 'c.le@student.hcmut.edu.vn',
-    date: '2025-10-25',
-    time: '11:00',
-    duration: 30,
-    type: 'online',
-    status: 'pending',
-    topic: 'Review bài làm',
-    meetingLink: 'https://meet.google.com/xyz-abcd-efg',
-    notes: ''
-  },
-  {
-    id: 4,
-    studentName: 'Phạm Thị D',
-    studentEmail: 'd.pham@student.hcmut.edu.vn',
-    date: '2025-10-20',
-    time: '09:30',
-    duration: 60,
-    type: 'in-person',
-    status: 'completed',
-    topic: 'Hướng dẫn làm đồ án',
-    location: 'H6-301',
-    notes: 'Sinh viên đã hiểu rõ yêu cầu. Cần theo dõi tiến độ tuần sau.'
-  }
-]
-
-const gridContainerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-}
-
-const gridItemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  show: { y: 0, opacity: 1 }
-}
-
-const tabContentVariants = {
-  initial: { y: 10, opacity: 0 },
-  animate: { y: 0, opacity: 1 },
-  exit: { y: -10, opacity: 0 },
-  transition: { duration: 0.2 }
-}
-
-const modalBackdropVariants = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1 },
-  exit: { opacity: 0 }
-}
-
-const modalPanelVariants = {
-  initial: { scale: 0.9, opacity: 0, y: 50 },
-  animate: { scale: 1, opacity: 1, y: 0 },
-  exit: { scale: 0.9, opacity: 0, y: 50 },
-  transition: { type: 'spring', stiffness: 300, damping: 30 }
-}
-
-// --- Component State Types ---
-
-type ActiveTab = 'documents' | 'assignments' | 'sessions' | 'availability';
-
-interface NewDocumentState {
-  title: string;
-  type: DocumentType;
-  category: DocumentCategory;
-  description: string;
-}
-
-interface NewAssignmentState {
-  title: string;
-  description: string;
-  dueDate: string;
-  points: number;
-}
-
-interface NewAvailabilityState {
-  day: DayOfWeek;
-  startTime: string;
-  endTime: string;
-  type: AvailabilityType;
-}
-
-// --- Utility Functions ---
-
-const getInitials = (user: User): string => {
-  return `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
-}
-
-const getFullName = (user: User): string => {
-  return `${user.lastName} ${user.firstName}`
-}
-
-const isTutor = (user: User): boolean => {
-  return user.roles.includes('TUTOR')
-}
+import Header from '~/pages/Course/Header.tsx'
 
 const TutorCommunityPlatform: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('documents')
@@ -306,7 +45,8 @@ const TutorCommunityPlatform: React.FC = () => {
     title: '',
     type: 'pdf',
     category: 'Tài liệu',
-    description: ''
+    description: '',
+    file: null
   })
 
   const [newAssignment, setNewAssignment] = useState<NewAssignmentState>({
@@ -322,8 +62,6 @@ const TutorCommunityPlatform: React.FC = () => {
     endTime: '17:00',
     type: 'both'
   })
-
-  const daysOfWeek: DayOfWeek[] = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật']
 
   const handleUploadDocument = () => {
     if (!isTutor(mockUserData)) {
@@ -341,8 +79,19 @@ const TutorCommunityPlatform: React.FC = () => {
     }
     setDocuments([doc, ...documents])
     setShowUploadModal(false)
-    setNewDocument({ title: '', type: 'pdf', category: 'Tài liệu', description: '' })
+    setNewDocument({ title: '', type: 'pdf', category: 'Tài liệu', description: '', file: null })
     toast.success('Đăng tài liệu thành công!')
+  }
+
+  const handleFileUpload = (e:React.ChangeEvent<HTMLInputElement>) => {
+    const file = e?.target?.files?.[0]
+    if (file) {
+      setNewDocument({
+        ...newDocument,
+        file: file,
+        title: newDocument.title || file.name.replace(/\.[^/.]+$/, '')
+      })
+    }
   }
 
   const handleCreateAssignment = () => {
@@ -413,9 +162,9 @@ const TutorCommunityPlatform: React.FC = () => {
   }
 
   const filteredDocuments = documents.filter(doc => {
-    const matchesSearch = doc.title.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesFilter = filterCategory === 'all' || doc.category === filterCategory
-    return matchesSearch && matchesFilter
+    const matchesSearch= doc.title.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesFilter = filterCategory === 'all' || doc.category == filterCategory
+    return matchesFilter && matchesSearch
   })
 
   const handleNewDocChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -447,38 +196,9 @@ const TutorCommunityPlatform: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 relative overflow-hidden">
       {/* Header */}
-      <div className="relative bg-white/80 backdrop-blur-md border-b-2 border-indigo-100 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-          <div className="flex items-center space-x-4">
-            <motion.div
-              whileHover={{ rotate: 360, scale: 1.1 }}
-              transition={{ duration: 0.6, type: 'spring' }}
-              className="w-16 h-16 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-xl ring-4 ring-indigo-100"
-            >
-              {mockUserData.avatarUrl ? (
-                <img src={mockUserData.avatarUrl} alt="Avatar" className="w-full h-full rounded-2xl object-cover" />
-              ) : (
-                getInitials(mockUserData)
-              )}
-            </motion.div>
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                {getFullName(mockUserData)}
-              </h1>
-              <p className="text-sm text-gray-600 flex items-center space-x-2 mt-1">
-                <Mail className="w-3 h-3" />
-                <span>{mockUserData.email}</span>
-                <motion.span
-                  whileHover={{ scale: 1.1 }}
-                  className="px-3 py-1 bg-gradient-to-r from-blue-100 to-purple-100 text-indigo-700 rounded-full text-xs font-bold shadow-sm"
-                >
-                  👨‍🏫 Gia sư
-                </motion.span>
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+
+      <Header tutor={ mockUserData }/>
+
 
       {/* Navigation */}
       <div className="relative bg-white/70 backdrop-blur-md border-b border-indigo-100">
@@ -495,7 +215,7 @@ const TutorCommunityPlatform: React.FC = () => {
                 onClick={() => setActiveTab(tab.id as ActiveTab)}
                 whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                className={`relative py-4 px-4 font-medium text-sm flex items-center space-x-2 transition-all whitespace-nowrap ${
+                className={`relative py-4 px-4 font-medium text-sm flex items-center space-x-2 transition-all whitespace-nowrap cursor-pointer ${
                   activeTab === tab.id
                     ? 'text-indigo-600'
                     : 'text-gray-500 hover:text-gray-700'
@@ -521,7 +241,7 @@ const TutorCommunityPlatform: React.FC = () => {
         <AnimatePresence mode="wait">
           {/* Documents Tab */}
           {activeTab === 'documents' && (
-            <motion.div key="documents" {...tabContentVariants} className="space-y-6">
+            < motion.div key="documents" {...tabContentVariants} className="space-y-6">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <motion.h2
                   initial={{ x: -20, opacity: 0 }}
@@ -534,7 +254,7 @@ const TutorCommunityPlatform: React.FC = () => {
                     whileHover={{ scale: 1.05, boxShadow: '0 10px 20px rgba(99, 102, 241, 0.3)' }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setShowUploadModal(true)}
-                    className="px-6 py-3 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:via-indigo-600 hover:to-purple-700 flex items-center space-x-2 shadow-lg font-semibold"
+                    className="px-6 py-3 cursor-pointer bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:via-indigo-600 hover:to-purple-700 flex items-center space-x-2 shadow-lg font-semibold"
                   >
                     <Upload className="w-5 h-5" />
                     <span>Đăng tài liệu</span>
@@ -562,7 +282,6 @@ const TutorCommunityPlatform: React.FC = () => {
                   <option value="all">📚 Tất cả danh mục</option>
                   <option value="Bài giảng">🎓 Bài giảng</option>
                   <option value="Tài liệu">📖 Tài liệu</option>
-                  <option value="Thông báo">📢 Thông báo</option>
                 </select>
               </div>
 
@@ -1068,6 +787,64 @@ const TutorCommunityPlatform: React.FC = () => {
                   <option value="Bài giảng">🎓 Bài giảng</option>
                   <option value="Thông báo">📢 Thông báo</option>
                 </select>
+
+                {/* File Upload Section */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Tải lên tệp tin
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="file"
+                      onChange={handleFileUpload}
+                      accept={
+                        newDocument.type === 'pdf' ? '.pdf' :
+                          newDocument.type === 'video' ? 'video/*' :
+                            newDocument.type === 'document' ? '.doc,.docx,.txt,.ppt,.pptx,.xls,.xlsx' :
+                              '*'
+                      }
+                      className="hidden"
+                      id="file-upload"
+                    />
+                    <label
+                      htmlFor="file-upload"
+                      className="flex items-center justify-center w-full border-2 border-dashed border-indigo-300 rounded-xl px-4 py-6 cursor-pointer hover:border-indigo-500 hover:bg-indigo-50/50 transition-all bg-white/80"
+                    >
+                      <div className="text-center">
+                        <div className="text-3xl mb-2">📁</div>
+                        <p className="text-sm text-gray-600">
+                          {newDocument.file ? (
+                            <span className="text-indigo-600 font-medium">
+                      ✓ {newDocument.file.name}
+                            </span>
+                          ) : (
+                            <>
+                              <span className="text-indigo-600 font-medium">Chọn tệp</span> hoặc kéo thả vào đây
+                            </>
+                          )}
+                        </p>
+                        {newDocument.file && (
+                          <p className="text-xs text-gray-500 mt-1">
+                            {(newDocument.file.size / 1024 / 1024).toFixed(2)} MB
+                          </p>
+                        )}
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                {/* URL input for link type */}
+                {newDocument.type === 'link' && (
+                  <input
+                    type="url"
+                    placeholder="Đường dẫn URL"
+                    name="url"
+                    value={newDocument.url || ''}
+                    onChange={handleNewDocChange}
+                    className="w-full border-2 border-indigo-100 rounded-xl px-4 py-3 focus:ring-4 focus:ring-indigo-200 focus:border-indigo-400 bg-white/80 outline-none transition-all"
+                  />
+                )}
+
                 <textarea
                   placeholder="Mô tả (tuỳ chọn)"
                   name="description"
