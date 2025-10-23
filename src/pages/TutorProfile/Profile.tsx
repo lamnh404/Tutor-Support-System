@@ -11,7 +11,6 @@ import {
   TrophyOutlined,
   MessageOutlined,
   CalendarOutlined,
-  GlobalOutlined,
   ClockCircleOutlined,
   FireTwoTone,
   HeartOutlined,
