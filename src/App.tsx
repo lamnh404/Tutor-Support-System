@@ -18,6 +18,7 @@ import TutorCommunityPlatform from '~/pages/Course/TutorCommunityPlatform.tsx'
 import AnimationBackground from '~/components/AnimationBackground/AnimationBackground.tsx'
 import { ActiveTabContextProvider } from '~/context/CourseContext/ActiveTabContext.tsx'
 
+import TutorList from '~/pages/TutorList/TutorList.tsx'
 interface ProtectedRouteProps {
   user: User | null
 }

@@ -37,6 +37,36 @@ export default function Header() {
         <Link to="/" className="inline-block py-[5px] mr-4 whitespace-nowrap bg-transparent max-h-[52px]">
           <img src="/logoBK.png" alt="Logo" className="max-h-[35px] align-middle overflow-clip" />
         </Link>
+        {user && (
+          <div className="h-full flex items-center space-x-2 cursor-pointer">
+            <Link to="/">
+              {/* 4. Apply conditional style */}
+              <button className={`${baseStyle} ${pathname === '/' ? activeStyle : inactiveStyle}`}>
+                Trang Chủ
+              </button>
+            </Link>
+            <Link to="/student">
+              <button className={`${baseStyle} ${pathname.startsWith('/student') ? activeStyle : inactiveStyle}`}>
+                Trang Cá Nhân
+              </button>
+            </Link>
+            <Link to="/mytutors">
+              <button className={`${baseStyle} ${pathname.startsWith('/mytutors') ? activeStyle : inactiveStyle}`}>
+                Các gia sư của tôi
+              </button>
+            </Link>
+            <Link to="/dashboard">
+              <button className={`${baseStyle} ${pathname.startsWith('/dashboard') ? activeStyle : inactiveStyle}`}>
+                Bảng Điều Khiển
+              </button>
+            </Link>
+            <Link to="/library">
+              <button className={`${baseStyle} ${pathname.startsWith('/library') ? activeStyle : inactiveStyle}`}>
+                Thư Viện
+              </button>
+            </Link>
+          </div>
+        )}
 
         {user && <HeaderButtons />}
 
