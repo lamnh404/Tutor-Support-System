@@ -1,18 +1,16 @@
-import React, { useState, ChangeEvent, useContext } from 'react'
+import React, { useState, type ChangeEvent, useContext } from 'react'
 
-import {
-  Calendar, Clock, Video, MapPin, Edit, Trash2, Plus, Check, X,
-  Mail, Search, Upload, Download,
-  BookOpen, FileText, Users, Star, Eye, MoreVertical
-} from 'lucide-react'
+import { Calendar, Clock, Video, MapPin, Trash2, Plus, Check, X, Mail } from 'lucide-react'
 
 import { motion, AnimatePresence } from 'framer-motion'
 
 import toast from 'react-hot-toast'
 
-import type { DocumentType, DocumentCategory, Document,
+import type {
+  DocumentType, DocumentCategory, Document,
   Assignment, DayOfWeek, AvailabilityType, SessionStatus, Session,
-  Availability, NewDocumentState, NewAssignmentState, NewAvailabilityState } from '~/pages/Course/TypeDefinition.ts'
+  Availability, NewDocumentState, NewAssignmentState, NewAvailabilityState
+} from '~/pages/Course/TypeDefinition.ts'
 
 import { daysOfWeek } from '~/pages/Course/TypeDefinition'
 
@@ -25,14 +23,18 @@ import { isTutor, getFullName } from '~/pages/Course/utils'
 
 import Header from '~/pages/Course/Header.tsx'
 
-import Tab from '~/pages/Course/Tab.tsx'
+import { Tabs, getStatusColor } from '~/pages/Course/utils'
 
-import { ActiveTabContext } from '~/context/activeTabContext'
+import TabCard from '~/pages/Course/Tab.tsx'
 
+import { ActiveTabContext } from '~/context/CourseContext/ActiveTabContext.tsx'
+
+import DocumentCard from '~/pages/Course/Contents/DocumentCard.tsx'
+
+import AssignmentCard from '~/pages/Course/Contents/AssignmentCard.tsx'
 
 const TutorCommunityPlatform: React.FC = () => {
   const { activeTab } = useContext(ActiveTabContext)
-  // const [activeTab, setActiveTab] = useState<ActiveTab>('documents')
   const [showUploadModal, setShowUploadModal] = useState<boolean>(false)
   const [showAssignmentModal, setShowAssignmentModal] = useState<boolean>(false)
   const [showAvailabilityModal, setShowAvailabilityModal] = useState<boolean>(false)
@@ -147,26 +149,6 @@ const TutorCommunityPlatform: React.FC = () => {
     setSelectedSession(null)
   }
 
-  const getStatusColor = (status: SessionStatus): string => {
-    switch (status) {
-    case 'confirmed': return 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-700'
-    case 'pending': return 'bg-gradient-to-r from-yellow-100 to-amber-100 text-yellow-700'
-    case 'completed': return 'bg-gradient-to-r from-gray-100 to-slate-100 text-gray-700'
-    case 'cancelled': return 'bg-gradient-to-r from-red-100 to-rose-100 text-red-700'
-    default: return 'bg-gray-100 text-gray-700'
-    }
-  }
-
-  const getTypeIcon = (type: DocumentType): string => {
-    switch (type) {
-    case 'video': return '🎥'
-    case 'pdf': return '📄'
-    case 'document': return '📝'
-    case 'link': return '🔗'
-    default: return '📁'
-    }
-  }
-
   const filteredDocuments = documents.filter(doc => {
     const matchesSearch= doc.title.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesFilter = filterCategory === 'all' || doc.category == filterCategory
@@ -207,34 +189,8 @@ const TutorCommunityPlatform: React.FC = () => {
       <div className="relative backdrop-blur-md  border-indigo-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-2 overflow-x-auto">
-            {[
-              { id: 'documents', label: 'Tài liệu & Bài giảng', icon: BookOpen, gradient: 'from-blue-500 to-cyan-500' },
-              { id: 'assignments', label: 'Bài tập', icon: FileText, gradient: 'from-purple-500 to-pink-500' },
-              { id: 'sessions', label: 'Buổi tư vấn', icon: Users, gradient: 'from-green-500 to-emerald-500' },
-              { id: 'availability', label: 'Lịch trống', icon: Calendar, gradient: 'from-orange-500 to-red-500' }
-            ].map(tab => (
-              <Tab key={tab.id} tab={tab} />
-              //   <motion.button
-              //     key={tab.id}
-              //     onClick={() => setActiveTab(tab.id as ActiveTab)}
-              //     whileHover={{ y: -2 }}
-              //     whileTap={{ scale: 0.98 }}
-              //     className={`relative py-4 px-4 font-medium text-sm flex items-center space-x-2 transition-all whitespace-nowrap cursor-pointer ${
-              //       activeTab === tab.id
-              //         ? 'text-indigo-600'
-              //         : 'text-gray-500 hover:text-gray-700'
-              //     }`}
-              //   >
-              //     <tab.icon className="w-5 h-5" />
-              //     <span>{tab.label}</span>
-              //     {activeTab === tab.id && (
-              //       <motion.div
-              //         layoutId="activeTab"
-              //         className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${tab.gradient} rounded-t-full`}
-              //         transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-              //       />
-              //     )}
-              //   </motion.button>
+            {Tabs.map(tab => (
+              <TabCard key={tab.id} tab={tab} />
             ))}
           </div>
         </div>
@@ -244,254 +200,22 @@ const TutorCommunityPlatform: React.FC = () => {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatePresence mode="wait">
           {/* Documents Tab */}
-          {activeTab === 'documents' && (
-            < motion.div key="documents" {...tabContentVariants} className="space-y-6">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <motion.h2
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                  Tài liệu & Bài giảng
-                </motion.h2>
-                {isTutor(mockUserData) && (
-                  <motion.button
-                    whileHover={{ scale: 1.05, boxShadow: '0 10px 20px rgba(99, 102, 241, 0.3)' }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setShowUploadModal(true)}
-                    className="px-6 py-3 cursor-pointer bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:via-indigo-600 hover:to-purple-700 flex items-center space-x-2 shadow-lg font-semibold"
-                  >
-                    <Upload className="w-5 h-5" />
-                    <span>Đăng tài liệu</span>
-                  </motion.button>
-                )}
-              </div>
-
-              {/* Search and Filter */}
-              <div className="flex flex-col sm:flex-row gap-3">
-                <div className="flex-1 relative">
-                  <Search className="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-indigo-400" />
-                  <input
-                    type="text"
-                    placeholder="Tìm kiếm tài liệu..."
-                    value={searchTerm}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 border-2 border-indigo-100 rounded-xl focus:ring-4 focus:ring-indigo-200 focus:border-indigo-400 bg-white/80 backdrop-blur-sm transition-all"
-                  />
-                </div>
-                <select
-                  value={filterCategory}
-                  onChange={(e: ChangeEvent<HTMLSelectElement>) => setFilterCategory(e.target.value)}
-                  className="px-5 py-3 border-2 border-indigo-100 rounded-xl focus:ring-4 focus:ring-indigo-200 focus:border-indigo-400 bg-white/80 backdrop-blur-sm font-medium transition-all"
-                >
-                  <option value="all">📚 Tất cả danh mục</option>
-                  <option value="Bài giảng">🎓 Bài giảng</option>
-                  <option value="Tài liệu">📖 Tài liệu</option>
-                </select>
-              </div>
-
-              {/* Documents Grid */}
-              {filteredDocuments.length > 0 ? (
-                <motion.div
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                  variants={gridContainerVariants}
-                  initial="hidden"
-                  animate="show"
-                >
-                  {filteredDocuments.map(doc => (
-                    <motion.div
-                      key={doc.id}
-                      variants={gridItemVariants}
-                      whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(0, 0, 0, 0.12)' }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                      className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border-2 border-indigo-50 p-6 cursor-pointer overflow-hidden relative group"
-                    >
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-100/50 to-purple-100/50 rounded-full blur-2xl -z-10 group-hover:scale-150 transition-transform duration-500" />
-
-                      <div className="flex items-start justify-between mb-4">
-                        <motion.div
-                          whileHover={{ scale: 1.2, rotate: 10 }}
-                          className="text-5xl"
-                        >
-                          {getTypeIcon(doc.type)}
-                        </motion.div>
-                        <motion.button
-                          whileHover={{ scale: 1.1, rotate: 90 }}
-                          className="p-2 hover:bg-indigo-50 rounded-lg transition"
-                        >
-                          <MoreVertical className="w-5 h-5 text-gray-400" />
-                        </motion.button>
-                      </div>
-
-                      <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 h-14 text-lg">{doc.title}</h3>
-
-                      {doc.description && (
-                        <p className="text-sm text-gray-600 mb-3 line-clamp-2 h-10">{doc.description}</p>
-                      )}
-
-                      <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
-                        <motion.span
-                          whileHover={{ scale: 1.05 }}
-                          className="px-3 py-1.5 bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-700 rounded-full font-bold"
-                        >
-                          {doc.category}
-                        </motion.span>
-                        <span className="text-gray-400 font-medium">{doc.uploadDate}</span>
-                      </div>
-
-                      <div className="flex items-center justify-between pt-4 border-t-2 border-indigo-50">
-                        <div className="flex items-center space-x-4 text-xs text-gray-500">
-                          <span className="flex items-center space-x-1.5">
-                            <Eye className="w-4 h-4 text-blue-500" />
-                            <span className="font-semibold">{doc.views}</span>
-                          </span>
-                          {doc.downloads !== undefined && (
-                            <span className="flex items-center space-x-1.5">
-                              <Download className="w-4 h-4 text-green-500" />
-                              <span className="font-semibold">{doc.downloads}</span>
-                            </span>
-                          )}
-                        </div>
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          className="p-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg hover:from-indigo-600 hover:to-purple-600 shadow-md"
-                        >
-                          <Download className="w-4 h-4" />
-                        </motion.button>
-                      </div>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              ) : (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="flex flex-col items-center justify-center p-16 bg-white/80 backdrop-blur-sm rounded-2xl border-2 border-dashed border-indigo-200"
-                >
-                  <FileText className="w-20 h-20 text-indigo-300 mb-4" />
-                  <h3 className="text-xl font-bold text-gray-700">Không tìm thấy tài liệu</h3>
-                  <p className="mt-2 text-sm text-gray-500">
-                    {searchTerm
-                      ? 'Hãy thử tìm kiếm với từ khoá khác.'
-                      : 'Chưa có tài liệu nào trong danh mục này.'}
-                  </p>
-                </motion.div>
-              )}
-            </motion.div>
-          )}
+          {activeTab === 'documents' &&
+            <DocumentCard
+              setShowUploadModal={setShowUploadModal}
+              searchTerm={ searchTerm }
+              setSearchTerm={setSearchTerm}
+              filterCategory={filterCategory}
+              setFilterCategory={setFilterCategory}
+              filteredDocuments={filteredDocuments}
+            />}
 
           {/* Assignments Tab */}
-          {activeTab === 'assignments' && (
-            <motion.div key="assignments" {...tabContentVariants} className="space-y-6">
-              <div className="flex justify-between items-center">
-                <motion.h2
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
-                >
-                  Quản lý Bài tập
-                </motion.h2>
-                {isTutor(mockUserData) && (
-                  <motion.button
-                    whileHover={{ scale: 1.05, boxShadow: '0 10px 20px rgba(147, 51, 234, 0.3)' }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setShowAssignmentModal(true)}
-                    className="px-6 py-3 bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 text-white rounded-xl hover:from-purple-600 hover:via-pink-600 hover:to-rose-600 flex items-center space-x-2 shadow-lg font-semibold"
-                  >
-                    <Plus className="w-5 h-5" />
-                    <span>Tạo bài tập mới</span>
-                  </motion.button>
-                )}
-              </div>
-
-              <motion.div
-                className="grid gap-5"
-                variants={gridContainerVariants}
-                initial="hidden"
-                animate="show"
-              >
-                {assignments.map(assignment => (
-                  <motion.div
-                    key={assignment.id}
-                    variants={gridItemVariants}
-                    whileHover={{ scale: 1.02 }}
-                    className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border-2 border-purple-50 p-6 hover:shadow-xl transition-all relative overflow-hidden group"
-                  >
-                    <div className="absolute top-0 left-0 w-40 h-40 bg-gradient-to-br from-purple-100/50 to-pink-100/50 rounded-full blur-3xl -z-10 group-hover:scale-150 transition-transform duration-500" />
-
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <h3 className="text-xl font-bold text-gray-900 mb-3">{assignment.title}</h3>
-                        <p className="text-gray-600 text-sm mb-4 leading-relaxed">{assignment.description}</p>
-                        <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-                          <motion.div
-                            whileHover={{ scale: 1.05 }}
-                            className="flex items-center space-x-2 bg-gradient-to-r from-blue-50 to-indigo-50 px-3 py-2 rounded-lg"
-                          >
-                            <Calendar className="w-4 h-4 text-blue-500" />
-                            <span className="font-medium">Hạn: {assignment.dueDate}</span>
-                          </motion.div>
-                          <motion.div
-                            whileHover={{ scale: 1.05 }}
-                            className="flex items-center space-x-2 bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-2 rounded-lg"
-                          >
-                            <FileText className="w-4 h-4 text-green-500" />
-                            <span className="font-medium">{assignment.submissions}/{assignment.totalStudents} bài nộp</span>
-                          </motion.div>
-                          <motion.div
-                            whileHover={{ scale: 1.05 }}
-                            className="flex items-center space-x-2 bg-gradient-to-r from-yellow-50 to-amber-50 px-3 py-2 rounded-lg"
-                          >
-                            <Star className="w-4 h-4 text-yellow-500" />
-                            <span className="font-medium">{assignment.points} điểm</span>
-                          </motion.div>
-                        </div>
-                      </div>
-                      <motion.span
-                        whileHover={{ scale: 1.1 }}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold shadow-md ${
-                          assignment.status === 'active' ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white' :
-                            assignment.status === 'upcoming' ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white' :
-                              'bg-gradient-to-r from-gray-400 to-slate-400 text-white'
-                        }`}
-                      >
-                        {assignment.status === 'active' ? '✓ Đang mở' :
-                          assignment.status === 'upcoming' ? '⏰ Sắp mở' : '🔒 Đã đóng'}
-                      </motion.span>
-                    </div>
-
-                    <div className="flex items-center space-x-3 pt-4 border-t-2 border-purple-50">
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="flex-1 px-5 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:from-purple-600 hover:to-pink-600 transition text-sm font-bold shadow-md"
-                      >
-                        Xem bài nộp
-                      </motion.button>
-                      {isTutor(mockUserData) && (
-                        <>
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="px-4 py-3 border-2 border-indigo-200 text-indigo-600 rounded-xl hover:bg-indigo-50 transition text-sm font-medium"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </motion.button>
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="px-4 py-3 border-2 border-red-200 text-red-600 rounded-xl hover:bg-red-50 transition text-sm font-medium"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </motion.button>
-                        </>
-                      )}
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </motion.div>
-          )}
+          {activeTab === 'assignments' &&
+            <AssignmentCard
+              setShowAssignmentModal={setShowAssignmentModal}
+              assignments={assignments}
+            />}
 
           {/* Sessions Tab */}
           {activeTab === 'sessions' && (
