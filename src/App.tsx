@@ -19,6 +19,7 @@ import AnimationBackground from '~/components/AnimationBackground/AnimationBackg
 import { ActiveTabContextProvider } from '~/context/CourseContext/ActiveTabContext.tsx'
 
 import TutorList from '~/pages/TutorList/TutorList.tsx'
+import { ActiveTabContextProvider } from '~/context/activeTabContext.tsx'
 interface ProtectedRouteProps {
   user: User | null
 }
