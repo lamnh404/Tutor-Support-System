@@ -30,7 +30,7 @@ export const myCurrentTutors: MyTutor[] = [
     id: '5',
     firstName: 'Thạch',
     lastName: 'Phạm Ngọc',
-    avatarUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUxZYv7uAVUFCZXfaurEyzaVkQ2SRiWLgKBw&s',
+    avatarUrl: 'https://scontent.fsgn14-1.fna.fbcdn.net/v/t39.30808-6/537309535_3157162737779473_3340922358978200204_n.jpg?...',
     subject: 'Xử lý tín hiệu', // Simple subject string
     rating_count: 36,
     rating_avg: 5.0,
