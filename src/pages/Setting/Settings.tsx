@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react'
-import { User, Save, Lock, History, LogOut, Camera } from 'lucide-react'
-import { userContext } from '~/context/User/userContext.tsx'
-// import type { User as UserTypte } from '~/context/userContext'
+import { User, Save, Lock, Camera } from 'lucide-react'
+import { userContext } from '~/context/User/userContext'
+// import type { User as UserTypte } from '~/context/User/userContext'
 
 const Settings: React.FC = () => {
   const { user, setUser } = useContext(userContext)
@@ -9,7 +9,7 @@ const Settings: React.FC = () => {
   const [formData, setFormData] = useState({
     firstName: user?.firstName,
     lastName: user?.lastName,
-    username: user?.email?.split('@')[0] || '',
+    username: user?.username || user?.email?.split('@')[0] || '',
     email: user?.email,
     phone: '+84 123 456 789',
     bio: 'Sinh viên năm 3 ngành Công nghệ Thông tin'
@@ -33,13 +33,16 @@ const Settings: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 1000))
 
       // Update user with form values
-      const updatedUser = {
-        ...user,
-        firstName: formData.firstName ?? user?.firstName ?? '',
-        lastName: formData.lastName ?? user?.lastName ?? '',
-        email: formData.email ?? user?.email ?? '',
+      if (user) {
+        const updatedUser = {
+          ...user,
+          firstName: formData.firstName ?? user.firstName,
+          lastName: formData.lastName ?? user.lastName,
+          email: formData.email ?? user.email,
+          roles: user.roles ?? []
+        }
+        setUser(updatedUser)
       }
-      setUser(updatedUser)
 
       setMessage({ type: 'success', text: 'Cập nhật thông tin thành công!' })
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -87,59 +90,45 @@ const Settings: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Họ và tên đệm <span className="text-red-500">*</span>
+                      Họ và tên đệm
                     </label>
                     <input
                       type="text"
                       name="lastName"
                       value={formData.lastName}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Nhập họ"
+                      disabled
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed text-gray-700"
+                      placeholder="Họ và tên đệm"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Tên <span className="text-red-500">*</span>
+                      Tên
                     </label>
                     <input
                       type="text"
                       name="firstName"
                       value={formData.firstName}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Nhập tên"
+                      disabled
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed text-gray-700"
+                      placeholder="Tên"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Tên đăng nhập</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                   <input
-                    type="text"
-                    name="username"
-                    value={formData.username}
-                    disabled
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed"
-                    placeholder="Tên đăng nhập"
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Nhập email"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      disabled
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 bg-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Nhập email"
-                    />
-                  </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Số điện thoại</label>
                     <input
@@ -149,6 +138,17 @@ const Settings: React.FC = () => {
                       onChange={handleInputChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="Nhập số điện thoại"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Tên đăng nhập</label>
+                    <input
+                      type="text"
+                      name="username"
+                      value={formData.username}
+                      disabled
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed text-gray-700"
+                      placeholder="Tên đăng nhập"
                     />
                   </div>
                 </div>
@@ -176,84 +176,6 @@ const Settings: React.FC = () => {
                   {loading ? 'Đang lưu...' : 'Lưu thay đổi'}
                 </button>
               </form>
-            </div>
-
-            {/* Student Academic Information */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-xl font-semibold mb-4">🎓 Thông tin học vụ</h3>
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <p className="text-sm text-gray-600 mb-1">Mã số sinh viên</p>
-                  <p className="text-lg font-semibold text-blue-600">2152001</p>
-                </div>
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <p className="text-sm text-gray-600 mb-1">Khóa học</p>
-                  <p className="text-lg font-semibold text-green-600">K21</p>
-                </div>
-                <div className="bg-purple-50 p-4 rounded-lg">
-                  <p className="text-sm text-gray-600 mb-1">Ngành đào tạo</p>
-                  <p className="font-semibold text-purple-600">Công nghệ Thông tin</p>
-                </div>
-                <div className="bg-orange-50 p-4 rounded-lg">
-                  <p className="text-sm text-gray-600 mb-1">Năm học hiện tại</p>
-                  <p className="font-semibold text-orange-600">2024-2025</p>
-                </div>
-              </div>
-
-              <hr className="my-4" />
-
-              <div className="grid grid-cols-3 gap-4">
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-blue-500">3.65</p>
-                  <p className="text-sm text-gray-600">GPA Tích lũy</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-green-500">128</p>
-                  <p className="text-sm text-gray-600">Tín chỉ đã tích lũy</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-purple-500">32</p>
-                  <p className="text-sm text-gray-600">Tín chỉ còn lại</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Academic Progress */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-xl font-semibold mb-4">📊 Tiến độ học tập</h3>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
-                  <div>
-                    <p className="font-semibold">Học kỳ hiện tại</p>
-                    <p className="text-sm text-gray-600">Học kỳ 1 - Năm học 2024-2025</p>
-                  </div>
-                  <span className="font-semibold text-blue-600">Đang học</span>
-                </div>
-
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
-                  <div>
-                    <p className="font-semibold">Số môn đang học</p>
-                    <p className="text-sm text-gray-600">Tổng cộng 6 môn học</p>
-                  </div>
-                  <span className="font-semibold text-green-600">20 tín chỉ</span>
-                </div>
-
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
-                  <div>
-                    <p className="font-semibold">Trạng thái học tập</p>
-                    <p className="text-sm text-gray-600">Đánh giá tổng quát</p>
-                  </div>
-                  <span className="font-semibold text-green-600">Tốt</span>
-                </div>
-
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
-                  <div>
-                    <p className="font-semibold">Dự kiến tốt nghiệp</p>
-                    <p className="text-sm text-gray-600">Thời gian hoàn thành chương trình</p>
-                  </div>
-                  <span className="font-semibold text-purple-600">06/2026</span>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -303,16 +225,6 @@ const Settings: React.FC = () => {
                       user?.roles?.includes('TUTOR') ? '👨‍🏫 Giảng viên' : '👨‍💼 Quản trị viên'}
                   </span>
                 </div>
-                <hr className="my-2" />
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Ngày tham gia:</span>
-                  <span>01/09/2024</span>
-                </div>
-                <hr className="my-2" />
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Trạng thái:</span>
-                  <span className="text-green-500 font-semibold">🟢 Đang hoạt động</span>
-                </div>
               </div>
             </div>
 
@@ -323,14 +235,6 @@ const Settings: React.FC = () => {
                 <button className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                   <Lock className="w-4 h-4 mr-2" />
                   Đổi mật khẩu
-                </button>
-                <button className="w-full flex items-center justify-center px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                  <History className="w-4 h-4 mr-2" />
-                  Lịch sử đăng nhập
-                </button>
-                <button className="w-full flex items-center justify-center px-4 py-2 bg-red-50 text-red-600 border border-red-300 rounded-lg hover:bg-red-100 transition-colors">
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Đăng xuất tất cả thiết bị
                 </button>
               </div>
             </div>
