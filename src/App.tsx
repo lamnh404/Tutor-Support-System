@@ -19,6 +19,8 @@ import AnimationBackground from '~/components/AnimationBackground/AnimationBackg
 import { ActiveTabContextProvider } from '~/context/CourseContext/ActiveTabContext.tsx'
 
 import TutorList from '~/pages/TutorList/TutorList.tsx'
+import BackToTop from './components/Header/BackToTop.tsx'
+// import StudentList from './pages/StudentList/StudentList.tsx'
 interface ProtectedRouteProps {
   user: User | null
 }
@@ -57,6 +59,7 @@ function App() {
             } />
 
             <Route path='/mytutors' element={ <TutorList />} />
+            {/* <Route path='/mymentees' element={ <StudentList />} /> */}
           </Route>
           <Route path='/login' element={ <Auth />} />
           <Route path='/register' element={ <Auth />} />
@@ -66,6 +69,7 @@ function App() {
         </Routes>
       </main>
       <ToastContainer position="top-right" autoClose={3000} />
+      <BackToTop />
     </>
   )
 }
