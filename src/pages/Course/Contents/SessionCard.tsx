@@ -5,32 +5,18 @@ import { Calendar, Check, Clock, Mail, MapPin, Video, X } from 'lucide-react'
 import { getStatusColor, isTutor } from '~/pages/Course/utils.ts'
 import { mockUserData } from '~/pages/Course/mockData.ts'
 import { type Session, type SessionStatus } from '~/pages/Course/TypeDefinition'
-import toast from 'react-hot-toast'
+
 
 interface AssignmentCardProps {
   sessions: Session[],
   setShowSessionModal: Dispatch<SetStateAction<boolean>>,
   selectedSession: Session | null,
   setSelectedSession: Dispatch<SetStateAction<Session | null>>,
-  setSessions: Dispatch<SetStateAction<Session[]>>
+  setSessions: Dispatch<SetStateAction<Session[]>>,
+  handleSessionAction: (sessionId: number, action: SessionStatus) => void
+
 }
-const SessionCard: React.FC<AssignmentCardProps> =({ sessions, setSelectedSession, setShowSessionModal, setSessions, selectedSession }) => {
-  const handleSessionAction = (sessionId: number, action: SessionStatus) => {
-    if (!isTutor(mockUserData)) {
-      toast.error('Chỉ giảng viên mới có thể quản lý buổi tư vấn!')
-      return
-    }
-    setSessions(sessions.map(s =>
-      s.id === sessionId ? { ...s, status: action, notes: action === 'completed' && selectedSession ? selectedSession.notes : s.notes } : s
-    ))
-
-    if (action === 'confirmed') toast.success('Đã xác nhận buổi tư vấn!')
-    if (action === 'cancelled') toast.error('Đã từ chối buổi tư vấn')
-    if (action === 'completed') toast.success('Buổi tư vấn đã hoàn thành!')
-
-    setShowSessionModal(false)
-    setSelectedSession(null)
-  }
+const SessionCard: React.FC<AssignmentCardProps> =({ sessions, setSelectedSession, setShowSessionModal, handleSessionAction }) => {
   return (
     <motion.div key="sessions" {...tabContentVariants} className="space-y-6">
       <div className="flex justify-between items-center">

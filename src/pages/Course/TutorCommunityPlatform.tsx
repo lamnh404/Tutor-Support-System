@@ -1,22 +1,16 @@
 import React, { useState, type ChangeEvent, useContext } from 'react'
 
-import { Trash2, Plus } from 'lucide-react'
-
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 
 import toast from 'react-hot-toast'
 
 import type {
   DocumentType, DocumentCategory, Document,
-  Assignment, DayOfWeek, AvailabilityType, SessionStatus, Session,
-  Availability, NewDocumentState, NewAssignmentState, NewAvailabilityState
+  Assignment, DayOfWeek, AvailabilityType, Session,
+  Availability, NewDocumentState, NewAssignmentState, NewAvailabilityState, SessionStatus
 } from '~/pages/Course/TypeDefinition.ts'
 
-import { daysOfWeek } from '~/pages/Course/TypeDefinition'
-
 import { mockUserData, mockDocuments, mockAssignments, mockAvailability, mockSessions } from '~/pages/Course/mockData.ts'
-
-import { tabContentVariants, modalBackdropVariants, modalPanelVariants } from '~/pages/Course/Config'
 
 import { isTutor, getFullName } from '~/pages/Course/utils'
 
@@ -33,6 +27,15 @@ import DocumentCard from '~/pages/Course/Contents/DocumentCard.tsx'
 import AssignmentCard from '~/pages/Course/Contents/AssignmentCard.tsx'
 
 import SessionCard from '~/pages/Course/Contents/SessionCard.tsx'
+
+import AvailabilityCard from '~/pages/Course/Contents/AvailabilityCard.tsx'
+
+import UploadDocument from '~/pages/Course/Modals/UploadDocument.tsx'
+
+import CreateAssignment from '~/pages/Course/Modals/CreateAssignment.tsx'
+
+import AvailabilityModal from '~/pages/Course/Modals/AvailabilityModal.tsx'
+import SessionModal from '~/pages/Course/Modals/SessionModal.tsx'
 
 const TutorCommunityPlatform: React.FC = () => {
   const { activeTab } = useContext(ActiveTabContext)
@@ -226,433 +229,62 @@ const TutorCommunityPlatform: React.FC = () => {
               selectedSession={selectedSession}
               setSelectedSession={setSelectedSession}
               setSessions={ setSessions }
+              handleSessionAction={ handleSessionAction }
             />}
 
           {/* Availability Tab */}
-          {activeTab === 'availability' && (
-            <motion.div key="availability" {...tabContentVariants} className="space-y-6">
-              <div className="flex justify-between items-center">
-                <motion.h2
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent"
-                >
-                  Lịch trống của tôi
-                </motion.h2>
-                {isTutor(mockUserData) && (
-                  <motion.button
-                    whileHover={{ scale: 1.05, boxShadow: '0 10px 20px rgba(249, 115, 22, 0.3)' }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setShowAvailabilityModal(true)}
-                    className="px-6 py-3 bg-gradient-to-r from-orange-500 via-red-500 to-rose-500 text-white rounded-xl hover:from-orange-600 hover:via-red-600 hover:to-rose-600 flex items-center space-x-2 shadow-lg font-semibold"
-                  >
-                    <Plus className="w-5 h-5" />
-                    <span>Thêm lịch trống</span>
-                  </motion.button>
-                )}
-              </div>
-
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border-2 border-orange-50 overflow-hidden">
-                <table className="w-full">
-                  <thead className="bg-gradient-to-r from-orange-100 to-red-100 border-b-2 border-orange-200">
-                    <tr>
-                      <th className="px-6 py-4 text-left text-sm font-bold text-orange-700 uppercase tracking-wider">📅 Thứ</th>
-                      <th className="px-6 py-4 text-left text-sm font-bold text-orange-700 uppercase tracking-wider">⏰ Thời gian</th>
-                      <th className="px-6 py-4 text-left text-sm font-bold text-orange-700 uppercase tracking-wider">📍 Hình thức</th>
-                      {isTutor(mockUserData) && (
-                        <th className="px-6 py-4 text-right text-sm font-bold text-orange-700 uppercase tracking-wider">⚙️ Thao tác</th>
-                      )}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y-2 divide-orange-50">
-                    <AnimatePresence>
-                      {availability.map((avail, index) => (
-                        <motion.tr
-                          key={avail.id}
-                          layout
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -50 }}
-                          transition={{ delay: index * 0.05 }}
-                          whileHover={{ backgroundColor: 'rgba(249, 115, 22, 0.05)' }}
-                          className="transition"
-                        >
-                          <td className="px-6 py-5 whitespace-nowrap text-sm font-bold text-gray-900">
-                            {avail.day}
-                          </td>
-                          <td className="px-6 py-5 whitespace-nowrap text-sm text-gray-700 font-medium">
-                            {avail.startTime} - {avail.endTime}
-                          </td>
-                          <td className="px-6 py-5 whitespace-nowrap text-sm">
-                            <span className={`px-3 py-1.5 rounded-lg font-bold ${
-                              avail.type === 'online' ? 'bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700' :
-                                avail.type === 'in-person' ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-700' :
-                                  'bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700'
-                            }`}>
-                              {avail.type === 'online' ? '💻 Trực tuyến' :
-                                avail.type === 'in-person' ? '🏫 Trực tiếp' : '🔄 Cả hai'}
-                            </span>
-                          </td>
-                          {isTutor(mockUserData) && (
-                            <td className="px-6 py-5 whitespace-nowrap text-right text-sm">
-                              <motion.button
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                                onClick={() => {
-                                  setAvailability(availability.filter(a => a.id !== avail.id))
-                                  toast.error('Đã xoá lịch trống')
-                                }}
-                                className="p-2 text-red-600 hover:bg-red-50 rounded-xl transition border-2 border-red-200"
-                                title="Xóa lịch"
-                              >
-                                <Trash2 className="w-5 h-5" />
-                              </motion.button>
-                            </td>
-                          )}
-                        </motion.tr>
-                      ))}
-                    </AnimatePresence>
-                  </tbody>
-                </table>
-              </div>
-            </motion.div>
-          )}
+          {activeTab === 'availability' &&
+            <AvailabilityCard
+              setShowAvailabilityModal={setShowAvailabilityModal}
+              availability={availability}
+              setAvailability={setAvailability}
+            />
+          }
         </AnimatePresence>
       </div>
 
       {/* --- Modals --- */}
       <AnimatePresence>
         {/* Upload Document Modal */}
-        {showUploadModal && isTutor(mockUserData) && (
-          <motion.div
-            variants={modalBackdropVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          >
-            <motion.div
-              variants={modalPanelVariants}
-              className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl w-full max-w-md p-6 border-2 border-indigo-100"
-            >
-              <h3 className="text-xl font-bold mb-5 bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                🚀 Đăng tài liệu mới
-              </h3>
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  placeholder="Tiêu đề"
-                  name="title"
-                  value={newDocument.title}
-                  onChange={handleNewDocChange}
-                  className="w-full border-2 border-indigo-100 rounded-xl px-4 py-3 focus:ring-4 focus:ring-indigo-200 focus:border-indigo-400 bg-white/80 outline-none transition-all"
-                />
-                <select
-                  name="type"
-                  value={newDocument.type}
-                  onChange={handleNewDocSelectChange}
-                  className="w-full border-2 border-indigo-100 rounded-xl px-4 py-3 focus:ring-4 focus:ring-indigo-200 focus:border-indigo-400 bg-white/80 outline-none transition-all"
-                >
-                  <option value="pdf">📄 PDF</option>
-                  <option value="video">🎥 Video</option>
-                  <option value="document">📝 Tài liệu khác</option>
-                  <option value="link">🔗 Đường dẫn</option>
-                </select>
-                <select
-                  name="category"
-                  value={newDocument.category}
-                  onChange={handleNewDocSelectChange}
-                  className="w-full border-2 border-indigo-100 rounded-xl px-4 py-3 focus:ring-4 focus:ring-indigo-200 focus:border-indigo-400 bg-white/80 outline-none transition-all"
-                >
-                  <option value="Tài liệu">📖 Tài liệu</option>
-                  <option value="Bài giảng">🎓 Bài giảng</option>
-                  <option value="Thông báo">📢 Thông báo</option>
-                </select>
-
-                {/* File Upload Section */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Tải lên tệp tin
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="file"
-                      onChange={handleFileUpload}
-                      accept={
-                        newDocument.type === 'pdf' ? '.pdf' :
-                          newDocument.type === 'video' ? 'video/*' :
-                            newDocument.type === 'document' ? '.doc,.docx,.txt,.ppt,.pptx,.xls,.xlsx' :
-                              '*'
-                      }
-                      className="hidden"
-                      id="file-upload"
-                    />
-                    <label
-                      htmlFor="file-upload"
-                      className="flex items-center justify-center w-full border-2 border-dashed border-indigo-300 rounded-xl px-4 py-6 cursor-pointer hover:border-indigo-500 hover:bg-indigo-50/50 transition-all bg-white/80"
-                    >
-                      <div className="text-center">
-                        <div className="text-3xl mb-2">📁</div>
-                        <p className="text-sm text-gray-600">
-                          {newDocument.file ? (
-                            <span className="text-indigo-600 font-medium">
-                      ✓ {newDocument.file.name}
-                            </span>
-                          ) : (
-                            <>
-                              <span className="text-indigo-600 font-medium">Chọn tệp</span> hoặc kéo thả vào đây
-                            </>
-                          )}
-                        </p>
-                        {newDocument.file && (
-                          <p className="text-xs text-gray-500 mt-1">
-                            {(newDocument.file.size / 1024 / 1024).toFixed(2)} MB
-                          </p>
-                        )}
-                      </div>
-                    </label>
-                  </div>
-                </div>
-
-                {/* URL input for link type */}
-                {newDocument.type === 'link' && (
-                  <input
-                    type="url"
-                    placeholder="Đường dẫn URL"
-                    name="url"
-                    value={newDocument.url || ''}
-                    onChange={handleNewDocChange}
-                    className="w-full border-2 border-indigo-100 rounded-xl px-4 py-3 focus:ring-4 focus:ring-indigo-200 focus:border-indigo-400 bg-white/80 outline-none transition-all"
-                  />
-                )}
-
-                <textarea
-                  placeholder="Mô tả (tuỳ chọn)"
-                  name="description"
-                  value={newDocument.description}
-                  onChange={handleNewDocChange}
-                  rows={3}
-                  className="w-full border-2 border-indigo-100 rounded-xl px-4 py-3 focus:ring-4 focus:ring-indigo-200 focus:border-indigo-400 bg-white/80 outline-none transition-all"
-                />
-              </div>
-              <div className="flex justify-end space-x-3 mt-6">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setShowUploadModal(false)}
-                  className="px-5 py-2 rounded-xl border-2 border-gray-300 hover:bg-gray-50 transition font-medium"
-                >
-                  Hủy
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05, boxShadow: '0 8px 15px rgba(99, 102, 241, 0.3)' }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleUploadDocument}
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600 shadow-md font-semibold"
-                >
-                  Đăng
-                </motion.button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
+        {showUploadModal && isTutor(mockUserData) &&
+          <UploadDocument
+            newDocument = {newDocument}
+            handleNewDocChange={ handleNewDocChange}
+            handleNewDocSelectChange={handleNewDocSelectChange}
+            handleFileUpload={handleFileUpload}
+            handleUploadDocument={handleUploadDocument}
+            setShowUploadModal={setShowUploadModal}
+          />
+        }
 
         {/* Create Assignment Modal */}
-        {showAssignmentModal && isTutor(mockUserData) && (
-          <motion.div
-            variants={modalBackdropVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          >
-            <motion.div
-              variants={modalPanelVariants}
-              className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl w-full max-w-md p-6 border-2 border-purple-100"
-            >
-              <h3 className="text-xl font-bold mb-5 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                ✨ Tạo bài tập mới
-              </h3>
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  placeholder="Tiêu đề bài tập"
-                  name="title"
-                  value={newAssignment.title}
-                  onChange={handleNewAssignmentChange}
-                  className="w-full border-2 border-purple-100 rounded-xl px-4 py-3 focus:ring-4 focus:ring-purple-200 focus:border-purple-400 bg-white/80 outline-none transition-all"
-                />
-                <textarea
-                  placeholder="Mô tả chi tiết"
-                  name="description"
-                  value={newAssignment.description}
-                  onChange={handleNewAssignmentChange}
-                  rows={3}
-                  className="w-full border-2 border-purple-100 rounded-xl px-4 py-3 focus:ring-4 focus:ring-purple-200 focus:border-purple-400 bg-white/80 outline-none transition-all"
-                />
-                <input
-                  type="date"
-                  name="dueDate"
-                  value={newAssignment.dueDate}
-                  onChange={handleNewAssignmentChange}
-                  className="w-full border-2 border-purple-100 rounded-xl px-4 py-3 focus:ring-4 focus:ring-purple-200 focus:border-purple-400 bg-white/80 outline-none transition-all"
-                />
-                <input
-                  type="number"
-                  placeholder="Điểm tối đa"
-                  name="points"
-                  value={newAssignment.points}
-                  onChange={handleNewAssignmentChange}
-                  className="w-full border-2 border-purple-100 rounded-xl px-4 py-3 focus:ring-4 focus:ring-purple-200 focus:border-purple-400 bg-white/80 outline-none transition-all"
-                />
-              </div>
-              <div className="flex justify-end space-x-3 mt-6">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setShowAssignmentModal(false)}
-                  className="px-5 py-2 rounded-xl border-2 border-gray-300 hover:bg-gray-50 transition font-medium"
-                >
-                  Hủy
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05, boxShadow: '0 8px 15px rgba(192, 38, 211, 0.3)' }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleCreateAssignment}
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 shadow-md font-semibold"
-                >
-                  Tạo
-                </motion.button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
+        {showAssignmentModal && isTutor(mockUserData) &&
+          <CreateAssignment
+            newAssignment={newAssignment}
+            handleCreateAssignment={handleCreateAssignment}
+            handleNewAssignmentChange={handleNewAssignmentChange}
+            setShowAssignmentModal={setShowAssignmentModal}
+          />
+        }
 
         {/* Add Availability Modal */}
-        {showAvailabilityModal && isTutor(mockUserData) && (
-          <motion.div
-            variants={modalBackdropVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          >
-            <motion.div
-              variants={modalPanelVariants}
-              className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl w-full max-w-md p-6 border-2 border-orange-100"
-            >
-              <h3 className="text-xl font-bold mb-5 bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-                🗓️ Thêm lịch trống
-              </h3>
-              <div className="space-y-4">
-                <select
-                  name="day"
-                  value={newAvailability.day}
-                  onChange={handleNewAvailabilityChange}
-                  className="w-full border-2 border-orange-100 rounded-xl px-4 py-3 focus:ring-4 focus:ring-orange-200 focus:border-orange-400 bg-white/80 outline-none transition-all"
-                >
-                  {daysOfWeek.map(day => (
-                    <option key={day} value={day}>{day}</option>
-                  ))}
-                </select>
-                <div className="flex space-x-3">
-                  <input
-                    type="time"
-                    name="startTime"
-                    value={newAvailability.startTime}
-                    onChange={handleNewAvailabilityChange}
-                    className="flex-1 border-2 border-orange-100 rounded-xl px-4 py-3 focus:ring-4 focus:ring-orange-200 focus:border-orange-400 bg-white/80 outline-none transition-all"
-                  />
-                  <input
-                    type="time"
-                    name="endTime"
-                    value={newAvailability.endTime}
-                    onChange={handleNewAvailabilityChange}
-                    className="flex-1 border-2 border-orange-100 rounded-xl px-4 py-3 focus:ring-4 focus:ring-orange-200 focus:border-orange-400 bg-white/80 outline-none transition-all"
-                  />
-                </div>
-                <select
-                  name="type"
-                  value={newAvailability.type}
-                  onChange={handleNewAvailabilityChange}
-                  className="w-full border-2 border-orange-100 rounded-xl px-4 py-3 focus:ring-4 focus:ring-orange-200 focus:border-orange-400 bg-white/80 outline-none transition-all"
-                >
-                  <option value="both">🔄 Cả hai</option>
-                  <option value="online">💻 Trực tuyến</option>
-                  <option value="in-person">🏫 Trực tiếp</option>
-                </select>
-              </div>
-              <div className="flex justify-end space-x-3 mt-6">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setShowAvailabilityModal(false)}
-                  className="px-5 py-2 rounded-xl border-2 border-gray-300 hover:bg-gray-50 transition font-medium"
-                >
-                  Hủy
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05, boxShadow: '0 8px 15px rgba(239, 68, 68, 0.3)' }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleAddAvailability}
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600 shadow-md font-semibold"
-                >
-                  Thêm
-                </motion.button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
+        {showAvailabilityModal && isTutor(mockUserData) &&
+          <AvailabilityModal
+            newAvailability={newAvailability}
+            handleAddAvailability={handleAddAvailability}
+            handleNewAvailabilityChange={handleNewAvailabilityChange}
+            setShowAvailabilityModal={setShowAvailabilityModal}
+          />}
 
         {/* Manage Session Modal */}
-        {showSessionModal && selectedSession && isTutor(mockUserData) && (
-          <motion.div
-            variants={modalBackdropVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          >
-            <motion.div
-              variants={modalPanelVariants}
-              className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl w-full max-w-lg p-6 border-2 border-green-100"
-            >
-              <h3 className="text-xl font-bold mb-2 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                Quản lý buổi tư vấn
-              </h3>
-              <p className="text-sm text-gray-600 mb-4 font-medium">
-                {selectedSession.studentName} – {selectedSession.topic}
-              </p>
-              <textarea
-                placeholder="Nhập ghi chú sau buổi tư vấn..."
-                value={selectedSession.notes || ''}
-                onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
-                  setSelectedSession({ ...selectedSession, notes: e.target.value })
-                }
-                rows={4}
-                className="w-full border-2 border-green-100 rounded-xl px-4 py-3 focus:ring-4 focus:ring-green-200 focus:border-green-400 bg-white/80 outline-none transition-all"
-              />
-              <div className="flex justify-end space-x-3 mt-6">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setShowSessionModal(false)}
-                  className="px-5 py-2 rounded-xl border-2 border-gray-300 hover:bg-gray-50 transition font-medium"
-                >
-                  Đóng
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05, boxShadow: '0 8px 15px rgba(16, 185, 129, 0.3)' }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleSessionAction(selectedSession.id, 'completed')}
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600 shadow-md font-semibold"
-                >
-                  Đánh dấu hoàn thành
-                </motion.button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
+        {showSessionModal && selectedSession && isTutor(mockUserData) &&
+          <SessionModal
+            selectedSession={selectedSession}
+            setSelectedSession={setSelectedSession}
+            setShowSessionModal={setShowSessionModal}
+            handleSessionAction={handleSessionAction}
+          />
+        }
       </AnimatePresence>
     </div>
   )
