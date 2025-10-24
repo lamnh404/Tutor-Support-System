@@ -17,8 +17,8 @@ import { setupAxiosInterceptors } from '~/utils/authorizedAxiosInstance.ts'
 import TutorCommunityPlatform from '~/pages/Course/TutorCommunityPlatform.tsx'
 import AnimationBackground from '~/components/AnimationBackground/AnimationBackground.tsx'
 import { ActiveTabContextProvider } from '~/context/CourseContext/ActiveTabContext.tsx'
+
 import TutorList from '~/pages/TutorList/TutorList.tsx'
-import { ActiveTabContextProvider } from '~/context/activeTabContext.tsx'
 interface ProtectedRouteProps {
   user: User | null
 }
