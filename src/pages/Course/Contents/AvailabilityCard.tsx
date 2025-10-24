@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { tabContentVariants } from '~/pages/Course/Config.ts'
 import { AnimatePresence, motion } from 'framer-motion'
 import { isTutor } from '~/pages/Course/utils.ts'
-import { mockUserData } from '~/pages/Course/mockData.ts'
 import { Plus, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import type { Availability } from '~/pages/Course/TypeDefinition'
+import { userContext } from '~/context/User/userContext.tsx'
 
 interface AvailabilityCardProps {
   setShowAvailabilityModal: React.Dispatch<React.SetStateAction<boolean>>,
@@ -14,6 +14,7 @@ interface AvailabilityCardProps {
 }
 
 const AvailabilityCard: React.FC<AvailabilityCardProps> = ({ setShowAvailabilityModal, availability, setAvailability }) => {
+  const { user } = useContext(userContext)
   return (
     <motion.div key="availability" {...tabContentVariants} className="space-y-6">
       <div className="flex justify-between items-center">
@@ -24,7 +25,7 @@ const AvailabilityCard: React.FC<AvailabilityCardProps> = ({ setShowAvailability
         >
         Lịch trống của tôi
         </motion.h2>
-        {isTutor(mockUserData) && (
+        {isTutor(user) && (
           <motion.button
             whileHover={{ scale: 1.05, boxShadow: '0 10px 20px rgba(249, 115, 22, 0.3)' }}
             whileTap={{ scale: 0.95 }}
@@ -44,7 +45,7 @@ const AvailabilityCard: React.FC<AvailabilityCardProps> = ({ setShowAvailability
               <th className="px-6 py-4 text-left text-sm font-bold text-orange-700 uppercase tracking-wider">📅 Thứ</th>
               <th className="px-6 py-4 text-left text-sm font-bold text-orange-700 uppercase tracking-wider">⏰ Thời gian</th>
               <th className="px-6 py-4 text-left text-sm font-bold text-orange-700 uppercase tracking-wider">📍 Hình thức</th>
-              {isTutor(mockUserData) && (
+              {isTutor(user) && (
                 <th className="px-6 py-4 text-right text-sm font-bold text-orange-700 uppercase tracking-wider">⚙️ Thao tác</th>
               )}
             </tr>
@@ -78,7 +79,7 @@ const AvailabilityCard: React.FC<AvailabilityCardProps> = ({ setShowAvailability
                         avail.type === 'in-person' ? '🏫 Trực tiếp' : '🔄 Cả hai'}
                     </span>
                   </td>
-                  {isTutor(mockUserData) && (
+                  {isTutor(user) && (
                     <td className="px-6 py-5 whitespace-nowrap text-right text-sm">
                       <motion.button
                         whileHover={{ scale: 1.1 }}

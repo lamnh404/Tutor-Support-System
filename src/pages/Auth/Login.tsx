@@ -33,7 +33,7 @@ const Login: React.FC = () => {
 
   const handleLogin = (data: LoginFormData) => {
     const { username, password } = data
-    toast.promise<User>(
+    toast.promise<unknown>(
       userLoginAPI(username, password),
       {
         pending: 'Đang đăng nhập...',
@@ -41,8 +41,8 @@ const Login: React.FC = () => {
         // error: 'Đăng nhập thất bại!'
       }
     ).then(res => {
-      // console.log(res)
-      login(res)
+      const { accessToken, tokenType, ...userData } = res
+      login(userData)
       setError(null)
       navigate('/')
     })

@@ -1,16 +1,17 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { gridContainerVariants, gridItemVariants, tabContentVariants } from '~/pages/Course/Config.ts'
 import { motion } from 'framer-motion'
 import { isTutor } from '~/pages/Course/utils.ts'
-import { mockUserData } from '~/pages/Course/mockData.ts'
 import { Calendar, Edit, FileText, Plus, Star, Trash2 } from 'lucide-react'
 import { type Assignment } from '~/pages/Course/TypeDefinition'
+import { userContext } from '~/context/User/userContext.tsx'
 interface AssignmentCardProps{
   setShowAssignmentModal: React.Dispatch<React.SetStateAction<boolean>>,
   assignments: Assignment[]
 }
 
 const AssignmentCard : React.FC<AssignmentCardProps> = ({ setShowAssignmentModal, assignments }) => {
+  const { user } = useContext(userContext)
   return (
     <motion.div key="assignments" {...tabContentVariants} className="space-y-6">
       <div className="flex justify-between items-center">
@@ -21,7 +22,7 @@ const AssignmentCard : React.FC<AssignmentCardProps> = ({ setShowAssignmentModal
         >
           Quản lý Bài tập
         </motion.h2>
-        {isTutor(mockUserData) && (
+        {isTutor(user) && (
           <motion.button
             whileHover={{ scale: 1.05, boxShadow: '0 10px 20px rgba(147, 51, 234, 0.3)' }}
             whileTap={{ scale: 0.95 }}
@@ -98,7 +99,7 @@ const AssignmentCard : React.FC<AssignmentCardProps> = ({ setShowAssignmentModal
               >
                 Xem bài nộp
               </motion.button>
-              {isTutor(mockUserData) && (
+              {isTutor(user) && (
                 <>
                   <motion.button
                     whileHover={{ scale: 1.05 }}

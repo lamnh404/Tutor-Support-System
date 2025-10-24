@@ -1,5 +1,5 @@
 import type { User } from '~/context/User/userContext.tsx'
-import type {Assignment, Availability, Document, Session} from "~/pages/Course/TypeDefinition.ts";
+import type { Assignment, Availability, Document, Session } from "~/pages/Course/TypeDefinition.ts";
 
 export const mockUserData: User = {
   email: 'cong.nguyen@hcmut.edu.vn',

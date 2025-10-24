@@ -36,8 +36,11 @@ import CreateAssignment from '~/pages/Course/Modals/CreateAssignment.tsx'
 
 import AvailabilityModal from '~/pages/Course/Modals/AvailabilityModal.tsx'
 import SessionModal from '~/pages/Course/Modals/SessionModal.tsx'
+import { userContext } from '~/context/User/userContext.tsx'
 
 const TutorCommunityPlatform: React.FC = () => {
+  const { user } = useContext(userContext)
+  console.log(user)
   const { activeTab } = useContext(ActiveTabContext)
   const [showUploadModal, setShowUploadModal] = useState<boolean>(false)
   const [showAssignmentModal, setShowAssignmentModal] = useState<boolean>(false)
@@ -76,7 +79,7 @@ const TutorCommunityPlatform: React.FC = () => {
   })
 
   const handleUploadDocument = () => {
-    if (!isTutor(mockUserData)) {
+    if (!isTutor(user)) {
       toast.error('Chỉ giảng viên mới có thể đăng tài liệu!')
       return
     }
@@ -86,7 +89,7 @@ const TutorCommunityPlatform: React.FC = () => {
       uploadDate: new Date().toISOString().split('T')[0],
       views: 0,
       downloads: newDocument.type === 'link' ? undefined : 0,
-      author: getFullName(mockUserData),
+      author: getFullName(user),
       size: '1.5 MB'
     }
     setDocuments([doc, ...documents])
@@ -107,7 +110,7 @@ const TutorCommunityPlatform: React.FC = () => {
   }
 
   const handleCreateAssignment = () => {
-    if (!isTutor(mockUserData)) {
+    if (!isTutor(user)) {
       toast.error('Chỉ giảng viên mới có thể tạo bài tập!')
       return
     }
@@ -126,7 +129,7 @@ const TutorCommunityPlatform: React.FC = () => {
   }
 
   const handleAddAvailability = () => {
-    if (!isTutor(mockUserData)) {
+    if (!isTutor(user)) {
       toast.error('Chỉ giảng viên mới có thể thêm lịch trống!')
       return
     }
@@ -137,7 +140,7 @@ const TutorCommunityPlatform: React.FC = () => {
   }
 
   const handleSessionAction = (sessionId: number, action: SessionStatus) => {
-    if (!isTutor(mockUserData)) {
+    if (!isTutor(user)) {
       toast.error('Chỉ giảng viên mới có thể quản lý buổi tư vấn!')
       return
     }
@@ -246,7 +249,7 @@ const TutorCommunityPlatform: React.FC = () => {
       {/* --- Modals --- */}
       <AnimatePresence>
         {/* Upload Document Modal */}
-        {showUploadModal && isTutor(mockUserData) &&
+        {showUploadModal && isTutor(user) &&
           <UploadDocument
             newDocument = {newDocument}
             handleNewDocChange={ handleNewDocChange}
@@ -258,7 +261,7 @@ const TutorCommunityPlatform: React.FC = () => {
         }
 
         {/* Create Assignment Modal */}
-        {showAssignmentModal && isTutor(mockUserData) &&
+        {showAssignmentModal && isTutor(user) &&
           <CreateAssignment
             newAssignment={newAssignment}
             handleCreateAssignment={handleCreateAssignment}
@@ -268,7 +271,7 @@ const TutorCommunityPlatform: React.FC = () => {
         }
 
         {/* Add Availability Modal */}
-        {showAvailabilityModal && isTutor(mockUserData) &&
+        {showAvailabilityModal && isTutor(user) &&
           <AvailabilityModal
             newAvailability={newAvailability}
             handleAddAvailability={handleAddAvailability}
@@ -277,7 +280,7 @@ const TutorCommunityPlatform: React.FC = () => {
           />}
 
         {/* Manage Session Modal */}
-        {showSessionModal && selectedSession && isTutor(mockUserData) &&
+        {showSessionModal && selectedSession && isTutor(user) &&
           <SessionModal
             selectedSession={selectedSession}
             setSelectedSession={setSelectedSession}

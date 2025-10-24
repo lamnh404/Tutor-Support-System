@@ -2,16 +2,16 @@ import type { User } from '~/context/User/userContext.tsx'
 import { type ActiveTab, type DocumentType, type SessionStatus, type Tab } from '~/pages/Course/TypeDefinition'
 import { BookOpen, Calendar, FileText, Users } from 'lucide-react'
 
-export const getInitials = (user: User): string => {
-  return `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
+export const getInitials = (user: User | null): string => {
+  return `${user!.firstName.charAt(0)}${user!.lastName.charAt(0)}`.toUpperCase()
 }
 
-export const getFullName = (user: User): string => {
-  return `${user.lastName} ${user.firstName}`
+export const getFullName = (user: User | null): string => {
+  return `${user!.lastName} ${user!.firstName}`
 }
 
-export const isTutor = (user: User): boolean => {
-  return user.roles.includes('TUTOR')
+export const isTutor = (user: User | null): boolean => {
+  return user!.roles.includes('TUTOR')
 }
 
 export const getStatusColor = (status: SessionStatus): string => {

@@ -1,10 +1,10 @@
-import React, { type Dispatch, type SetStateAction } from 'react'
+import React, { type Dispatch, type SetStateAction, useContext } from 'react'
 import { gridContainerVariants, gridItemVariants, tabContentVariants } from '~/pages/Course/Config.ts'
 import { motion } from 'framer-motion'
 import { Calendar, Check, Clock, Mail, MapPin, Video, X } from 'lucide-react'
 import { getStatusColor, isTutor } from '~/pages/Course/utils.ts'
-import { mockUserData } from '~/pages/Course/mockData.ts'
 import { type Session, type SessionStatus } from '~/pages/Course/TypeDefinition'
+import { userContext } from '~/context/User/userContext.tsx'
 
 
 interface AssignmentCardProps {
@@ -17,6 +17,7 @@ interface AssignmentCardProps {
 
 }
 const SessionCard: React.FC<AssignmentCardProps> =({ sessions, setSelectedSession, setShowSessionModal, handleSessionAction }) => {
+  const { user } = useContext(userContext)
   return (
     <motion.div key="sessions" {...tabContentVariants} className="space-y-6">
       <div className="flex justify-between items-center">
@@ -131,7 +132,7 @@ const SessionCard: React.FC<AssignmentCardProps> =({ sessions, setSelectedSessio
                     session.status === 'pending' ? '⏳ Chờ xác nhận' :
                       session.status === 'completed' ? '✓ Hoàn thành' : '❌ Đã hủy'}
                 </motion.span>
-                {isTutor(mockUserData) && session.status === 'pending' && (
+                {isTutor(user) && session.status === 'pending' && (
                   <div className="flex space-x-2">
                     <motion.button
                       whileHover={{ scale: 1.1 }}
@@ -153,7 +154,7 @@ const SessionCard: React.FC<AssignmentCardProps> =({ sessions, setSelectedSessio
                     </motion.button>
                   </div>
                 )}
-                {isTutor(mockUserData) && session.status === 'confirmed' && (
+                {isTutor(user) && session.status === 'confirmed' && (
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}

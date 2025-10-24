@@ -1,11 +1,11 @@
-import React, { type ChangeEvent } from 'react'
+import React, { type ChangeEvent, useContext } from 'react'
 import { gridContainerVariants, gridItemVariants, tabContentVariants } from '~/pages/Course/Config.ts'
 import { motion } from 'framer-motion'
 import { isTutor } from '~/pages/Course/utils.ts'
-import { mockUserData } from '~/pages/Course/mockData.ts'
 import { Download, Eye, FileText, MoreVertical, Search, Upload } from 'lucide-react'
 import { type Document } from '~/pages/Course/TypeDefinition.ts'
 import { getTypeIcon } from '~/pages/Course/utils.ts'
+import { userContext } from '~/context/User/userContext.tsx'
 interface DocumentProps {
   setShowUploadModal: React.Dispatch<React.SetStateAction<boolean>>
   searchTerm: string
@@ -17,6 +17,7 @@ interface DocumentProps {
 
 const DocumentCard: React.FC<DocumentProps> =({ setShowUploadModal, searchTerm, setSearchTerm,
   filterCategory, setFilterCategory, filteredDocuments }) => {
+  const { user } = useContext(userContext)
   return (
     <motion.div key="documents" {...tabContentVariants} className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -26,7 +27,7 @@ const DocumentCard: React.FC<DocumentProps> =({ setShowUploadModal, searchTerm, 
           className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
           Tài liệu & Bài giảng
         </motion.h2>
-        {isTutor(mockUserData) && (
+        {isTutor(user) && (
           <motion.button
             whileHover={{ scale: 1.05, boxShadow: '0 10px 20px rgba(99, 102, 241, 0.3)' }}
             whileTap={{ scale: 0.95 }}
