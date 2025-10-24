@@ -1,5 +1,5 @@
 ﻿import React, { useState } from 'react'
-import { useParams, Navigate, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Navigate } from 'react-router-dom'
 import { initialStudents, type Student } from '~/pages/StudentProfile/StudentData'
 import {
   StarFilled,
@@ -120,6 +120,7 @@ const StudentProfile: React.FC = () => {
                 <span className="text-gray-700 flex-1">{goal}</span>
               </div>
             ))}
+
           </div>
 
           <Divider />
@@ -134,6 +135,7 @@ const StudentProfile: React.FC = () => {
                 <span className="text-gray-700 flex-1">{achievement}</span>
               </div>
             ))}
+
           </div>
 
           <Divider />
@@ -159,6 +161,7 @@ const StudentProfile: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-red-400/10 to-pink-400/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
             ))}
+
           </div>
 
           <Divider />
@@ -176,6 +179,7 @@ const StudentProfile: React.FC = () => {
                 <span className="font-medium text-gray-800">{course}</span>
               </div>
             ))}
+
           </div>
         </div>
       )
@@ -212,10 +216,12 @@ const StudentProfile: React.FC = () => {
                         </span>
                       </div>
                     ))}
+
                   </div>
                 </div>
               </div>
             )}
+
           </div>
 
           <div className="space-y-4">
@@ -263,6 +269,7 @@ const StudentProfile: React.FC = () => {
                 <p className="text-gray-400">Hãy bắt đầu tìm gia sư để học tập nhé!</p>
               </div>
             )}
+
           </div>
         </>
       )
