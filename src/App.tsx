@@ -12,6 +12,8 @@ import ScrollToTop from '~/components/ScrollToTop/ScrollToTop.tsx'
 import Home from '~/pages/Homepage/Home.tsx'
 import Setting from '~/pages/Setting/Settings.tsx'
 import LibraryPage from './pages/Library/LibraryPage.tsx'
+import StudentProfile from '~/pages/StudentProfile/StudentProfile.tsx'
+import StudentSearchPage from '~/pages/StudentSearch/StudentSearch.tsx'
 import { useNavigate } from 'react-router-dom'
 import { setupAxiosInterceptors } from '~/utils/authorizedAxiosInstance.ts'
 
@@ -43,9 +45,11 @@ function App() {
           <Route element={<ProtectedRoute user={user} />}>
             <Route path="/settings" element={ <Setting /> } />
             <Route path="/dashboard" element={ <TutorSearchPage /> } />
+            <Route path="/student-search" element={ <StudentSearchPage /> } />
             <Route path="/library" element={ <LibraryPage /> } />
           </Route>
-          <Route path='/:id' element={ <Profile />} />
+          <Route path='/tutor/:id' element={ <Profile />} />
+          <Route path='/student/:id' element={ <StudentProfile />} />
           <Route path='/login' element={ <Auth />} />
           <Route path='/register' element={ <Auth />} />
           <Route path="/" element={ <Home />} />
