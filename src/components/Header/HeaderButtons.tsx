@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { Dropdown, Button } from 'antd'
 import type { MenuProps } from 'antd'
 import { MenuOutlined } from '@ant-design/icons'
-import { userContext } from '~/context/userContext'
+import { userContext } from '~/context/User/userContext'
 
 const allNavLinks = [
   { path: '/', label: 'Trang Chủ', requiredRoles: ['STUDENT', 'TUTOR'] },
