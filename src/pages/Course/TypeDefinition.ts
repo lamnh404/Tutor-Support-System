@@ -75,6 +75,7 @@ export interface NewDocumentState {
   category: DocumentCategory;
   description: string;
   file: File | null;
+  url?: string;
 }
 
 export interface NewAssignmentState {
