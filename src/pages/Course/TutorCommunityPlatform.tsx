@@ -40,7 +40,7 @@ import { userContext } from '~/context/User/userContext.tsx'
 
 const TutorCommunityPlatform: React.FC = () => {
   const { user } = useContext(userContext)
-  console.log(user)
+  // setUser(prev => prev? { ...prev, roles: ['TUTOR'] } : prev)
   const { activeTab } = useContext(ActiveTabContext)
   const [showUploadModal, setShowUploadModal] = useState<boolean>(false)
   const [showAssignmentModal, setShowAssignmentModal] = useState<boolean>(false)

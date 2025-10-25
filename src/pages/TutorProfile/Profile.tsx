@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useParams, Navigate, useNavigate } from 'react-router-dom'
-import { initialProfile } from '~/pages/TutorProfile/ProfileData.tsx'
+import { initialProfile, skillTranslations } from '~/pages/TutorProfile/ProfileData.tsx'
 import { type Tutor } from '~/pages/TutorSearch/TutorData.tsx'
 import { mockReviews, type Review } from '~/components/Review/mockReviews.tsx'
 import {
@@ -60,15 +60,6 @@ const Profile: React.FC = () => {
             <p className="text-gray-700 leading-relaxed mb-4 text-base">
               {userProfile?.description}
             </p>
-            {/*<p className="text-gray-700 leading-relaxed mb-4 text-base">*/}
-            {/*  Welcome to my OET preparation and ESL classes! 🎓 With almost 7 years of experience helping*/}
-            {/*  medical professionals like doctors, ophthalmologists, nurses, physiotherapists, and dentists ace the*/}
-            {/*  OET, I'm confident I can help you too!*/}
-            {/*</p>*/}
-            {/*<p className="text-gray-700 leading-relaxed text-base">*/}
-            {/*  My approach is fun, engaging, and tailored to each student's unique needs. 🎯 I love teaching kids*/}
-            {/*  and adults alike, creating an environment where learning feels natural and enjoyable.*/}
-            {/*</p>*/}
           </div>
 
           <Divider />
@@ -171,29 +162,6 @@ const Profile: React.FC = () => {
         </>
       )
     }
-    // {
-    //   key: 'schedule',
-    //   label: <span className="flex items-center gap-2"><CalendarOutlined /> Schedule</span>,
-    //   children: (
-    //     <div className="text-center py-16">
-    //       <div className="inline-block p-8 bg-gradient-to-br from-blue-50 to-purple-50 rounded-full mb-6">
-    //         <CalendarOutlined className="text-7xl text-blue-500" />
-    //       </div>
-    //       <h3 className="text-2xl font-bold text-gray-900 mb-3">Schedule Your First Lesson</h3>
-    //       <p className="text-gray-600 mb-8 max-w-md mx-auto">
-    //         View {userProfile?.firstName}'s available time slots and book a lesson that fits your schedule perfectly
-    //       </p>
-    //       <Button
-    //         type="primary"
-    //         size="large"
-    //         icon={<CalendarOutlined />}
-    //         className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0 px-8 h-12 text-base font-medium"
-    //       >
-    //         View Available Times
-    //       </Button>
-    //     </div>
-    //   )
-    // }
   ]
 
 
@@ -309,25 +277,11 @@ const Profile: React.FC = () => {
                     <Tag icon={<CheckCircleFilled />} color="blue" className="px-3 py-1">
                       Đã xác minh
                     </Tag>
-                    {/*<Tag icon={<SafetyCertificateOutlined />} color="green" className="px-3 py-1">*/}
-                    {/*  Background Checked*/}
-                    {/*</Tag>*/}
                   </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                {/*<div className="bg-gradient-to-br from-yellow-50 to-orange-100 p-4 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">*/}
-                {/*  <div className="flex items-center gap-2 mb-1">*/}
-                {/*    <StarFilled className="text-yellow-500 text-xl" />*/}
-                {/*    <span className="text-2xl font-bold text-gray-800">{userProfile.rating_avg.toFixed(1)}</span>*/}
-                {/*  </div>*/}
-                {/*  <p className="text-xs text-gray-600">{userProfile.rating_count} reviews</p>*/}
-                {/*  <div className="mt-2 h-1 bg-yellow-200 rounded-full overflow-hidden">*/}
-                {/*    <div className="h-full bg-yellow-500 rounded-full" style={{ width: '95%' }}></div>*/}
-                {/*  </div>*/}
-                {/*</div>*/}
-
                 <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
                   <div className="flex items-center gap-2 mb-1">
                     <TeamOutlined className="text-blue-500 text-xl" />
@@ -350,15 +304,18 @@ const Profile: React.FC = () => {
                   <span>🎯</span> Chuyên ngành
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {userProfile.expertise.map((skill, index) => (
-                    <Tag
-                      key={index}
-                      color="blue"
-                      className="cursor-pointer"
-                    >
-                      {skill}
-                    </Tag>
-                  ))}
+                  {userProfile.expertise.map((skill, index) => {
+                    const translated = skillTranslations[skill] || skill
+                    return (
+                      <Tag
+                        key={index}
+                        color="blue"
+                        className="cursor-pointer"
+                      >
+                        {translated}
+                      </Tag>
+                    )
+                  })}
                 </div>
               </div>
 
