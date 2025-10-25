@@ -1,6 +1,11 @@
 import React, { useState, useContext } from 'react'
+<<<<<<< HEAD
 import { User, Save, Lock, History, LogOut, Camera } from 'lucide-react'
 import { userContext } from '~/context/User/userContext.tsx'
+=======
+import { User, Save, Lock, Camera } from 'lucide-react'
+import { userContext } from '~/context/userContext'
+>>>>>>> origin/student-profile
 // import type { User as UserTypte } from '~/context/userContext'
 
 const Settings: React.FC = () => {

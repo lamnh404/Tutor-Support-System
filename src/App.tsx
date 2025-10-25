@@ -61,6 +61,11 @@ function App() {
 
             <Route path='/mytutors' element={ <TutorList />} />
           </Route>
+<<<<<<< HEAD
+=======
+          <Route path='/tutor/:id' element={ <Profile />} />
+          <Route path='/student/:id' element={ <StudentProfile />} />
+>>>>>>> origin/student-profile
           <Route path='/login' element={ <Auth />} />
           <Route path='/register' element={ <Auth />} />
           <Route path="/" element={ <Home />} />
