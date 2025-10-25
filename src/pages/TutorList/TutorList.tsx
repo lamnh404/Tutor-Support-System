@@ -6,15 +6,15 @@ import { Button } from 'antd'
 
 const TutorList: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-200 to-indigo-200 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-9/12 mx-auto">
-        <h1 className="text-5xl font-bold text-center text-gray-800 mb-10">
-          Danh sách gia sư của tôi
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold text-left text-gray-800 mb-10">
+          Gia sư Hiện tại của bạn
         </h1>
 
         {myCurrentTutors.length > 0 ? (
-          <div className="bg-linear-to-bl from-sky-500 to-indigo-500 p-6 rounded-xl shadow-md border border-gray-200">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-gradient-to-bl from-gray-100 to-gray-300 p-6 rounded-xl shadow-md border border-gray-200">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {myCurrentTutors.map((tutor) => (
                 <TutorListCard key={tutor.id} tutor={tutor} />
               ))}
@@ -36,4 +36,3 @@ const TutorList: React.FC = () => {
 }
 
 export default TutorList
-
