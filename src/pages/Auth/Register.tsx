@@ -13,7 +13,7 @@ import FieldErrorAlert from '~/components/Form/FieldErrorAlert.tsx'
 // import { userContext } from '~/context/userContext.tsx'
 import { toast } from 'react-toastify'
 import { userRegisterAPI } from '~/apis/userAPI'
-import { type User } from '~/context/userContext'
+import { type User } from '~/context/User/userContext.tsx'
 import { AxiosError } from 'axios'
 
 type RegisterFormData = {

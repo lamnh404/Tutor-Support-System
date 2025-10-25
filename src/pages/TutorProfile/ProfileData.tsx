@@ -1,4 +1,5 @@
 import type { Tutor } from '~/pages/TutorSearch/TutorData.tsx'
+import type { ExpertiseCode } from '~/pages/TutorSearch/TutorDefinitions.tsx'
 
 export const initialProfile: Tutor[] = [
   {
@@ -31,3 +32,24 @@ export const initialProfile: Tutor[] = [
     description: 'Giảng viên múa lửa, có hơn 10 năm kinh nghiệm biểu diễn và giảng dạy nghệ thuật múa lửa.'
   }
 ]
+
+export const skillTranslations: Record<ExpertiseCode, string> = {
+  MACHINE_LEARNING: 'Học máy',
+  SOFTWARE_ENGINEERING: 'Kỹ thuật phần mềm',
+  DATA_SCIENCE: 'Khoa học dữ liệu',
+  ARTIFICIAL_INTELLIGENCE: 'Trí tuệ nhân tạo',
+  CYBERSECURITY: 'An ninh mạng',
+  WEB_DEVELOPMENT: 'Phát triển web',
+  MOBILE_DEVELOPMENT: 'Phát triển di động',
+  DATABASE_DESIGN: 'Thiết kế cơ sở dữ liệu',
+  ALGORITHMS: 'Thuật toán',
+  COMPUTER_NETWORKS: 'Mạng máy tính',
+  EMBEDDED_SYSTEMS: 'Hệ thống nhúng',
+  SIGNAL_PROCESSING: 'Xử lý tín hiệu',
+  CONTROL_SYSTEMS: 'Hệ thống điều khiển',
+  THERMODYNAMICS: 'Nhiệt động lực học',
+  MECHANICAL_DESIGN: 'Thiết kế cơ khí',
+  PROCESS_ENGINEERING: 'Công nghệ chế biến',
+  MATERIALS_SCIENCE: 'Khoa học vật liệu'
+}
+

@@ -8,11 +8,11 @@ import {
   PASSWORD_RULE_MESSAGE
 } from '~/utils/validators.ts'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert.tsx'
-import { userContext } from '~/context/userContext.tsx'
+import { userContext } from '~/context/User/userContext.tsx'
 import { toast } from 'react-toastify'
 import { userLoginAPI } from '~/apis/userAPI'
 // import { AxiosError } from 'axios'
-import { type User } from '~/context/userContext'
+import { type User } from '~/context/User/userContext.tsx'
 
 type LoginFormData = {
   username: string
@@ -33,7 +33,7 @@ const Login: React.FC = () => {
 
   const handleLogin = (data: LoginFormData) => {
     const { username, password } = data
-    toast.promise<User>(
+    toast.promise<unknown>(
       userLoginAPI(username, password),
       {
         pending: 'Đang đăng nhập...',
@@ -41,8 +41,8 @@ const Login: React.FC = () => {
         // error: 'Đăng nhập thất bại!'
       }
     ).then(res => {
-      // console.log(res)
-      login(res)
+      const { accessToken, tokenType, ...userData } = res
+      login(userData)
       setError(null)
       navigate('/')
     })

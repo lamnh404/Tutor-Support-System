@@ -133,6 +133,7 @@ const TutorSearchPage: React.FC = () => {
         setDisplayedTutors(data)
         setHasMore(data.length === PAGE_SIZE)
         setCurrentPage(2)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         toast.error('Không thể tải danh sách gia sư. Vui lòng thử lại sau.')
         setDisplayedTutors([])

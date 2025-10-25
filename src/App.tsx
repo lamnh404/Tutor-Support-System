@@ -3,9 +3,9 @@ import { Routes, Route, useLocation, Outlet, Navigate } from 'react-router-dom'
 import Auth from '~/pages/Auth/Auth'
 import NotFound from '~/pages/404/NotFound'
 import { useContext, useEffect } from 'react'
-import { type User } from './context/userContext.tsx'
+import { type User } from './context/User/userContext.tsx'
 import { ToastContainer } from 'react-toastify'
-import { userContext } from '~/context/userContext.tsx'
+import { userContext } from '~/context/User/userContext.tsx'
 import TutorSearchPage from '~/pages/TutorSearch/TutorSearch.tsx'
 import Profile from '~/pages/TutorProfile/Profile.tsx'
 import ScrollToTop from '~/components/ScrollToTop/ScrollToTop.tsx'
@@ -14,7 +14,11 @@ import Setting from '~/pages/Setting/Settings.tsx'
 import LibraryPage from './pages/Library/LibraryPage.tsx'
 import { useNavigate } from 'react-router-dom'
 import { setupAxiosInterceptors } from '~/utils/authorizedAxiosInstance.ts'
+import TutorCommunityPlatform from '~/pages/Course/TutorCommunityPlatform.tsx'
+import AnimationBackground from '~/components/AnimationBackground/AnimationBackground.tsx'
+import { ActiveTabContextProvider } from '~/context/CourseContext/ActiveTabContext.tsx'
 
+import TutorList from '~/pages/TutorList/TutorList.tsx'
 interface ProtectedRouteProps {
   user: User | null
 }
@@ -37,6 +41,7 @@ function App() {
   return (
     <>
       <ScrollToTop />
+      <AnimationBackground />
       {showHeader && <Header />}
       <main className={showHeader ? 'mt-[71px]' : ''}>
         <Routes>
@@ -44,8 +49,15 @@ function App() {
             <Route path="/settings" element={ <Setting /> } />
             <Route path="/dashboard" element={ <TutorSearchPage /> } />
             <Route path="/library" element={ <LibraryPage /> } />
+            <Route path='/:id' element={ <Profile />} />
+            <Route path='/course/:id' element={
+              <ActiveTabContextProvider>
+                <TutorCommunityPlatform/>
+              </ActiveTabContextProvider>
+            } />
+
+            <Route path='/mytutors' element={ <TutorList />} />
           </Route>
-          <Route path='/:id' element={ <Profile />} />
           <Route path='/login' element={ <Auth />} />
           <Route path='/register' element={ <Auth />} />
           <Route path="/" element={ <Home />} />

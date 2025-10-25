@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import Cycle from './Cycle'
-import { userContext } from '~/context/userContext.tsx'
+import { userContext } from '~/context/User/userContext.tsx'
 import { useContext } from 'react'
 
 export default function Intro() {

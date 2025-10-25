@@ -7,7 +7,6 @@ export interface User {
   roles: string[]
   avatarUrl?: string
 }
-
 interface UserContextType {
   user: User | null
   setUser: React.Dispatch<React.SetStateAction<User | null>>

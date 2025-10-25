@@ -1,5 +1,5 @@
 import { useContext, useEffect } from 'react'
-import { userContext } from '~/context/userContext'
+import { userContext } from '~/context/User/userContext.tsx'
 import Home from '~/pages/Homepage/Home'
 import { useNavigate, useLocation } from 'react-router-dom'
 
