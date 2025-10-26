@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 // import { Card } from 'antd'
 import Login from './Login'
 import Register from './Register.tsx'
-import { userContext } from '~/context/userContext'
+import { userContext } from '~/context/User/userContext.tsx'
 import { useContext, useEffect } from 'react'
 
 function Auth() {
