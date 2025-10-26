@@ -19,6 +19,8 @@ import AnimationBackground from '~/components/AnimationBackground/AnimationBackg
 import { ActiveTabContextProvider } from '~/context/CourseContext/ActiveTabContext.tsx'
 
 import TutorList from '~/pages/TutorList/TutorList.tsx'
+import StudentProfile from '~/pages/StudentProfile/StudentProfile.tsx'
+import StudentSearchPage from '~/pages/StudentSearch/StudentSearch.tsx'
 interface ProtectedRouteProps {
   user: User | null
 }
@@ -57,6 +59,8 @@ function App() {
             } />
 
             <Route path='/mytutors' element={ <TutorList />} />
+            <Route path='/students' element={ <StudentSearchPage />} />
+            <Route path='/student/:id' element={ <StudentProfile />} />
           </Route>
           <Route path='/login' element={ <Auth />} />
           <Route path='/register' element={ <Auth />} />
