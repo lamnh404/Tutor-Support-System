@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react'
 import { User, Save, Lock, Camera } from 'lucide-react'
-import { userContext } from '~/context/User/userContext'
-// import type { User as UserTypte } from '~/context/User/userContext'
+import { userContext } from '../../context/User/userContext'
+// import type { User as UserTypte } from '~/context/userContext'
 
 const Settings: React.FC = () => {
   const { user, setUser } = useContext(userContext)
