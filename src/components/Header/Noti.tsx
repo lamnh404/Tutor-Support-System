@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
 import { Avatar } from 'antd'
-import { 
-  MessageOutlined, 
-  CalendarOutlined, 
-  StarOutlined, 
+import {
+  MessageOutlined,
+  CalendarOutlined,
+  StarOutlined,
   CheckCircleOutlined,
   InfoCircleOutlined,
   ExclamationCircleOutlined,
@@ -17,25 +17,25 @@ interface NotiProps {
 }
 
 const getNotificationIcon = (type: Notification['type']) => {
-  const iconProps = { className: "text-lg" }
-  
+  const iconProps = { className: 'text-lg' }
+
   switch (type) {
-    case 'booking':
-      return <CalendarOutlined {...iconProps} style={{ color: '#52c41a' }} />
-    case 'assignment':
-      return <MessageOutlined {...iconProps} style={{ color: '#722ed1' }} />
-    case 'review':
-      return <StarOutlined {...iconProps} style={{ color: '#faad14' }} />
-    case 'payment':
-      return <CheckCircleOutlined {...iconProps} style={{ color: '#52c41a' }} />
-    case 'success':
-      return <CheckCircleOutlined {...iconProps} style={{ color: '#52c41a' }} />
-    case 'warning':
-      return <ExclamationCircleOutlined {...iconProps} style={{ color: '#faad14' }} />
-    case 'error':
-      return <CloseOutlined {...iconProps} style={{ color: '#ff4d4f' }} />
-    default:
-      return <InfoCircleOutlined {...iconProps} style={{ color: '#1890ff' }} />
+  case 'booking':
+    return <CalendarOutlined {...iconProps} style={{ color: '#52c41a' }} />
+  case 'assignment':
+    return <MessageOutlined {...iconProps} style={{ color: '#722ed1' }} />
+  case 'review':
+    return <StarOutlined {...iconProps} style={{ color: '#faad14' }} />
+  case 'payment':
+    return <CheckCircleOutlined {...iconProps} style={{ color: '#52c41a' }} />
+  case 'success':
+    return <CheckCircleOutlined {...iconProps} style={{ color: '#52c41a' }} />
+  case 'warning':
+    return <ExclamationCircleOutlined {...iconProps} style={{ color: '#faad14' }} />
+  case 'error':
+    return <CloseOutlined {...iconProps} style={{ color: '#ff4d4f' }} />
+  default:
+    return <InfoCircleOutlined {...iconProps} style={{ color: '#1890ff' }} />
   }
 }
 
@@ -43,7 +43,7 @@ const getTimeAgo = (timestamp: string) => {
   const now = new Date()
   const notifTime = new Date(timestamp)
   const diffInMinutes = Math.floor((now.getTime() - notifTime.getTime()) / (1000 * 60))
-  
+
   if (diffInMinutes < 1) return 'Vừa xong'
   if (diffInMinutes < 60) return `${diffInMinutes} phút trước`
   if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)} giờ trước`
@@ -66,7 +66,7 @@ export default function Noti({ notification }: NotiProps) {
   }
 
   const content = (
-    <div 
+    <div
       className={`w-full border-b border-gray-100 p-4 relative hover:bg-gray-50 transition-colors cursor-pointer group ${
         !notification.isRead ? 'bg-blue-50/30' : ''
       }`}

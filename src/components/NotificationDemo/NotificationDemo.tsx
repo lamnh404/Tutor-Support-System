@@ -52,8 +52,8 @@ const NotificationDemo: React.FC = () => {
 
   return (
     <div className="fixed bottom-4 right-4 z-50">
-      <Button 
-        type="primary" 
+      <Button
+        type="primary"
         onClick={handleAddRandomNotification}
         className="shadow-lg"
       >

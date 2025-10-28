@@ -23,7 +23,8 @@ import StudentProfile from '~/pages/StudentProfile/StudentProfile.tsx'
 import StudentSearchPage from '~/pages/StudentSearch/StudentSearch.tsx'
 import { NotificationProvider } from '~/context/NotificationContext/NotificationContext'
 import NotificationDemo from '~/components/NotificationDemo/NotificationDemo'
-import BackToTop from './components/Header/BackToTop.tsx'
+import BackToTop from '~/components/Header/BackToTop.tsx'
+import TutorDashboard from '~/pages/TutorDashboard/TutorDashboard.tsx'
 // import StudentList from './pages/StudentList/StudentList.tsx'
 interface ProtectedRouteProps {
   user: User | null
@@ -54,7 +55,7 @@ function App() {
           <Routes>
             <Route element={<ProtectedRoute user={user} />}>
               <Route path="/settings" element={ <Setting /> } />
-              <Route path="/dashboard" element={ <TutorSearchPage /> } />
+              <Route path="/search" element={ <TutorSearchPage /> } />
               <Route path="/library" element={ <LibraryPage /> } />
               <Route path='/:id' element={ <Profile />} />
               <Route path='/course/:id' element={
@@ -68,6 +69,7 @@ function App() {
               <Route path='/student/:id' element={ <StudentProfile />} />
               {/* <Route path='/mymentees' element={ <StudentList />} /> */}
             </Route>
+            <Route path='/tutordashboard' element={ <TutorDashboard />} />
             <Route path='/login' element={ <Auth />} />
             <Route path='/register' element={ <Auth />} />
             <Route path="/" element={ <Home />} />

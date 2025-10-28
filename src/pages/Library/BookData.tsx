@@ -24,7 +24,7 @@ export const initialBooks: Book[] = [
     publisher: 'NXB Đại học Quốc gia TP.HCM',
     publishYear: 2019,
     genre: 'Giáo trình',
-    coursesUsingBook: ['CO2003 - Cấu trúc dữ liệu và giải thuật', 'CO2013 - Cấu trúc dữ liệu và giải thuật nâng cao']
+    coursesUsingBook: ['Cấu trúc dữ liệu và giải thuật', 'Giải thuật nâng cao']
   },
   {
     id: '2',
@@ -37,7 +37,7 @@ export const initialBooks: Book[] = [
     publisher: 'NXB Đại học Quốc gia TP.HCM',
     publishYear: 2022,
     genre: 'Giáo trình',
-    coursesUsingBook: ['CO3005 - Mạng máy tính']
+    coursesUsingBook: ['Mạng máy tính']
   },
   {
     id: '3',
@@ -63,7 +63,7 @@ export const initialBooks: Book[] = [
     publisher: 'NXB Đại học Quốc gia TP.HCM',
     publishYear: 2021,
     genre: 'Giáo trình',
-    coursesUsingBook: ['CO2001 - Lập trình hướng đối tượng']
+    coursesUsingBook: ['Lập trình hướng đối tượng']
   },
   {
     id: '5',
@@ -76,7 +76,7 @@ export const initialBooks: Book[] = [
     publisher: 'Prentice Hall',
     publishYear: 2001,
     genre: 'Sách tham khảo',
-    coursesUsingBook: ['CO3006 - Hệ điều hành']
+    coursesUsingBook: ['Hệ điều hành']
   },
   {
     id: '6',

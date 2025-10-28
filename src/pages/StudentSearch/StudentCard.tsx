@@ -29,16 +29,16 @@ const getDepartmentColors = (departmentCode: DepartmentCode) => {
 
 const StudentCard: React.FC<StudentCardProps> = ({ student }) => {
   const colors = getDepartmentColors(student.department)
-  
+
   const departmentName = DEPARTMENTS.find(d => d.code === student.department)?.name || student.department
-  
+
   const getYearText = (year: number) => {
-    switch(year) {
-      case 1: return 'Năm 1'
-      case 2: return 'Năm 2' 
-      case 3: return 'Năm 3'
-      case 4: return 'Năm 4'
-      default: return `Năm ${year}`
+    switch (year) {
+    case 1: return 'Năm 1'
+    case 2: return 'Năm 2'
+    case 3: return 'Năm 3'
+    case 4: return 'Năm 4'
+    default: return `Năm ${year}`
     }
   }
 

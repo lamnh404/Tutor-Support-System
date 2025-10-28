@@ -58,14 +58,14 @@ export default function Header() {
                       {unreadCount > 0 && (
                         <button
                           onClick={() => markAllAsRead()}
-                          className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                          className="text-xs text-blue-600 hover:text-blue-800 cursor-pointer flex items-center gap-1"
                         >
                           <CheckOutlined className="text-xs" />
                           Đánh dấu đã đọc
                         </button>
                       )}
                     </div>
-                    
+
                     {/* Notifications List */}
                     <div className="max-h-96 overflow-y-auto">
                       {notifications.length > 0 ? (
