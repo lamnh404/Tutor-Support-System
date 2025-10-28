@@ -20,6 +20,7 @@ import { ActiveTabContextProvider } from '~/context/CourseContext/ActiveTabConte
 
 import TutorList from '~/pages/TutorList/TutorList.tsx'
 import BackToTop from './components/Header/BackToTop.tsx'
+import AdminDashboard from "~/pages/admin/AdminDashboard.tsx";
 // import StudentList from './pages/StudentList/StudentList.tsx'
 interface ProtectedRouteProps {
   user: User | null
@@ -59,6 +60,7 @@ function App() {
             } />
 
             <Route path='/mytutors' element={ <TutorList />} />
+            <Route path='/admin' element={ <AdminDashboard /> }/>
             {/* <Route path='/mymentees' element={ <StudentList />} /> */}
           </Route>
           <Route path='/login' element={ <Auth />} />
