@@ -80,14 +80,6 @@ export default function Header() {
                         </div>
                       )}
                     </div>
-                    
-                    {notifications.length > 0 && (
-                      <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 text-center">
-                        <button className="text-xs text-blue-600 hover:text-blue-800">
-                          Xem tất cả thông báo
-                        </button>
-                      </div>
-                    )}
                   </div>
                 )}
               </div>
