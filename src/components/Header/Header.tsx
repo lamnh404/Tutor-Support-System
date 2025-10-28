@@ -15,7 +15,6 @@ export default function Header() {
   const { notifications, unreadCount, markAllAsRead } = useNotifications()
 
   const { user, logout } = useContext(userContext)
-  // useLocation is no longer needed here for navigation active state
 
   const handleLogout = () => {
     userLogoutAPI(true)

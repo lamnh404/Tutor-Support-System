@@ -1,6 +1,19 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { userContext } from '~/context/User/userContext.tsx'
 
 const Footer: React.FC = () => {
+  const { login } = useContext(userContext)
+  const mockUser = {
+    id: 'mock-user-123',
+    name: 'Test User',
+    email: 'messi10@hcmut.edu.vn',
+    roles: ['STUDENT', 'TUTOR'],
+    avatarUrl: 'https://hips.hearstapps.com/hmg-prod/images/cristiano-ronaldo-of-portugal-during-the-uefa-nations-news-photo-1748359673.pjpeg',
+    username: 'testuser',
+    firstName: 'Ronaldo',
+    lastName: 'User'
+  }
+
   return (
     <footer className="bg-gray-800 text-gray-300 py-12">
       <div className="container mx-auto grid md:grid-cols-2 gap-8 px-4 ">
@@ -17,12 +30,18 @@ const Footer: React.FC = () => {
         <div className="items-center justify-between mx-auto">
           <h4 className="text-lg font-bold mb-4">Các trang</h4>
           <ul className="space-y-2 text-sm">
-            <li><a href="#" className="hover:underline">Dashboard</a></li>
-            <li><a href="library" className="hover:underline">Thư viện</a></li>
-            <li><a href="#" className="hover:underline">Hỗ trợ</a></li>
+            <li><a href="/dashboard" className="hover:underline">Dashboard</a></li>
+            <li><a href="/library" className="hover:underline">Thư viện</a></li>
+            <li>
+              <button
+                onClick={() => login(mockUser)}
+                className="hover:underline text-left bg-transparent border-none p-0 cursor-pointer text-gray-300 text-sm"
+              >
+                Hỗ trợ
+              </button>
+            </li>
           </ul>
         </div>
-
       </div>
       <div className="text-center text-sm mt-8 border-t border-gray-700 pt-4">
         <p>&copy; 2025 HCMUT. All rights reserved.</p>

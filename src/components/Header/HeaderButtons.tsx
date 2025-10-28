@@ -50,7 +50,7 @@ const HeaderButtons: React.FC = () => {
 
   return (
     <>
-      <div className="hidden lg:flex h-full items-center space-x-2">
+      <div className="hidden xl:flex h-full items-center space-x-2">
         {availableNavLinks.map(link => {
           const isActive = (pathname.startsWith(link.path) && link.path !== '/') || pathname === link.path
           return (
@@ -63,7 +63,7 @@ const HeaderButtons: React.FC = () => {
         })}
       </div>
 
-      <div className="flex items-center lg:hidden">
+      <div className="flex items-center xl:hidden">
         <Dropdown menu={{ items: responsiveMenuItems }} trigger={['click']} placement="bottomRight">
           <Button
             type="text"

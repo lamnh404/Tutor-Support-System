@@ -47,15 +47,11 @@ export default function LibraryPage() {
     })
 
     return filtered
-  }, [searchTerm, showFavorited, showInUse, books]) // Thêm `books` vào dependency
+  }, [searchTerm, showFavorited, showInUse, books])
 
   useEffect(() => {
-    // Khi component được render, ép hiển thị thanh cuộn trên body
     document.body.style.overflowY = 'scroll'
-
-    // Hàm cleanup: sẽ được gọi khi component bị gỡ khỏi DOM (unmount)
     return () => {
-      // Trả lại trạng thái mặc định cho các trang khác
       document.body.style.overflowY = 'auto'
     }
   }, [])
@@ -71,7 +67,7 @@ export default function LibraryPage() {
           </div>
         </div>
 
-        <aside className="w-full lg:w-80 lg:flex-shrink-0 lg:border-l lg:border-gray-200">
+        <aside className="w-full lg:w-80 flex-shrink-0 lg:border-l lg:border-gray-200 bg-gradient-to-bl from-blue-50 to to-blue-200">
           <div className="sticky top-[71px] h-[calc(100vh-71px)] overflow-y-auto p-6">
             <h3 className="text-lg font-semibold text-gray-900">Tìm kiếm & Lọc</h3>
 
@@ -83,7 +79,7 @@ export default function LibraryPage() {
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
                 placeholder="Tìm theo tên sách, tác giả..."
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-base p-3"
+                className="block w-full rounded-md border-gray-300 bg-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-base p-3"
               />
             </div>
 
@@ -92,16 +88,16 @@ export default function LibraryPage() {
                 type="button"
                 onClick={() => setShowFavorited(prev => !prev)}
                 aria-pressed={showFavorited}
-                className={`w-full flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-semibold transition-colors ${showFavorited ? 'bg-indigo-600 text-white shadow' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
+                className={`w-full flex items-center cursor-pointer justify-center gap-2 rounded-md ring-1 px-3 py-2 text-sm font-semibold transition-colors ${showFavorited ? 'bg-gradient-to-bl from-pink-300 to-pink-500 text-white shadow' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
               >
-                Ưa thích {showFavorited ? <CheckIcon/> : <SquareIcon/>}
+                Yêu thích {showFavorited ? <CheckIcon/> : <SquareIcon/>}
               </button>
 
               <button
                 type="button"
                 onClick={() => setShowInUse(prev => !prev)}
                 aria-pressed={showInUse}
-                className={`w-full flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-semibold transition-colors ${showInUse ? 'bg-indigo-600 text-white shadow' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
+                className={`w-full flex items-center cursor-pointer justify-center gap-2 rounded-md ring-1 px-3 py-2 text-sm font-semibold transition-colors ${showInUse ? 'bg-gradient-to-bl from-indigo-400 to-indigo-600 text-white shadow' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
               >
                 Đang sử dụng {showInUse ? <CheckIcon/> : <SquareIcon/>}
               </button>
