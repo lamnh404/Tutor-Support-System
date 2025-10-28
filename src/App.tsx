@@ -21,6 +21,8 @@ import { ActiveTabContextProvider } from '~/context/CourseContext/ActiveTabConte
 import TutorList from '~/pages/TutorList/TutorList.tsx'
 import StudentProfile from '~/pages/StudentProfile/StudentProfile.tsx'
 import StudentSearchPage from '~/pages/StudentSearch/StudentSearch.tsx'
+import { NotificationProvider } from '~/context/NotificationContext/NotificationContext'
+import NotificationDemo from '~/components/NotificationDemo/NotificationDemo'
 interface ProtectedRouteProps {
   user: User | null
 }
@@ -41,7 +43,7 @@ function App() {
   }, [logout, navigate])
 
   return (
-    <>
+    <NotificationProvider>
       <ScrollToTop />
       <AnimationBackground />
       {showHeader && <Header />}
@@ -70,7 +72,9 @@ function App() {
         </Routes>
       </main>
       <ToastContainer position="top-right" autoClose={3000} />
-    </>
+      {/* Demo button - remove in production */}
+      <NotificationDemo />
+    </NotificationProvider>
   )
 }
 
