@@ -26,7 +26,7 @@ import {
 } from 'recharts'
 import type { ActivityLog } from '~/pages/admin/TypeDefinition.ts'
 
-export const Overview: React.FC = () => {
+const Overview: React.FC = () => {
   const StatCard = ({
     title,
     value,
@@ -268,3 +268,4 @@ export const Overview: React.FC = () => {
     </div>
   )
 }
+export default Overview

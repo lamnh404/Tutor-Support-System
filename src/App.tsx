@@ -20,7 +20,7 @@ import { ActiveTabContextProvider } from '~/context/CourseContext/ActiveTabConte
 
 import TutorList from '~/pages/TutorList/TutorList.tsx'
 import BackToTop from './components/Header/BackToTop.tsx'
-import { Overview } from '~/pages/admin/Overview.tsx'
+import Overview from '~/pages/admin/Overview.tsx'
 import UserManagement from '~/pages/admin/UserManagement.tsx'
 import Analytics from '~/pages/admin/Analytics.tsx'
 import Logs from '~/pages/admin/Logs.tsx'
