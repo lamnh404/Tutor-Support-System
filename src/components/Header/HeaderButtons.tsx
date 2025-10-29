@@ -12,6 +12,10 @@ const allNavLinks = [
   { path: '/tutordashboard', label: 'Các học sinh của tôi', requiredRoles: ['TUTOR'] }, // Specifically for TUTOR
   { path: '/search', label: 'Tìm kiếm', requiredRoles: ['STUDENT', 'TUTOR'] },
   { path: '/library', label: 'Thư Viện', requiredRoles: ['STUDENT', 'TUTOR'] }
+  { path: '/admin/overview', label: 'Tổng Quan', requiredRoles: ['ADMIN'] },
+  { path: '/admin/users', label: 'Người Dùng', requiredRoles: ['ADMIN'] },
+  { path: '/admin/analytics', label: 'Phân Tích', requiredRoles: ['ADMIN'] },
+  { path: '/admin/logs', label: 'Hoạt Động', requiredRoles: ['ADMIN'] }
 ]
 
 const HeaderButtons: React.FC = () => {

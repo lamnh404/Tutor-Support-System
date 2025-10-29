@@ -12,7 +12,6 @@ import { userContext } from '~/context/User/userContext.tsx'
 import { toast } from 'react-toastify'
 import { userLoginAPI } from '~/apis/userAPI'
 // import { AxiosError } from 'axios'
-import { type User } from '~/context/User/userContext.tsx'
 
 type LoginFormData = {
   username: string

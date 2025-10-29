@@ -26,12 +26,21 @@ import NotificationDemo from '~/components/NotificationDemo/NotificationDemo'
 import BackToTop from '~/components/Header/BackToTop.tsx'
 import TutorDashboard from '~/pages/TutorDashboard/TutorDashboard.tsx'
 // import StudentList from './pages/StudentList/StudentList.tsx'
+import Overview from '~/pages/admin/Overview.tsx'
+import UserManagement from '~/pages/admin/UserManagement.tsx'
+import Analytics from '~/pages/admin/Analytics.tsx'
+import Logs from '~/pages/admin/Logs.tsx'
 interface ProtectedRouteProps {
   user: User | null
+  allowedRoles?: string[]
 }
 
-const ProtectedRoute = ({ user }: ProtectedRouteProps) => {
-  if (!user) return <Navigate to="/login" replace />
+const ProtectedRoute = ({ user, allowedRoles }: ProtectedRouteProps) => {
+  if (!user)
+    return <Navigate to="/login" replace />
+
+  if (allowedRoles && !user.roles.some(role => allowedRoles.includes(role)))
+    return <Navigate to="/404" replace />
   return <Outlet />
 }
 
@@ -48,39 +57,44 @@ function App() {
   return (
     <>
       <NotificationProvider>
-        <ScrollToTop />
-        <AnimationBackground />
-        {showHeader && <Header />}
-        <main className={showHeader ? 'mt-[71px]' : ''}>
-          <Routes>
-            <Route element={<ProtectedRoute user={user} />}>
-              <Route path="/settings" element={ <Setting /> } />
-              <Route path="/search" element={ <TutorSearchPage /> } />
-              <Route path="/library" element={ <LibraryPage /> } />
-              <Route path='/:id' element={ <Profile />} />
-              <Route path='/course/:id' element={
-                <ActiveTabContextProvider>
-                  <TutorCommunityPlatform/>
-                </ActiveTabContextProvider>
-              } />
+      <ScrollToTop />
+      <AnimationBackground />
+      {showHeader && <Header />}
+      <main className={showHeader ? 'mt-[71px]' : ''}>
+        <Routes>
+          <Route element={<ProtectedRoute user={user} allowedRoles={['STUDENT', 'TUTOR']} />}>
+            <Route path="/settings" element={ <Setting /> } />
+            <Route path="/dashboard" element={ <TutorSearchPage /> } />
+            <Route path="/library" element={ <LibraryPage /> } />
+            <Route path='/:id' element={ <Profile />} />
+            <Route path='/course/:id' element={
+              <ActiveTabContextProvider>
+                <TutorCommunityPlatform/>
+              </ActiveTabContextProvider>
+            } />
 
               <Route path='/mytutors' element={ <TutorList />} />
               <Route path='/students' element={ <StudentSearchPage />} />
               <Route path='/student/:id' element={ <StudentProfile />} />
               {/* <Route path='/mymentees' element={ <StudentList />} /> */}
             </Route>
+          <Route element={<ProtectedRoute user={user} allowedRoles={['ADMIN']} />}>
+            <Route path='/admin/overview' element={ <Overview/>} />
+            <Route path='/admin/users' element={<UserManagement />}/>
+            <Route path='admin/analytics' element={ <Analytics /> }/>
+            <Route path ='/admin/logs' element={<Logs/>} />
+          </Route>
             <Route path='/tutordashboard' element={ <TutorDashboard />} />
-            <Route path='/login' element={ <Auth />} />
-            <Route path='/register' element={ <Auth />} />
-            <Route path="/" element={ <Home />} />
-            <Route path="/404" element={ <NotFound />} />
-            <Route path="*" element={ <Navigate to="/404" replace/> }/>
-          </Routes>
-        </main>
-        <ToastContainer position="top-right" autoClose={3000} />
-        {/* Demo button - remove in production */}
+          <Route path='/login' element={ <Auth />} />
+          <Route path='/register' element={ <Auth />} />
+          <Route path="/" element={ <Home />} />
+          <Route path="/404" element={ <NotFound />} />
+          <Route path="*" element={ <Navigate to="/404" replace/> }/>
+        </Routes>
+      </main>
+      <ToastContainer position="top-right" autoClose={3000} />
         <NotificationDemo />
-        <BackToTop />
+      <BackToTop />
       </NotificationProvider>
     </>
   )
