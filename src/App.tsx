@@ -62,8 +62,10 @@ function App() {
         {showHeader && <Header />}
         <main className={showHeader ? 'mt-[71px]' : ''}>
           <Routes>
-            <Route element={<ProtectedRoute user={user} allowedRoles={['STUDENT', 'TUTOR']} />}>
+            <Route element={<ProtectedRoute user={user} />}>
               <Route path="/settings" element={ <Setting /> } />
+            </Route>
+            <Route element={<ProtectedRoute user={user} allowedRoles={['STUDENT', 'TUTOR']} />}>
               <Route path="/search" element={ <TutorSearchPage /> } />
               <Route path="/library" element={ <LibraryPage /> } />
               <Route path='/:id' element={ <Profile />} />
@@ -72,7 +74,6 @@ function App() {
                   <TutorCommunityPlatform/>
                 </ActiveTabContextProvider>
               } />
-
               <Route path='/mytutors' element={ <TutorList />} />
               <Route path='/students' element={ <StudentSearchPage />} />
               <Route path='/student/:id' element={ <StudentProfile />} />
