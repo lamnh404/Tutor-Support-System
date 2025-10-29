@@ -18,18 +18,17 @@ import TutorCommunityPlatform from '~/pages/Course/TutorCommunityPlatform.tsx'
 import AnimationBackground from '~/components/AnimationBackground/AnimationBackground.tsx'
 import { ActiveTabContextProvider } from '~/context/CourseContext/ActiveTabContext.tsx'
 
-import TutorList from '~/pages/TutorList/TutorList.tsx'
 import StudentProfile from '~/pages/StudentProfile/StudentProfile.tsx'
 import StudentSearchPage from '~/pages/StudentSearch/StudentSearch.tsx'
 import { NotificationProvider } from '~/context/NotificationContext/NotificationContext'
 import NotificationDemo from '~/components/NotificationDemo/NotificationDemo'
 import BackToTop from '~/components/Header/BackToTop.tsx'
-import TutorDashboard from '~/pages/TutorDashboard/TutorDashboard.tsx'
 // import StudentList from './pages/StudentList/StudentList.tsx'
 import Overview from '~/pages/admin/Overview.tsx'
 import UserManagement from '~/pages/admin/UserManagement.tsx'
 import Analytics from '~/pages/admin/Analytics.tsx'
 import Logs from '~/pages/admin/Logs.tsx'
+import Dashboard from '~/pages/TutorList/Dashboard.tsx'
 interface ProtectedRouteProps {
   user: User | null
   allowedRoles?: string[]
@@ -74,7 +73,7 @@ function App() {
                   <TutorCommunityPlatform/>
                 </ActiveTabContextProvider>
               } />
-              <Route path='/mytutors' element={ <TutorList />} />
+              <Route path='/dashboard' element={ <Dashboard />} />
               <Route path='/students' element={ <StudentSearchPage />} />
               <Route path='/student/:id' element={ <StudentProfile />} />
               {/* <Route path='/mymentees' element={ <StudentList />} /> */}
@@ -85,7 +84,6 @@ function App() {
               <Route path='admin/analytics' element={ <Analytics /> }/>
               <Route path ='/admin/logs' element={<Logs/>} />
             </Route>
-            <Route path='/tutordashboard' element={ <TutorDashboard />} />
             <Route path='/login' element={ <Auth />} />
             <Route path='/register' element={ <Auth />} />
             <Route path="/" element={ <Home />} />

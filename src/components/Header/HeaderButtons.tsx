@@ -8,8 +8,7 @@ import { userContext } from '~/context/User/userContext'
 const allNavLinks = [
   { path: '/', label: 'Trang Chủ', requiredRoles: ['STUDENT', 'TUTOR'] },
   { path: '/student', label: 'Trang Cá Nhân', requiredRoles: ['STUDENT', 'TUTOR'] },
-  { path: '/mytutors', label: 'Các gia sư của tôi', requiredRoles: ['STUDENT'] }, // Specifically for STUDENT
-  { path: '/tutordashboard', label: 'Các học sinh của tôi', requiredRoles: ['TUTOR'] }, // Specifically for TUTOR
+  { path: '/dashboard', label: 'Bảng Điều Khiển', requiredRoles: ['STUDENT', 'TUTOR'] },
   { path: '/search', label: 'Tìm kiếm', requiredRoles: ['STUDENT', 'TUTOR'] },
   { path: '/library', label: 'Thư Viện', requiredRoles: ['STUDENT', 'TUTOR'] },
   { path: '/admin/overview', label: 'Tổng Quan', requiredRoles: ['ADMIN'] },
