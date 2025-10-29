@@ -20,14 +20,22 @@ import { ActiveTabContextProvider } from '~/context/CourseContext/ActiveTabConte
 
 import TutorList from '~/pages/TutorList/TutorList.tsx'
 import BackToTop from './components/Header/BackToTop.tsx'
-import AdminDashboard from "~/pages/admin/AdminDashboard.tsx";
-// import StudentList from './pages/StudentList/StudentList.tsx'
+import { Overview } from '~/pages/admin/Overview.tsx'
+import UserManagement from '~/pages/admin/UserManagement.tsx'
+import Analytics from '~/pages/admin/Analytics.tsx'
+import Logs from '~/pages/admin/Logs.tsx'
+
 interface ProtectedRouteProps {
   user: User | null
+  allowedRoles?: string[]
 }
 
-const ProtectedRoute = ({ user }: ProtectedRouteProps) => {
-  if (!user) return <Navigate to="/login" replace />
+const ProtectedRoute = ({ user, allowedRoles }: ProtectedRouteProps) => {
+  if (!user)
+    return <Navigate to="/login" replace />
+
+  if (allowedRoles && !user.roles.some(role => allowedRoles.includes(role)))
+    return <Navigate to="/404" replace />
   return <Outlet />
 }
 
@@ -48,7 +56,7 @@ function App() {
       {showHeader && <Header />}
       <main className={showHeader ? 'mt-[71px]' : ''}>
         <Routes>
-          <Route element={<ProtectedRoute user={user} />}>
+          <Route element={<ProtectedRoute user={user} allowedRoles={['STUDENT', 'TUTOR']} />}>
             <Route path="/settings" element={ <Setting /> } />
             <Route path="/dashboard" element={ <TutorSearchPage /> } />
             <Route path="/library" element={ <LibraryPage /> } />
@@ -60,8 +68,12 @@ function App() {
             } />
 
             <Route path='/mytutors' element={ <TutorList />} />
-            <Route path='/admin' element={ <AdminDashboard /> }/>
-            {/* <Route path='/mymentees' element={ <StudentList />} /> */}
+          </Route>
+          <Route element={<ProtectedRoute user={user} allowedRoles={['ADMIN']} />}>
+            <Route path='/admin/overview' element={ <Overview/>} />
+            <Route path='/admin/users' element={<UserManagement />}/>
+            <Route path='admin/analytics' element={ <Analytics /> }/>
+            <Route path ='/admin/logs' element={<Logs/>} />
           </Route>
           <Route path='/login' element={ <Auth />} />
           <Route path='/register' element={ <Auth />} />

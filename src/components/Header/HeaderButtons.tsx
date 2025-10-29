@@ -12,10 +12,10 @@ const allNavLinks = [
   { path: '/mymentees', label: 'Các học sinh của tôi', requiredRoles: ['TUTOR'] }, // Specifically for TUTOR
   { path: '/dashboard', label: 'Bảng Điều Khiển', requiredRoles: ['STUDENT', 'TUTOR'] },
   { path: '/library', label: 'Thư Viện', requiredRoles: ['STUDENT', 'TUTOR'] },
-  { path: '/admin', label: 'Tổng Quan', requiredRoles: ['ADMIN'] },
-  { path: '/admin', label: 'Người Dùng', requiredRoles: ['ADMIN'] },
-  { path: '/admin', label: 'Phân Tích', requiredRoles: ['ADMIN'] },
-  { path: '/admin', label: 'Hoạt Động', requiredRoles: ['ADMIN'] }
+  { path: '/admin/overview', label: 'Tổng Quan', requiredRoles: ['ADMIN'] },
+  { path: '/admin/users', label: 'Người Dùng', requiredRoles: ['ADMIN'] },
+  { path: '/admin/analytics', label: 'Phân Tích', requiredRoles: ['ADMIN'] },
+  { path: '/admin/logs', label: 'Hoạt Động', requiredRoles: ['ADMIN'] }
 ]
 
 const HeaderButtons: React.FC = () => {
