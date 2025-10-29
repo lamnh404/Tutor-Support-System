@@ -57,44 +57,44 @@ function App() {
   return (
     <>
       <NotificationProvider>
-      <ScrollToTop />
-      <AnimationBackground />
-      {showHeader && <Header />}
-      <main className={showHeader ? 'mt-[71px]' : ''}>
-        <Routes>
-          <Route element={<ProtectedRoute user={user} allowedRoles={['STUDENT', 'TUTOR']} />}>
-            <Route path="/settings" element={ <Setting /> } />
-            <Route path="/dashboard" element={ <TutorSearchPage /> } />
-            <Route path="/library" element={ <LibraryPage /> } />
-            <Route path='/:id' element={ <Profile />} />
-            <Route path='/course/:id' element={
-              <ActiveTabContextProvider>
-                <TutorCommunityPlatform/>
-              </ActiveTabContextProvider>
-            } />
+        <ScrollToTop />
+        <AnimationBackground />
+        {showHeader && <Header />}
+        <main className={showHeader ? 'mt-[71px]' : ''}>
+          <Routes>
+            <Route element={<ProtectedRoute user={user} allowedRoles={['STUDENT', 'TUTOR']} />}>
+              <Route path="/settings" element={ <Setting /> } />
+              <Route path="/search" element={ <TutorSearchPage /> } />
+              <Route path="/library" element={ <LibraryPage /> } />
+              <Route path='/:id' element={ <Profile />} />
+              <Route path='/course/:id' element={
+                <ActiveTabContextProvider>
+                  <TutorCommunityPlatform/>
+                </ActiveTabContextProvider>
+              } />
 
               <Route path='/mytutors' element={ <TutorList />} />
               <Route path='/students' element={ <StudentSearchPage />} />
               <Route path='/student/:id' element={ <StudentProfile />} />
               {/* <Route path='/mymentees' element={ <StudentList />} /> */}
             </Route>
-          <Route element={<ProtectedRoute user={user} allowedRoles={['ADMIN']} />}>
-            <Route path='/admin/overview' element={ <Overview/>} />
-            <Route path='/admin/users' element={<UserManagement />}/>
-            <Route path='admin/analytics' element={ <Analytics /> }/>
-            <Route path ='/admin/logs' element={<Logs/>} />
-          </Route>
+            <Route element={<ProtectedRoute user={user} allowedRoles={['ADMIN']} />}>
+              <Route path='/admin/overview' element={ <Overview/>} />
+              <Route path='/admin/users' element={<UserManagement />}/>
+              <Route path='admin/analytics' element={ <Analytics /> }/>
+              <Route path ='/admin/logs' element={<Logs/>} />
+            </Route>
             <Route path='/tutordashboard' element={ <TutorDashboard />} />
-          <Route path='/login' element={ <Auth />} />
-          <Route path='/register' element={ <Auth />} />
-          <Route path="/" element={ <Home />} />
-          <Route path="/404" element={ <NotFound />} />
-          <Route path="*" element={ <Navigate to="/404" replace/> }/>
-        </Routes>
-      </main>
-      <ToastContainer position="top-right" autoClose={3000} />
+            <Route path='/login' element={ <Auth />} />
+            <Route path='/register' element={ <Auth />} />
+            <Route path="/" element={ <Home />} />
+            <Route path="/404" element={ <NotFound />} />
+            <Route path="*" element={ <Navigate to="/404" replace/> }/>
+          </Routes>
+        </main>
+        <ToastContainer position="top-right" autoClose={3000} />
         <NotificationDemo />
-      <BackToTop />
+        <BackToTop />
       </NotificationProvider>
     </>
   )
