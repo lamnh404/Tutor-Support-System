@@ -4,7 +4,6 @@ import TutorListCard from './TutorListCard'
 import { Link } from 'react-router-dom'
 import { Button } from 'antd'
 import MyCalendar from './MyCalendar'
-import { myCalendarEvents } from './MyCalendarData'
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
 import { userContext } from '~/context/User/userContext'
 import TutorDashboard from '~/pages/TutorDashboard/TutorDashboard'
@@ -28,7 +27,6 @@ const Dashboard: React.FC = () => {
 
   const [viewMode, setViewMode] = useState<ViewMode>(getInitialView())
   const [currentPage, setCurrentPage] = useState(1)
-  const [currentDate, setCurrentDate] = useState(new Date())
 
   const ITEMS_PER_PAGE = 12
 
@@ -45,18 +43,6 @@ const Dashboard: React.FC = () => {
   const handleNextTutorPage = () => {
     setCurrentPage(prev => Math.min(totalTutorPages, prev + 1))
   }
-
-  const currentMonth = currentDate.getMonth()
-  const currentYear = currentDate.getFullYear()
-
-  const handlePrevMonth = () => {
-    setCurrentDate(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1))
-  }
-  const handleNextMonth = () => {
-    setCurrentDate(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1))
-  }
-
-  const monthYearDisplay = currentDate.toLocaleString('vi-VN', { month: 'long', year: 'numeric' })
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -150,28 +136,7 @@ const Dashboard: React.FC = () => {
             )}
 
             {viewMode === 'calendar' && canSeeCalendar && (
-              <div className="bg-white p-6 rounded-xl shadow-md border border-gray-300">
-                <div className="flex justify-between items-center mb-4 px-2">
-                  <h2 className="text-xl font-bold text-gray-800">{monthYearDisplay}</h2>
-                </div>
-                <MyCalendar
-                  events={myCalendarEvents}
-                  year={currentYear}
-                  month={currentMonth}
-                />
-                <div className="flex justify-end items-center gap-2 mt-4">
-                  <Button
-                    icon={<LeftOutlined />}
-                    onClick={handlePrevMonth}
-                    aria-label="Tháng trước"
-                  />
-                  <Button
-                    icon={<RightOutlined />}
-                    onClick={handleNextMonth}
-                    aria-label="Tháng sau"
-                  />
-                </div>
-              </div>
+              <MyCalendar />
             )}
           </div>
         </div>
