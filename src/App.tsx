@@ -29,6 +29,7 @@ import UserManagement from '~/pages/admin/UserManagement.tsx'
 import Analytics from '~/pages/admin/Analytics.tsx'
 import Logs from '~/pages/admin/Logs.tsx'
 import Dashboard from '~/pages/TutorList/Dashboard.tsx'
+import MyProfile from '~/pages/MyProfile/MyProfile.tsx'
 interface ProtectedRouteProps {
   user: User | null
   allowedRoles?: string[]
@@ -63,6 +64,7 @@ function App() {
           <Routes>
             <Route element={<ProtectedRoute user={user} />}>
               <Route path="/settings" element={ <Setting /> } />
+              <Route path="/my-profile" element={ <MyProfile /> } />
             </Route>
             <Route element={<ProtectedRoute user={user} allowedRoles={['STUDENT', 'TUTOR']} />}>
               <Route path="/search" element={ <TutorSearchPage /> } />
