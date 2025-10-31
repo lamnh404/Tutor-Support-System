@@ -28,7 +28,7 @@ export const initialProfile: Tutor[] = [
     rating_avg: 4.9,
     currMentee: 5,
     maxMentee: 6,
-    avatarUrl: 'https://thichtrangtri.com/wp-content/uploads/2025/04/hinh-nen-hieuthuhai-1.jpg',
+    avatarUrl: 'https://cdnphoto.dantri.com.vn/m-T7tMuWTDyJb-S-X2C0mg==/zoom/1200_630/2024/03/17/hieuthuhai-crop-1710669668729.jpeg',
     description: 'Giảng viên múa lửa, có hơn 10 năm kinh nghiệm biểu diễn và giảng dạy nghệ thuật múa lửa.'
   }
 ]

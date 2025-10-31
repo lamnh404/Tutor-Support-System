@@ -121,12 +121,6 @@ const StudentCard: React.FC<StudentCardProps> = ({ student }) => {
         </div>
 
         <div className="flex flex-col space-y-3 w-full">
-          <button
-            className="w-full bg-green-500 cursor-pointer text-white font-semibold py-3 px-4 rounded-lg hover:bg-green-600 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
-            disabled={!student.isActive}
-          >
-            {student.isActive ? 'Gửi lời mời dạy' : 'Không hoạt động'}
-          </button>
           <Link
             to={`/student/${student.id}`}
             className="w-full text-center bg-white cursor-pointer text-gray-700 font-semibold py-3 px-4 rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors shadow-sm"

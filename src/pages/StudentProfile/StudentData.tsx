@@ -123,7 +123,7 @@ export const initialStudents: Student[] = [
     firstName: 'Hương',
     lastName: 'Phạm Thị',
     username: 'phamthihuong',
-    avatarUrl: 'https://images.unsplash.com/photo-1494790108755-2616b612b388?w=400&h=400&fit=crop&crop=face',
+    avatarUrl: 'https://i.pravatar.cc/400?img=5',
     studentId: '2152045',
     department: 'EE',
     year: 2,
