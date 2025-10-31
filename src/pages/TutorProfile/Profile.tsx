@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { useParams, Navigate, useNavigate } from 'react-router-dom'
 import { initialProfile, skillTranslations } from '~/pages/TutorProfile/ProfileData.tsx'
 import { type Tutor } from '~/pages/TutorSearch/TutorData.tsx'
 import { mockReviews, type Review } from '~/components/Review/mockReviews.tsx'
+import { userContext } from '~/context/User/userContext.tsx'
 import {
   StarFilled,
   CheckCircleFilled,
@@ -25,12 +26,15 @@ const Profile: React.FC = () => {
   const [activeTab, setActiveTab] = useState('about')
   const [isFavorite, setIsFavorite] = useState(false)
   const navigate = useNavigate()
+  const { user } = useContext(userContext)
 
   const userProfile: Tutor | undefined = initialProfile.find(profile => profile.id === id)
 
   if (!userProfile) {
     return <Navigate to='/404' replace/>
   }
+
+  const isTutor = user?.roles.includes('TUTOR')
 
   const availabilityPercentage = ((userProfile.maxMentee - userProfile.currMentee) / userProfile.maxMentee) * 100
   const isHighDemand = userProfile.currMentee / userProfile.maxMentee > 0.7
@@ -239,23 +243,25 @@ const Profile: React.FC = () => {
                 </div>
               </div>
 
-              <div className="mt-4 flex flex-col gap-2 w-full">
-                <Button
-                  type="primary"
-                  size="large"
-                  icon={<MessageOutlined />}
-                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 border-0"
-                >
-                  Gởi tin nhắn
-                </Button>
-                <Button
-                  size="large"
-                  icon={<CalendarOutlined />}
-                  className="w-full border-2 border-blue-500 text-blue-600 hover:bg-blue-50"
-                >
-                  Đặt lịch học
-                </Button>
-              </div>
+              {!isTutor && (
+                <div className="mt-4 flex flex-col gap-2 w-full">
+                  <Button
+                    type="primary"
+                    size="large"
+                    icon={<MessageOutlined />}
+                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 border-0"
+                  >
+                    Gởi tin nhắn
+                  </Button>
+                  <Button
+                    size="large"
+                    icon={<CalendarOutlined />}
+                    className="w-full border-2 border-blue-500 text-blue-600 hover:bg-blue-50"
+                  >
+                    Đặt lịch học
+                  </Button>
+                </div>
+              )}
             </div>
 
             {/* Info Section */}

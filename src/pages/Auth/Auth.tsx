@@ -13,7 +13,7 @@ function Auth() {
   const navigate = useNavigate()
   useEffect(() => {
     if (user) {
-      navigate('/dashboard', { replace: true })
+      navigate('/', { replace: true })
     }
   }, [navigate, user])
   return (

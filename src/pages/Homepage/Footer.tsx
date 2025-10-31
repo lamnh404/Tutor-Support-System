@@ -3,11 +3,21 @@ import { userContext } from '~/context/User/userContext.tsx'
 
 const Footer: React.FC = () => {
   const { login } = useContext(userContext)
-  const mockUser = {
+  const mockUser1 = {
     id: 'mock-user-123',
     name: 'Test User',
     email: 'messi10@hcmut.edu.vn',
     roles: ['STUDENT', 'TUTOR'],
+    avatarUrl: 'https://hips.hearstapps.com/hmg-prod/images/cristiano-ronaldo-of-portugal-during-the-uefa-nations-news-photo-1748359673.pjpeg',
+    username: 'testuser',
+    firstName: 'Ronaldo',
+    lastName: 'User'
+  }
+  const mockUser2 = {
+    id: 'mock-user-123',
+    name: 'Test User',
+    email: 'messi10@hcmut.edu.vn',
+    roles: ['ADMIN'],
     avatarUrl: 'https://hips.hearstapps.com/hmg-prod/images/cristiano-ronaldo-of-portugal-during-the-uefa-nations-news-photo-1748359673.pjpeg',
     username: 'testuser',
     firstName: 'Ronaldo',
@@ -34,10 +44,18 @@ const Footer: React.FC = () => {
             <li><a href="/library" className="hover:underline">Thư viện</a></li>
             <li>
               <button
-                onClick={() => login(mockUser)}
+                onClick={() => login(mockUser1)}
                 className="hover:underline text-left bg-transparent border-none p-0 cursor-pointer text-gray-300 text-sm"
               >
                 Hỗ trợ
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => login(mockUser2)}
+                className="hover:underline text-left bg-transparent border-none p-0 cursor-pointer text-gray-300 text-sm"
+              >
+                Hỗ trợ (Admin)
               </button>
             </li>
           </ul>

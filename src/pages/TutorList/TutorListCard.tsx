@@ -12,7 +12,11 @@ const TutorListCard: React.FC<TutorListCardProps> = ({ tutor }) => {
     'from-pink-300 via-purple-300 to-indigo-400',
     'from-green-300 via-blue-400 to-purple-500',
     'from-yellow-300 via-red-400 to-pink-500',
-    'from-teal-300 via-cyan-400 to-blue-500'
+    'from-teal-300 via-cyan-400 to-blue-500',
+    'from-green-200 via-lime-300 to-yellow-400',
+    'from-purple-200 via-pink-300 to-red-400',
+    'from-gray-300 via-gray-400 to-gray-500',
+    'from-indigo-300 via-purple-400 to-pink-500'
   ]
   const gradientClass = gradients[parseInt(tutor.id, 10) % gradients.length] || gradients[0]
 
@@ -29,7 +33,7 @@ const TutorListCard: React.FC<TutorListCardProps> = ({ tutor }) => {
           <img
             src={tutor.avatarUrl}
             alt={`${tutor.lastName} ${tutor.firstName}`}
-            className="w-16 h-16 rounded-full object-cover border-4 border-white shadow-md mr-3"
+            className="w-16 h-16 rounded-full object-cover border-3 border-blue-300 shadow-md mr-3"
           />
           <p className="text-xl font-bold text-gray-700 line-clamp-1">
             {tutor.lastName} {tutor.firstName}
