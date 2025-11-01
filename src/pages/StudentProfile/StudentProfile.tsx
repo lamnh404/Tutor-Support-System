@@ -1,42 +1,42 @@
-import React, { useState } from 'react'
-import { useParams, Navigate, useNavigate } from 'react-router-dom'
+import React, { useState, useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { userContext } from '~/context/User/userContext'
 import { initialStudents, type Student } from '~/pages/StudentProfile/StudentData'
 import {
-  StarFilled,
-  CheckCircleFilled,
+  UserOutlined,
+  MailOutlined,
+  PhoneOutlined,
   BookOutlined,
-  TeamOutlined,
+  EditOutlined,
+  SaveOutlined,
+  CloseOutlined,
+  CameraOutlined,
   TrophyOutlined,
-  MessageOutlined,
-  CalendarOutlined,
-  GlobalOutlined,
-  ClockCircleOutlined,
-  FireTwoTone,
-  HeartOutlined,
-  HeartFilled,
-  ShareAltOutlined,
-  MoreOutlined
+  CheckCircleFilled,
+  GlobalOutlined
 } from '@ant-design/icons'
-import { Card, Avatar, Button, Tag, Progress, Tabs, Rate, Divider, Tooltip, Badge, message, type TabsProps } from 'antd'
+import { Card, Avatar, Button, Tag, Input, Select, message, Divider, Upload, type UploadProps } from 'antd'
 import { DEPARTMENTS } from '~/pages/TutorSearch/TutorDefinitions'
 
+const { TextArea } = Input
+const { Option } = Select
+
 const StudentProfile: React.FC = () => {
-  const { id } = useParams()
-  const [activeTab, setActiveTab] = useState('about')
-  const [isFavorite, setIsFavorite] = useState(false)
+  const { user } = useContext(userContext)
   const navigate = useNavigate()
 
-  const studentProfile: Student | undefined = initialStudents.find(student => student.id === id)
+  // Mock data - In real app, fetch based on user.email
+  const [studentData, setStudentData] = useState<Student>(
+    initialStudents.find(s => s.id === 'student2') || initialStudents[0]
+  )
 
-  if (!studentProfile) {
-    return <Navigate to='/404' replace/>
+  const [isEditing, setIsEditing] = useState(false)
+  const [editedData, setEditedData] = useState<Student>(studentData)
+
+  if (!user) {
+    navigate('/login')
+    return null
   }
-
-  const progressPercentage = Math.min((studentProfile.completedCourses / 50) * 100, 100)
-  const isNearGraduation = studentProfile.year >= 4
-  const averageRating = studentProfile.tutorHistory.length > 0 
-    ? studentProfile.tutorHistory.reduce((sum, history) => sum + history.rating, 0) / studentProfile.tutorHistory.length 
-    : 0
 
   const getDepartmentName = (code: string) => {
     const dept = DEPARTMENTS.find(d => d.code === code)
@@ -44,432 +44,444 @@ const StudentProfile: React.FC = () => {
   }
 
   const getYearText = (year: number) => {
-    switch(year) {
-      case 1: return 'Năm thứ nhất'
-      case 2: return 'Năm thứ hai' 
-      case 3: return 'Năm thứ ba'
-      case 4: return 'Năm thứ tư'
-      default: return `Năm thứ ${year}`
+    switch (year) {
+    case 1: return 'Năm 1'
+    case 2: return 'Năm 2'
+    case 3: return 'Năm 3'
+    case 4: return 'Năm 4'
+    default: return `Năm ${year}`
     }
   }
 
   const getGPAColor = (gpa: number) => {
-    if (gpa >= 3.6) return { text: 'Xuất sắc', color: 'gold' }
-    if (gpa >= 3.2) return { text: 'Giỏi', color: 'green' }
-    if (gpa >= 2.5) return { text: 'Khá', color: 'blue' }
-    return { text: 'Trung bình', color: 'orange' }
+    if (gpa >= 3.6) return { text: 'Xuất sắc', color: '#fadb14', bg: 'bg-yellow-50' }
+    if (gpa >= 3.2) return { text: 'Giỏi', color: '#52c41a', bg: 'bg-green-50' }
+    if (gpa >= 2.5) return { text: 'Khá', color: '#1890ff', bg: 'bg-blue-50' }
+    return { text: 'Trung bình', color: '#fa8c16', bg: 'bg-orange-50' }
   }
 
-  const { text: gpaText, color: gpaColor } = getGPAColor(studentProfile.gpa)
+  const { text: gpaText, color: gpaColor, bg: gpaBg } = getGPAColor(studentData.gpa)
 
-  const ratingDistribution = {
-    5: 0,
-    4: 0,
-    3: 0,
-    2: 0,
-    1: 0
+  const handleSave = () => {
+    // In real app, call API to save
+    setStudentData(editedData)
+    setIsEditing(false)
+    message.success('Cập nhật thông tin thành công!')
   }
-  
-  studentProfile.tutorHistory.forEach(history => {
-    const rating = Math.floor(history.rating)
-    if (rating >= 1 && rating <= 5) {
-      ratingDistribution[rating as keyof typeof ratingDistribution]++
+
+  const handleCancel = () => {
+    setEditedData(studentData)
+    setIsEditing(false)
+  }
+
+  const uploadProps: UploadProps = {
+    name: 'avatar',
+    showUploadList: false,
+    beforeUpload: (file) => {
+      const isImage = file.type.startsWith('image/')
+      if (!isImage) {
+        message.error('Bạn chỉ có thể tải lên file ảnh!')
+        return false
+      }
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!isLt2M) {
+        message.error('Ảnh phải nhỏ hơn 2MB!')
+        return false
+      }
+
+      // In real app, upload to server
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setEditedData({ ...editedData, avatarUrl: e.target?.result as string })
+      }
+      reader.readAsDataURL(file)
+      return false
     }
-  })
-
-  const totalReviews = studentProfile.tutorHistory.length
-  const ratingPercentages = {
-    5: totalReviews > 0 ? (ratingDistribution[5] / totalReviews) * 100 : 0,
-    4: totalReviews > 0 ? (ratingDistribution[4] / totalReviews) * 100 : 0,
-    3: totalReviews > 0 ? (ratingDistribution[3] / totalReviews) * 100 : 0,
-    2: totalReviews > 0 ? (ratingDistribution[2] / totalReviews) * 100 : 0,
-    1: totalReviews > 0 ? (ratingDistribution[1] / totalReviews) * 100 : 0
   }
-
-  const tabItems: TabsProps['items'] = [
-    {
-      key: 'about',
-      label: <span className="flex items-center gap-2"><BookOutlined /> About</span>,
-      children: (
-        <div className="prose max-w-none">
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-xl mb-6">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              👋 Giới thiệu
-            </h3>
-            <p className="text-gray-700 leading-relaxed mb-4 text-base">
-              Xin chào! Mình là {studentProfile.firstName}, hiện đang là sinh viên năm {studentProfile.year} 
-              ngành {getDepartmentName(studentProfile.department)} tại trường Đại học Bách Khoa TP.HCM. 
-              Mình đang tìm kiếm gia sư để nâng cao kiến thức và kỹ năng trong lĩnh vực học tập.
-            </p>
-            <p className="text-gray-700 leading-relaxed text-base">
-              Với GPA hiện tại là {studentProfile.gpa}/4.0, mình mong muốn học hỏi thêm để đạt được 
-              các mục tiêu học tập và phát triển bản thân tốt hơn. Mình học tập nghiêm túc và luôn 
-              sẵn sàng đón nhận những thử thách mới.
-            </p>
-          </div>
-
-          <Divider />
-
-          <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            💡 Mục tiêu học tập
-          </h3>
-          <div className="grid md:grid-cols-2 gap-4">
-            {studentProfile.learningGoals.map((goal, index) => (
-              <div key={index} className="flex items-start gap-3 p-4 bg-white rounded-lg border-2 border-gray-100 hover:border-blue-200 hover:shadow-md transition-all">
-                <span className="text-2xl">🎯</span>
-                <span className="text-gray-700 flex-1">{goal}</span>
-              </div>
-            ))}
-          </div>
-
-          <Divider />
-
-          <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            🏆 Thành tích
-          </h3>
-          <div className="grid md:grid-cols-2 gap-4">
-            {studentProfile.achievements.map((achievement, index) => (
-              <div key={index} className="flex items-start gap-3 p-4 bg-white rounded-lg border-2 border-gray-100 hover:border-blue-200 hover:shadow-md transition-all">
-                <span className="text-2xl">⭐</span>
-                <span className="text-gray-700 flex-1">{achievement}</span>
-              </div>
-            ))}
-          </div>
-
-          <Divider />
-
-          <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            📚 Môn học cần hỗ trợ
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {studentProfile.needHelpWith.map((subject, index) => (
-              <div 
-                key={index} 
-                className="relative p-6 bg-gradient-to-br from-red-50 via-orange-50 to-pink-50 rounded-xl border-2 border-red-200 hover:border-red-400 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group cursor-pointer"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-red-500 to-pink-500 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    📖
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-gray-800 font-bold text-lg leading-tight">{subject}</p>
-                    <p className="text-xs text-red-600 mt-1 font-semibold">Cần tìm gia sư</p>
-                  </div>
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-br from-red-400/10 to-pink-400/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </div>
-            ))}
-          </div>
-
-          <Divider />
-
-          <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            📖 Các môn học hiện tại
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {studentProfile.currentCourses.map((course, index) => (
-              <div 
-                key={index} 
-                className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-100 hover:border-blue-300 hover:shadow-md transition-all"
-              >
-                <BookOutlined className="text-blue-500 text-xl flex-shrink-0" />
-                <span className="font-medium text-gray-800">{course}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )
-    },
-    {
-      key: 'reviews',
-      label: <span className="flex items-center gap-2"><StarFilled />Đánh giá ({studentProfile.tutorHistory.length})</span>,
-      children: (
-        <>
-          <div className="mb-6">
-            {studentProfile.tutorHistory.length > 0 && (
-              <div className="bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 p-6 rounded-xl mb-6">
-                <div className="flex flex-col md:flex-row gap-8 items-center">
-                  <div className="text-center">
-                    <div className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-orange-600">
-                      {averageRating.toFixed(1)}
-                    </div>
-                    <Rate disabled defaultValue={averageRating} allowHalf className="text-3xl my-2" />
-                    <p className="text-gray-600 font-medium">Dựa trên {studentProfile.tutorHistory.length} đánh giá</p>
-                  </div>
-
-                  <div className="flex-1 w-full">
-                    {[5, 4, 3, 2, 1].map((star) => (
-                      <div key={star} className="flex items-center gap-3 mb-2">
-                        <span className="text-sm font-medium text-gray-700 w-16">{star} sao</span>
-                        <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full transition-all duration-500"
-                            style={{ width: `${ratingPercentages[star as keyof typeof ratingPercentages]}%` }}
-                          ></div>
-                        </div>
-                        <span className="text-sm text-gray-600 w-12 text-right">
-                          {ratingPercentages[star as keyof typeof ratingPercentages].toFixed(0)}%
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="space-y-4">
-            {studentProfile.tutorHistory.length > 0 ? (
-              studentProfile.tutorHistory.map((history, index) => (
-                <Card
-                  key={index}
-                  className="hover:shadow-xl transition-all duration-300 border-2 border-gray-100 hover:border-blue-200"
-                >
-                  <div className="flex gap-4">
-                    <Avatar
-                      size={56}
-                      className="bg-gradient-to-br from-blue-500 to-purple-500 flex-shrink-0 text-white font-bold"
-                    >
-                      {history.tutorName.charAt(0).toUpperCase()}
-                    </Avatar>
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between mb-3">
-                        <div>
-                          <h4 className="font-bold text-gray-900 text-lg">{history.tutorName}</h4>
-                          <p className="text-sm text-gray-500 flex items-center gap-2">
-                            <BookOutlined />
-                            Môn học: {history.subject}
-                          </p>
-                          <p className="text-sm text-gray-500 flex items-center gap-2">
-                            <ClockCircleOutlined />
-                            {history.date}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <Rate disabled defaultValue={history.rating} className="text-base" />
-                        </div>
-                      </div>
-                      <p className="text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-lg border-l-4 border-blue-400">
-                        "{history.comment}"
-                      </p>
-                    </div>
-                  </div>
-                </Card>
-              ))
-            ) : (
-              <div className="text-center py-16">
-                <BookOutlined className="text-6xl text-gray-300 mb-4" />
-                <h3 className="text-xl font-semibold text-gray-500 mb-2">Chưa có đánh giá</h3>
-                <p className="text-gray-400">Hãy bắt đầu tìm gia sư để học tập nhé!</p>
-              </div>
-            )}
-          </div>
-        </>
-      )
-    }
-  ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8 px-4">
       <div className="max-w-7xl mx-auto">
-        {/* Top Action Bar */}
-        <div className="flex justify-between items-center mb-4">
-          <Button
-            type="primary"
-            onClick={() => {
-              window.scrollTo({ top: 0, behavior: 'smooth' })
-              navigate('/dashboard')
-            }}
-            className="text-gray-600 hover:text-gray-900"
-          >
-            ← Quay lại
-          </Button>
-          <div className="flex gap-2">
-            <Tooltip title={isFavorite ? 'Loại bỏ khỏi mục yêu thích' : 'Thêm vào mục yêu thích'}>
-              <Button
-                shape="circle"
-                icon={isFavorite ? <HeartFilled className="text-red-500" /> : <HeartOutlined />}
-                onClick={() => setIsFavorite(!isFavorite)}
-              />
-            </Tooltip>
-            <Tooltip title="Chia sẻ profile">
-              <Button
-                shape="circle"
-                icon={<ShareAltOutlined />}
-                onClick={async () => {
-                  try {
-                    await navigator.clipboard.writeText(window.location.href)
-                    message.success('Đã sao chép link!')
-                  } catch (error) {
-                    message.error('Không thể sao chép link.')
-                  }
-                }}
-              />
-            </Tooltip>
-            <Button shape="circle" icon={<MoreOutlined />} />
+        {/* Header Actions - Sticky */}
+        <div className="sticky top-20 z-40 bg-white/80 backdrop-blur-md shadow-sm rounded-2xl px-6 py-4 mb-6 flex justify-between items-center">
+          <div>
+            <Button
+              type="text"
+              onClick={() => navigate(-1)}
+              className="text-gray-600 hover:text-gray-900 font-medium"
+              size="large"
+            >
+              ← Quay lại
+            </Button>
           </div>
+          {!isEditing ? (
+            <Button
+              type="primary"
+              icon={<EditOutlined />}
+              onClick={() => setIsEditing(true)}
+              size="large"
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border-0 shadow-lg"
+            >
+              Chỉnh sửa hồ sơ
+            </Button>
+          ) : (
+            <div className="flex gap-3">
+              <Button
+                icon={<CloseOutlined />}
+                onClick={handleCancel}
+                size="large"
+                className="hover:bg-gray-100"
+              >
+                Hủy
+              </Button>
+              <Button
+                type="primary"
+                icon={<SaveOutlined />}
+                onClick={handleSave}
+                size="large"
+                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 border-0 shadow-lg"
+              >
+                Lưu thay đổi
+              </Button>
+            </div>
+          )}
         </div>
 
-        {/* Header Card */}
-        <Card className="mb-6 shadow-2xl rounded-2xl overflow-hidden border-0 bg-white/80 backdrop-blur-sm">
-          {/* Banner Background */}
-          <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-10"></div>
+        <div className="grid lg:grid-cols-12 gap-6">
+          {/* Left Column - Profile Card */}
+          <div className="lg:col-span-4">
+            <Card className="shadow-2xl rounded-3xl overflow-hidden border-0">
+              {/* Gradient Banner */}
+              <div className="h-24 bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 relative">
+                <div className="absolute inset-0 bg-black/10"></div>
+              </div>
 
-          <div className="relative flex flex-col md:flex-row gap-6 pt-4">
-            <div className="flex flex-col items-center md:items-start z-10">
-              <Badge.Ribbon text={gpaText} color={gpaColor}>
-                <Avatar
-                  size={180}
-                  src={studentProfile.avatarUrl}
-                  className="border-4 border-white shadow-xl"
-                />
-              </Badge.Ribbon>
-
-              {/* Quick Stats Under Avatar */}
-              <div className="mt-4 bg-gradient-to-br from-blue-50 to-purple-50 p-4 rounded-xl w-full">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                    {averageRating > 0 ? averageRating.toFixed(1) : 'N/A'}
-                  </div>
-                  {averageRating > 0 && <Rate disabled defaultValue={averageRating} allowHalf className="text-sm" />}
-                  <div className="text-xs text-gray-600 mt-1">
-                    {studentProfile.tutorHistory.length} đánh giá từ gia sư
+              {/* Avatar */}
+              <div className="relative -mt-12 mb-3">
+                <div className="flex justify-center">
+                  <div className="relative group">
+                    <Avatar
+                      size={100}
+                      src={isEditing ? editedData.avatarUrl : studentData.avatarUrl}
+                      className="border-4 border-white shadow-2xl ring-2 ring-blue-100"
+                    />
+                    {isEditing && (
+                      <Upload {...uploadProps}>
+                        <div className="absolute inset-0 bg-black bg-opacity-60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer">
+                          <CameraOutlined className="text-white text-2xl" />
+                        </div>
+                      </Upload>
+                    )}
                   </div>
                 </div>
               </div>
 
-              <div className="mt-4 flex flex-col gap-2 w-full">
-                <Button
-                  type="primary"
-                  size="large"
-                  icon={<MessageOutlined />}
-                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 border-0"
-                >
-                  Gửi tin nhắn
-                </Button>
-                <Button
-                  size="large"
-                  icon={<CalendarOutlined />}
-                  className="w-full border-2 border-blue-500 text-blue-600 hover:bg-blue-50"
-                >
-                  Đặt lịch dạy
-                </Button>
-              </div>
-            </div>
-
-            {/* Info Section */}
-            <div className="flex-1 z-10">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h1 className="text-4xl font-bold text-gray-900">
-                      {studentProfile.lastName} {studentProfile.firstName}
+              {/* Name */}
+              <div className="text-center px-4 mb-3">
+                {isEditing ? (
+                  <div className="space-y-2">
+                    <Input
+                      prefix={<UserOutlined />}
+                      placeholder="Họ"
+                      value={editedData.lastName}
+                      onChange={(e) => setEditedData({ ...editedData, lastName: e.target.value })}
+                    />
+                    <Input
+                      prefix={<UserOutlined />}
+                      placeholder="Tên"
+                      value={editedData.firstName}
+                      onChange={(e) => setEditedData({ ...editedData, firstName: e.target.value })}
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <h1 className="text-xl font-bold text-gray-900 mb-2">
+                      {studentData.lastName} {studentData.firstName}
                     </h1>
-                    {isNearGraduation && (
-                      <Tooltip title="Sắp tốt nghiệp!">
-                        <Badge count={<FireTwoTone twoToneColor="#52c41a" />} />
-                      </Tooltip>
-                    )}
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-3 mb-3">
-                    <Tag icon={<CheckCircleFilled />} color="blue" className="px-3 py-1">
-                      Sinh viên đã xác minh
+                    <Tag icon={<CheckCircleFilled />} color="blue" className="text-xs">
+                      Đã xác thực
                     </Tag>
-                    {studentProfile.isActive && (
-                      <Tag color="green" className="px-3 py-1">
-                        Đang hoạt động
-                      </Tag>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-2 mb-2 text-gray-700">
-                    <BookOutlined />
-                    <span className="font-medium">{getDepartmentName(studentProfile.department)} - {getYearText(studentProfile.year)}</span>
-                  </div>
-
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <GlobalOutlined />
-                    <span>MSSV: {studentProfile.studentId}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <TrophyOutlined className="text-blue-500 text-xl" />
-                    <span className="text-2xl font-bold text-gray-800">{studentProfile.gpa}</span>
-                  </div>
-                  <p className="text-xs text-gray-600">GPA hiện tại</p>
-                </div>
-
-                <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-4 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <BookOutlined className="text-green-500 text-xl" />
-                    <span className="text-2xl font-bold text-gray-800">{studentProfile.completedCourses}</span>
-                  </div>
-                  <p className="text-xs text-gray-600">Khóa học hoàn thành</p>
-                </div>
-
-                <div className="bg-gradient-to-br from-purple-50 to-pink-100 p-4 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <TeamOutlined className="text-purple-500 text-xl" />
-                    <span className="text-2xl font-bold text-gray-800">{studentProfile.currentCourses.length}</span>
-                  </div>
-                  <p className="text-xs text-gray-600">Môn đang học</p>
-                </div>
-
-                <div className="bg-gradient-to-br from-orange-50 to-yellow-100 p-4 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <ClockCircleOutlined className="text-orange-500 text-xl" />
-                    <span className="text-2xl font-bold text-gray-800">{studentProfile.totalHoursLearned}</span>
-                  </div>
-                  <p className="text-xs text-gray-600">Giờ học</p>
-                </div>
-              </div>
-
-              {/* Study Progress (like Availability in TutorProfile) */}
-              <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-5 rounded-xl border-2 border-gray-200">
-                <div className="flex justify-between items-center mb-3">
-                  <div className="flex items-center gap-2">
-                    <ClockCircleOutlined className="text-lg text-blue-600" />
-                    <span className="text-sm font-semibold text-gray-700">Tiến độ học tập</span>
-                  </div>
-                  <span className="text-sm font-bold text-gray-800">
-                    {studentProfile.completedCourses} khóa học
-                  </span>
-                </div>
-                <Progress
-                  percent={progressPercentage}
-                  strokeColor={{
-                    '0%': progressPercentage > 80 ? '#52c41a' : progressPercentage > 60 ? '#1890ff' : progressPercentage > 40 ? '#faad14' : '#f5222d',
-                    '100%': progressPercentage > 80 ? '#95de64' : progressPercentage > 60 ? '#40a9ff' : progressPercentage > 40 ? '#ffc53d' : '#ff7875'
-                  }}
-                  showInfo={false}
-                  className="mb-2"
-                />
-                {isNearGraduation && (
-                  <div className="flex items-center gap-2 text-xs text-green-600 font-medium mt-2">
-                    <TrophyOutlined />
-                    <span>Sắp tốt nghiệp</span>
-                  </div>
+                  </>
                 )}
               </div>
-            </div>
-          </div>
-        </Card>
 
-        {/* Tabs Section */}
-        <Card className="shadow-2xl rounded-2xl border-0 bg-white/80 backdrop-blur-sm">
-          <Tabs
-            activeKey={activeTab}
-            onChange={setActiveTab}
-            size="large"
-            items={tabItems}
-            className="student-profile-tabs"
-          />
-        </Card>
+              <Divider className="my-2" />
+
+              {/* Stats Grid */}
+              <div className="px-4 pb-3">
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  <div className="text-center bg-gradient-to-br from-blue-50 to-blue-100 p-2.5 rounded-xl">
+                    <div className="text-lg font-bold text-blue-600">
+                      {studentData.completedCourses}
+                    </div>
+                    <div className="text-xs text-gray-600">Môn học</div>
+                  </div>
+                  <div className="text-center bg-gradient-to-br from-purple-50 to-purple-100 p-2.5 rounded-xl">
+                    <div className="text-lg font-bold text-purple-600">
+                      {studentData.totalHoursLearned}h
+                    </div>
+                    <div className="text-xs text-gray-600">Giờ học</div>
+                  </div>
+                  <div className={`text-center p-2.5 rounded-xl ${gpaBg}`}>
+                    <div className="text-lg font-bold" style={{ color: gpaColor }}>
+                      {studentData.gpa.toFixed(2)}
+                    </div>
+                    <div className="text-xs font-semibold" style={{ color: gpaColor }}>
+                      {gpaText}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Info Details - Compact */}
+                <div className="space-y-2.5">
+                  <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-lg">
+                    <BookOutlined className="text-blue-500" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500">Khoa</p>
+                      {isEditing ? (
+                        <Select
+                          value={editedData.department}
+                          onChange={(value) => setEditedData({ ...editedData, department: value })}
+                          className="w-full"
+                          size="small"
+                        >
+                          {DEPARTMENTS.map(dept => (
+                            <Option key={dept.code} value={dept.code}>{dept.name}</Option>
+                          ))}
+                        </Select>
+                      ) : (
+                        <p className="font-semibold text-gray-800 text-sm truncate">{getDepartmentName(studentData.department)}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-lg">
+                    <TrophyOutlined className="text-purple-500" />
+                    <div className="flex-1">
+                      <p className="text-xs text-gray-500">Năm học</p>
+                      {isEditing ? (
+                        <Select
+                          value={editedData.year}
+                          onChange={(value) => setEditedData({ ...editedData, year: value })}
+                          className="w-full"
+                          size="small"
+                        >
+                          {[1, 2, 3, 4].map(year => (
+                            <Option key={year} value={year}>{getYearText(year)}</Option>
+                          ))}
+                        </Select>
+                      ) : (
+                        <p className="font-semibold text-gray-800 text-sm">{getYearText(studentData.year)}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-lg">
+                    <GlobalOutlined className="text-green-500" />
+                    <div className="flex-1">
+                      <p className="text-xs text-gray-500">MSSV</p>
+                      <p className="font-mono font-semibold text-gray-800 text-sm">{studentData.studentId}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Right Column - Content Cards */}
+          <div className="lg:col-span-8 space-y-6">
+            {/* About Me / Introduction */}
+            <Card
+              title={
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
+                    <UserOutlined className="text-indigo-600 text-xl" />
+                  </div>
+                  <span className="text-lg font-bold">Giới thiệu bản thân</span>
+                </div>
+              }
+              className="shadow-xl rounded-3xl border-0"
+            >
+              {isEditing ? (
+                <TextArea
+                  rows={6}
+                  placeholder="Viết vài dòng giới thiệu về bản thân bạn..."
+                  className="text-base"
+                  defaultValue={`Xin chào! Mình là ${studentData.firstName}, sinh viên năm ${studentData.year} khoa ${getDepartmentName(studentData.department)}. Mình đang tìm kiếm cơ hội học hỏi và phát triển kỹ năng trong các môn học chuyên ngành.`}
+                />
+              ) : (
+                <div className="p-4 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl border-l-4 border-indigo-500">
+                  <p className="text-gray-700 leading-relaxed text-base">
+                    Xin chào! Mình là <span className="font-bold text-indigo-600">{studentData.firstName}</span>,
+                    sinh viên năm {studentData.year} khoa <span className="font-bold text-indigo-600">{getDepartmentName(studentData.department)}</span>.
+                    Mình đang tìm kiếm cơ hội học hỏi và phát triển kỹ năng trong các môn học chuyên ngành.
+                    Với GPA <span className="font-bold" style={{ color: gpaColor }}>{studentData.gpa.toFixed(2)}</span>,
+                    mình đã hoàn thành <span className="font-bold text-purple-600">{studentData.completedCourses} môn học</span> và
+                    tích lũy được <span className="font-bold text-blue-600">{studentData.totalHoursLearned} giờ học</span>.
+                  </p>
+                </div>
+              )}
+            </Card>
+
+            {/* Current Courses */}
+            <Card
+              title={
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <BookOutlined className="text-blue-600 text-xl" />
+                  </div>
+                  <span className="text-lg font-bold">Các môn đang học</span>
+                </div>
+              }
+              className="shadow-xl rounded-3xl border-0"
+            >
+              {isEditing ? (
+                <Select
+                  mode="multiple"
+                  placeholder="Chọn các môn đang học"
+                  value={editedData.currentCourses}
+                  onChange={(value) => setEditedData({ ...editedData, currentCourses: value })}
+                  className="w-full"
+                  size="large"
+                >
+                  {studentData.currentCourses.map(course => (
+                    <Option key={course} value={course}>{course}</Option>
+                  ))}
+                </Select>
+              ) : (
+                <div className="flex flex-wrap gap-4">
+                  {studentData.currentCourses.map((course, idx) => (
+                    <Tag
+                      key={idx}
+                      color="blue"
+                      className="px-8 py-4 text-xl font-bold rounded-2xl border-0 shadow-lg hover:shadow-2xl transition-all hover:scale-110 cursor-default transform"
+                    >
+                      📚 {course}
+                    </Tag>
+                  ))}
+                </div>
+              )}
+            </Card>
+
+            {/* Need Help With */}
+            <Card
+              title={
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+                    <BookOutlined className="text-orange-600 text-xl" />
+                  </div>
+                  <span className="text-lg font-bold">Cần hỗ trợ</span>
+                </div>
+              }
+              className="shadow-xl rounded-3xl border-0"
+            >
+              {isEditing ? (
+                <Select
+                  mode="multiple"
+                  placeholder="Chọn các môn cần hỗ trợ"
+                  value={editedData.needHelpWith}
+                  onChange={(value) => setEditedData({ ...editedData, needHelpWith: value })}
+                  className="w-full"
+                  size="large"
+                >
+                  {studentData.needHelpWith.map(subject => (
+                    <Option key={subject} value={subject}>{subject}</Option>
+                  ))}
+                </Select>
+              ) : (
+                <div className="flex flex-wrap gap-4">
+                  {studentData.needHelpWith.map((subject, idx) => (
+                    <Tag
+                      key={idx}
+                      color="orange"
+                      className="px-8 py-4 text-xl font-bold rounded-2xl border-0 shadow-lg hover:shadow-2xl transition-all hover:scale-110 cursor-default transform"
+                    >
+                      ⚠️ {subject}
+                    </Tag>
+                  ))}
+                </div>
+              )}
+            </Card>
+
+            {/* Learning Goals */}
+            <Card
+              title={
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <TrophyOutlined className="text-purple-600 text-xl" />
+                  </div>
+                  <span className="text-lg font-bold">Mục tiêu học tập</span>
+                </div>
+              }
+              className="shadow-xl rounded-3xl border-0"
+            >
+              {isEditing ? (
+                <TextArea
+                  rows={5}
+                  value={editedData.learningGoals[0]}
+                  onChange={(e) => setEditedData({
+                    ...editedData,
+                    learningGoals: [e.target.value, ...editedData.learningGoals.slice(1)]
+                  })}
+                  placeholder="Nhập mục tiêu học tập của bạn..."
+                  className="text-base"
+                />
+              ) : (
+                <div className="space-y-4">
+                  {studentData.learningGoals.map((goal, idx) => (
+                    <div key={idx} className="flex items-start gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border-l-4 border-blue-500">
+                      <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">
+                        {idx + 1}
+                      </div>
+                      <p className="text-gray-700 leading-relaxed flex-1">{goal}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+
+            {/* Contact Info */}
+            <Card
+              title={
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                    <MailOutlined className="text-green-600 text-xl" />
+                  </div>
+                  <span className="text-lg font-bold">Thông tin liên hệ</span>
+                </div>
+              }
+              className="shadow-xl rounded-3xl border-0"
+            >
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="flex items-center gap-4 p-5 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl">
+                  <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <MailOutlined className="text-white text-xl" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-gray-500 mb-1">Email</p>
+                    <p className="font-semibold text-gray-800 truncate">{user.username + '@hcmut.edu.vn'}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 p-5 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl">
+                  <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <PhoneOutlined className="text-white text-xl" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs text-gray-500 mb-1">Điện thoại</p>
+                    {isEditing ? (
+                      <Input
+                        placeholder="Số điện thoại"
+                        size="large"
+                      />
+                    ) : (
+                      <p className="font-semibold text-gray-800">Chưa cập nhật</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   )

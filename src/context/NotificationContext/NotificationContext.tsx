@@ -97,15 +97,15 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }
 
   const markAsRead = (id: string) => {
-    setNotifications(prev => 
-      prev.map(notif => 
+    setNotifications(prev =>
+      prev.map(notif =>
         notif.id === id ? { ...notif, isRead: true } : notif
       )
     )
   }
 
   const markAllAsRead = () => {
-    setNotifications(prev => 
+    setNotifications(prev =>
       prev.map(notif => ({ ...notif, isRead: true }))
     )
   }
