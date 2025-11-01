@@ -7,7 +7,7 @@ import { type User } from './context/User/userContext.tsx'
 import { ToastContainer } from 'react-toastify'
 import { userContext } from '~/context/User/userContext.tsx'
 import TutorSearchPage from '~/pages/TutorSearch/TutorSearch.tsx'
-import Profile from '~/pages/TutorProfile/Profile.tsx'
+import TutorProfile from '~/pages/TutorProfile/TutorProfile.tsx'
 import ScrollToTop from '~/components/ScrollToTop/ScrollToTop.tsx'
 import Home from '~/pages/Homepage/Home.tsx'
 import Setting from '~/pages/Setting/Settings.tsx'
@@ -17,19 +17,16 @@ import { setupAxiosInterceptors } from '~/utils/authorizedAxiosInstance.ts'
 import TutorCommunityPlatform from '~/pages/Course/TutorCommunityPlatform.tsx'
 import AnimationBackground from '~/components/AnimationBackground/AnimationBackground.tsx'
 import { ActiveTabContextProvider } from '~/context/CourseContext/ActiveTabContext.tsx'
-
-import StudentProfile from '~/pages/StudentProfile/StudentProfile.tsx'
 import StudentSearchPage from '~/pages/StudentSearch/StudentSearch.tsx'
 import { NotificationProvider } from '~/context/NotificationContext/NotificationContext'
 import NotificationDemo from '~/components/NotificationDemo/NotificationDemo'
 import BackToTop from '~/components/Header/BackToTop.tsx'
-// import StudentList from './pages/StudentList/StudentList.tsx'
 import Overview from '~/pages/admin/Overview.tsx'
 import UserManagement from '~/pages/admin/UserManagement.tsx'
 import Analytics from '~/pages/admin/Analytics.tsx'
 import Logs from '~/pages/admin/Logs.tsx'
 import Dashboard from '~/pages/TutorList/Dashboard.tsx'
-import MyProfile from '~/pages/MyProfile/MyProfile.tsx'
+import StudentProfile from '~/pages/StudentProfile/StudentProfile.tsx'
 interface ProtectedRouteProps {
   user: User | null
   allowedRoles?: string[]
@@ -64,12 +61,11 @@ function App() {
           <Routes>
             <Route element={<ProtectedRoute user={user} />}>
               <Route path="/settings" element={ <Setting /> } />
-              <Route path="/my-profile" element={ <MyProfile /> } />
             </Route>
             <Route element={<ProtectedRoute user={user} allowedRoles={['STUDENT', 'TUTOR']} />}>
               <Route path="/search" element={ <TutorSearchPage /> } />
               <Route path="/library" element={ <LibraryPage /> } />
-              <Route path='/:id' element={ <Profile />} />
+              <Route path='/:id' element={ <TutorProfile />} />
               <Route path='/course/:id' element={
                 <ActiveTabContextProvider>
                   <TutorCommunityPlatform/>

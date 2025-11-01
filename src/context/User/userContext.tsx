@@ -1,7 +1,7 @@
 import React, { createContext, useState } from 'react'
 
 export interface User {
-  email: string
+  username: string
   firstName: string
   lastName: string
   roles: string[]

@@ -46,7 +46,7 @@ export const initialStudents: Student[] = [
     completedCourses: 28,
     currentCourses: [
       'Phát triển ứng dụng Web',
-      'Cơ sở dữ liệu nâng cao', 
+      'Cơ sở dữ liệu nâng cao',
       'Trí tuệ nhân tạo',
       'Kỹ thuật phần mềm',
       'Mạng máy tính',
@@ -85,7 +85,7 @@ export const initialStudents: Student[] = [
         date: '2024-10-15'
       },
       {
-        tutorId: 'tutor2', 
+        tutorId: 'tutor2',
         tutorName: 'Trần Văn Bạch',
         subject: 'Web Development',
         rating: 4.5,
