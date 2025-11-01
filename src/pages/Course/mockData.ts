@@ -2,7 +2,7 @@ import type { User } from '~/context/User/userContext.tsx'
 import type { Assignment, Availability, Document, Session } from '~/pages/Course/TypeDefinition.ts';
 
 export const mockUserData: User = {
-  email: 'cong.nguyen@hcmut.edu.vn',
+  username: 'cong.nguyen',
   firstName: 'Công',
   lastName: 'Nguyễn Thành',
   roles: ['TUTOR'],
@@ -130,5 +130,68 @@ export const mockSessions: Session[] = [
     topic: 'Hướng dẫn làm đồ án',
     location: 'H6-301',
     notes: 'Sinh viên đã hiểu rõ yêu cầu. Cần theo dõi tiến độ tuần sau.'
+  }
+]
+
+export const mockStudents = [
+  {
+    id: 1,
+    name: 'Nguyễn Văn A',
+    email: 'nguyenvana@email.com',
+    phone: '0901234567',
+    enrollDate: '2024-09-01',
+    coursesEnrolled: 3,
+    completedAssignments: 12,
+    averageScore: 8.5,
+    status: 'active',
+    avatar: '👨‍🎓'
+  },
+  {
+    id: 2,
+    name: 'Trần Thị B',
+    email: 'tranthib@email.com',
+    phone: '0912345678',
+    enrollDate: '2024-09-05',
+    coursesEnrolled: 2,
+    completedAssignments: 8,
+    averageScore: 9.0,
+    status: 'active',
+    avatar: '👩‍🎓'
+  },
+  {
+    id: 3,
+    name: 'Lê Văn C',
+    email: 'levanc@email.com',
+    phone: '0923456789',
+    enrollDate: '2024-08-20',
+    coursesEnrolled: 4,
+    completedAssignments: 15,
+    averageScore: 7.8,
+    status: 'active',
+    avatar: '👨‍🎓'
+  },
+  {
+    id: 4,
+    name: 'Phạm Thị D',
+    email: 'phamthid@email.com',
+    phone: '0934567890',
+    enrollDate: '2024-09-10',
+    coursesEnrolled: 2,
+    completedAssignments: 6,
+    averageScore: 8.2,
+    status: 'inactive',
+    avatar: '👩‍🎓'
+  },
+  {
+    id: 5,
+    name: 'Hoàng Văn E',
+    email: 'hoangvane@email.com',
+    phone: '0945678901',
+    enrollDate: '2024-09-15',
+    coursesEnrolled: 3,
+    completedAssignments: 10,
+    averageScore: 8.8,
+    status: 'active',
+    avatar: '👨‍🎓'
   }
 ]

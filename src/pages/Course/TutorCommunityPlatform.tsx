@@ -37,6 +37,7 @@ import CreateAssignment from '~/pages/Course/Modals/CreateAssignment.tsx'
 import AvailabilityModal from '~/pages/Course/Modals/AvailabilityModal.tsx'
 import SessionModal from '~/pages/Course/Modals/SessionModal.tsx'
 import { userContext } from '~/context/User/userContext.tsx'
+import StudentCard from "~/pages/Course/Contents/StudentCard.tsx";
 
 const TutorCommunityPlatform: React.FC = () => {
   const { user } = useContext(userContext)
@@ -208,40 +209,43 @@ const TutorCommunityPlatform: React.FC = () => {
         <AnimatePresence mode="wait">
           {/* Documents Tab */}
           {activeTab === 'documents' &&
-            <DocumentCard
-              setShowUploadModal={setShowUploadModal}
-              searchTerm={ searchTerm }
-              setSearchTerm={setSearchTerm}
-              filterCategory={filterCategory}
-              setFilterCategory={setFilterCategory}
-              filteredDocuments={filteredDocuments}
-            />}
+              <DocumentCard
+                setShowUploadModal={setShowUploadModal}
+                searchTerm={ searchTerm }
+                setSearchTerm={setSearchTerm}
+                filterCategory={filterCategory}
+                setFilterCategory={setFilterCategory}
+                filteredDocuments={filteredDocuments}
+              />}
 
           {/* Assignments Tab */}
           {activeTab === 'assignments' &&
-            <AssignmentCard
-              setShowAssignmentModal={setShowAssignmentModal}
-              assignments={assignments}
-            />}
+              <AssignmentCard
+                setShowAssignmentModal={setShowAssignmentModal}
+                assignments={assignments}
+              />}
 
           {/* Sessions Tab */}
           {activeTab === 'sessions' &&
-            <SessionCard
-              sessions={sessions}
-              setShowSessionModal={setShowSessionModal}
-              selectedSession={selectedSession}
-              setSelectedSession={setSelectedSession}
-              setSessions={ setSessions }
-              handleSessionAction={ handleSessionAction }
-            />}
+              <SessionCard
+                sessions={sessions}
+                setShowSessionModal={setShowSessionModal}
+                selectedSession={selectedSession}
+                setSelectedSession={setSelectedSession}
+                setSessions={ setSessions }
+                handleSessionAction={ handleSessionAction }
+              />}
 
           {/* Availability Tab */}
           {activeTab === 'availability' &&
-            <AvailabilityCard
-              setShowAvailabilityModal={setShowAvailabilityModal}
-              availability={availability}
-              setAvailability={setAvailability}
-            />
+              <AvailabilityCard
+                setShowAvailabilityModal={setShowAvailabilityModal}
+                availability={availability}
+                setAvailability={setAvailability}
+              />
+          }
+          {activeTab === 'students' &&
+          <StudentCard/>
           }
         </AnimatePresence>
       </div>
@@ -250,43 +254,43 @@ const TutorCommunityPlatform: React.FC = () => {
       <AnimatePresence>
         {/* Upload Document Modal */}
         {showUploadModal && isTutor(user) &&
-          <UploadDocument
-            newDocument = {newDocument}
-            handleNewDocChange={ handleNewDocChange}
-            handleNewDocSelectChange={handleNewDocSelectChange}
-            handleFileUpload={handleFileUpload}
-            handleUploadDocument={handleUploadDocument}
-            setShowUploadModal={setShowUploadModal}
-          />
+            <UploadDocument
+              newDocument = {newDocument}
+              handleNewDocChange={ handleNewDocChange}
+              handleNewDocSelectChange={handleNewDocSelectChange}
+              handleFileUpload={handleFileUpload}
+              handleUploadDocument={handleUploadDocument}
+              setShowUploadModal={setShowUploadModal}
+            />
         }
 
         {/* Create Assignment Modal */}
         {showAssignmentModal && isTutor(user) &&
-          <CreateAssignment
-            newAssignment={newAssignment}
-            handleCreateAssignment={handleCreateAssignment}
-            handleNewAssignmentChange={handleNewAssignmentChange}
-            setShowAssignmentModal={setShowAssignmentModal}
-          />
+            <CreateAssignment
+              newAssignment={newAssignment}
+              handleCreateAssignment={handleCreateAssignment}
+              handleNewAssignmentChange={handleNewAssignmentChange}
+              setShowAssignmentModal={setShowAssignmentModal}
+            />
         }
 
         {/* Add Availability Modal */}
         {showAvailabilityModal && isTutor(user) &&
-          <AvailabilityModal
-            newAvailability={newAvailability}
-            handleAddAvailability={handleAddAvailability}
-            handleNewAvailabilityChange={handleNewAvailabilityChange}
-            setShowAvailabilityModal={setShowAvailabilityModal}
-          />}
+            <AvailabilityModal
+              newAvailability={newAvailability}
+              handleAddAvailability={handleAddAvailability}
+              handleNewAvailabilityChange={handleNewAvailabilityChange}
+              setShowAvailabilityModal={setShowAvailabilityModal}
+            />}
 
         {/* Manage Session Modal */}
         {showSessionModal && selectedSession && isTutor(user) &&
-          <SessionModal
-            selectedSession={selectedSession}
-            setSelectedSession={setSelectedSession}
-            setShowSessionModal={setShowSessionModal}
-            handleSessionAction={handleSessionAction}
-          />
+            <SessionModal
+              selectedSession={selectedSession}
+              setSelectedSession={setSelectedSession}
+              setShowSessionModal={setShowSessionModal}
+              handleSessionAction={handleSessionAction}
+            />
         }
       </AnimatePresence>
     </div>
