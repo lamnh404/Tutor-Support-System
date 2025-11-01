@@ -1,8 +1,7 @@
-// src/pages/MyTutors/MyTutorData.tsx
 import { type Tutor } from '../TutorSearch/TutorData'
 
-export interface MyTutor extends Omit<Tutor, 'department' | 'expertise'> { // Omit unused fields
-  subject: string; // Add a simple subject field
+export interface MyTutor extends Omit<Tutor, 'department' | 'expertise'> {
+  subject: string;
   nextSession?: {
     dateTime: Date;
     location: string;
@@ -15,7 +14,7 @@ export const myCurrentTutors: MyTutor[] = [
     firstName: 'Hiếc',
     lastName: 'Lê Sang',
     avatarUrl: 'https://upload.wikimedia.org/wikipedia/commons/1/1a/Faker_2020_interview.jpg',
-    subject: 'Thuật toán & Kỹ thuật phần mềm', // Simple subject string
+    subject: 'Thuật toán & Kỹ thuật phần mềm',
     rating_count: 12,
     rating_avg: 4.9,
     currMentee: 5,
@@ -69,7 +68,6 @@ export const myCurrentTutors: MyTutor[] = [
     currMentee: 3,
     maxMentee: 8,
     description: 'Mùa sau là mùa của chúng ta...'
-    // No next session
   },
   {
     id: '5',

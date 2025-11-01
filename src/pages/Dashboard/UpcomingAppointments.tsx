@@ -1,8 +1,7 @@
-// src/pages/TutorDashboard/UpcomingAppointments.tsx
-import React from 'react';
-import { type UpcomingAppointment } from './TutorDashboardData';
-import { CalendarOutlined, EnvironmentOutlined, InfoCircleOutlined, ArrowRightOutlined } from '@ant-design/icons';
-import { motion } from 'framer-motion';
+import React from 'react'
+import { type UpcomingAppointment } from './TutorDashboardData'
+import { CalendarOutlined, EnvironmentOutlined, InfoCircleOutlined, ArrowRightOutlined } from '@ant-design/icons'
+import { motion } from 'framer-motion'
 
 interface UpcomingAppointmentsProps {
   appointments: UpcomingAppointment[];
@@ -13,11 +12,11 @@ const formatDateTime = (date: Date): string => {
   return date.toLocaleString('vi-VN', {
     weekday: 'short', month: 'numeric', day: 'numeric',
     hour: '2-digit', minute: '2-digit'
-  });
-};
+  })
+}
 
 const UpcomingAppointments: React.FC<UpcomingAppointmentsProps> = ({ appointments, limit = 3 }) => {
-  const limitedAppointments = appointments.slice(0, limit);
+  const limitedAppointments = appointments.slice(0, limit)
 
   return (
     <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-green-100">
@@ -48,10 +47,10 @@ const UpcomingAppointments: React.FC<UpcomingAppointmentsProps> = ({ appointment
                 <p className="text-sm text-gray-600 mt-1 flex items-center gap-1.5"><CalendarOutlined /> {formatDateTime(app.dateTime)}</p>
                 <p className="text-sm text-gray-600 flex items-center gap-1.5"><EnvironmentOutlined /> {app.location}</p>
                 {app.description && (
-                   <p className="text-xs text-gray-500 mt-1 flex items-start gap-1.5 pt-1 border-t border-green-100">
-                      <InfoCircleOutlined className="mt-0.5 flex-shrink-0"/>
-                      <span className="italic">{app.description}</span>
-                   </p>
+                  <p className="text-xs text-gray-500 mt-1 flex items-start gap-1.5 pt-1 border-t border-green-100">
+                    <InfoCircleOutlined className="mt-0.5 flex-shrink-0"/>
+                    <span className="italic">{app.description}</span>
+                  </p>
                 )}
               </div>
             </motion.li>
@@ -61,7 +60,7 @@ const UpcomingAppointments: React.FC<UpcomingAppointmentsProps> = ({ appointment
         <p className="text-gray-500 italic">Không có lịch hẹn nào sắp tới.</p>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default UpcomingAppointments;
+export default UpcomingAppointments

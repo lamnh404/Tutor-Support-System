@@ -1,4 +1,3 @@
-// src/pages/MyTutors/EventHoverPanel.tsx
 import React from 'react'
 import { type CalendarEvent } from './MyCalendarData'
 import { CalendarOutlined, InfoCircleOutlined, ClockCircleOutlined, EnvironmentOutlined } from '@ant-design/icons'
@@ -18,7 +17,6 @@ const EventHoverPanel: React.FC<EventHoverPanelProps> = ({ event }) => {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.15 }}
-      // Sửa: Thêm z-50 để đảm bảo nó luôn ở trên cùng
       className="absolute z-50 left-full top-0 ml-2 w-72 bg-gradient-to-bl from-green-200 to-green-300 rounded-lg shadow-xl border border-gray-200 p-4"
     >
       <h4 className="font-bold text-gray-800">{event.title}</h4>

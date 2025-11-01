@@ -1,5 +1,3 @@
-// src/pages/TutorDashboard/TutorDashboardData.tsx
-
 export interface PendingRequest {
   id: string;
   studentName: string;
@@ -15,7 +13,7 @@ export interface UpcomingAppointment {
   dateTime: Date;
   location: string;
   subject: string;
-  description?: string; // Add description field
+  description?: string;
 }
 
 export interface CurrentStudent {

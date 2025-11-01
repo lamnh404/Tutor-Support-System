@@ -16,14 +16,14 @@ import {
 import { userContext } from '~/context/User/userContext'
 import { motion, AnimatePresence } from 'framer-motion'
 
-import PendingRequests from '../TutorDashboard/PendingRequests'
-import UpcomingAppointments from '../TutorDashboard/UpcomingAppointments'
-import AvailabilityShortcut from '../TutorDashboard/AvailabilityShortcut'
-import CommunityView from '../TutorDashboard/CommunityView'
+import PendingRequests from './PendingRequests'
+import UpcomingAppointments from './UpcomingAppointments'
+import AvailabilityShortcut from './AvailabilityShortcut'
+import CommunityView from './CommunityView'
 import {
   pendingRequestsData,
-  upcomingAppointmentsData,
-} from '../TutorDashboard/TutorDashboardData'
+  upcomingAppointmentsData
+} from './TutorDashboardData'
 
 type Role = 'STUDENT' | 'TUTOR';
 
@@ -128,11 +128,11 @@ const Dashboard: React.FC = () => {
     setActiveRole(prev => (prev === 'STUDENT' ? 'TUTOR' : 'STUDENT'))
   }
 
-  const handleAcceptRequest = (requestId: string) => {
+  const handleAcceptRequest = () => {
     message.success('Đã chấp nhận yêu cầu!')
   }
 
-  const handleRejectRequest = (requestId: string) => {
+  const handleRejectRequest = () => {
     message.info('Đã từ chối yêu cầu.')
   }
 
@@ -157,7 +157,7 @@ const Dashboard: React.FC = () => {
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">
+          <h1 className={activeRole === 'STUDENT' ? 'text-3xl font-bold text-transparent bg-clip-text bg-linear-to-t from-sky-600 to-indigo-600' : 'text-3xl font-bold text-transparent bg-clip-text bg-linear-to-t from-violet-600 to-fuchsia-600'}>
             Bảng điều khiển {activeRole === 'STUDENT' ? 'Học sinh' : 'Gia sư'}
           </h1>
           {isMultiRole && (
@@ -169,7 +169,7 @@ const Dashboard: React.FC = () => {
                 <motion.button
                   onClick={handleToggleRole}
                   whileTap={{ scale: 0.9, rotate: 180 }}
-                  className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors"
+                  className="p-2 rounded-full bg-gradient-to-br from-zinc-200 from-30% via-purple-300 to-zinc-300 cursor-pointer to-70% hover:bg-gray-300 text-black transition-colors"
                 >
                   <SwapOutlined className="text-xl" />
                 </motion.button>
@@ -188,8 +188,8 @@ const Dashboard: React.FC = () => {
                   className={`w-full flex items-center gap-3 p-3 rounded-lg text-base font-medium transition-all duration-300 border border-transparent
                     ${
                 activeTabId === tab.id
-                  ? `bg-gradient-to-bl ${tab.gradient} text-white shadow-lg scale-105`
-                  : 'bg-white text-gray-700 shadow-sm border-gray-200 hover:shadow-md hover:text-black'
+                  ? `bg-gradient-to-bl ${tab.gradient} text-white cursor shadow-lg scale-105`
+                  : 'bg-white text-gray-700 shadow-sm border-gray-200 cursor-pointer hover:shadow-md hover:text-black'
                 }`}
                 >
                   <span className={`text-xl ${activeTabId === tab.id ? 'text-white' : 'text-gray-400'}`}>

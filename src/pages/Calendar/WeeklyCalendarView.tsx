@@ -1,4 +1,3 @@
-// src/pages/MyTutors/WeeklyCalendarView.tsx
 import React, { useState } from 'react'
 import { type CalendarEvent } from './MyCalendarData'
 import { getEventTypeColor } from './MyCalendarData'
@@ -40,8 +39,6 @@ const WeeklyCalendarView: React.FC<WeeklyCalendarViewProps> = ({ events, weekDay
               {dayEvents.map(event => (
                 <div
                   key={event.id}
-                  // Sửa: Thêm z-index động
-                  // Khi hover, z-index = 20. Khi không hover, z-index = 10 (mặc định)
                   className={`relative ${hoveredEvent && hoveredEvent.id === event.id ? 'z-20' : 'z-10'}`}
                   onMouseEnter={() => setHoveredEvent(event)}
                   onMouseLeave={() => setHoveredEvent(null)}

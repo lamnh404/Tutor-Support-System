@@ -1,4 +1,3 @@
-// src/pages/MyTutors/MyCalendar.tsx
 import React, { useState } from 'react'
 import { myCalendarEvents, getWeekNumber } from './MyCalendarData'
 import { Button } from 'antd'
@@ -11,7 +10,7 @@ const getMonday = (d: Date): Date => {
   const day = d.getDay()
   const diff = d.getDate() - day + (day === 0 ? -6 : 1)
   const monday = new Date(d.setDate(diff))
-  monday.setHours(0, 0, 0, 0) // Normalize to start of day
+  monday.setHours(0, 0, 0, 0)
   return monday
 }
 

@@ -1,4 +1,3 @@
-// src/pages/TutorDashboard/PendingRequests.tsx
 import React from 'react'
 import { type PendingRequest } from './TutorDashboardData'
 import { CheckOutlined, CloseOutlined, MessageOutlined, ArrowRightOutlined } from '@ant-design/icons'
@@ -8,7 +7,7 @@ interface PendingRequestsProps {
   requests: PendingRequest[];
   onAccept: (requestId: string) => void;
   onReject: (requestId: string) => void;
-  limit?: number; // Số lượng hiển thị
+  limit?: number;
 }
 
 const PendingRequests: React.FC<PendingRequestsProps> = ({ requests, onAccept, onReject, limit = 2 }) => {

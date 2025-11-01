@@ -1,5 +1,3 @@
-// src/pages/MyTutors/MyCalendarData.tsx
-
 export type EventType = 'assignment_open' | 'assignment_due' | 'session' | 'other';
 
 export interface CalendarEvent {
