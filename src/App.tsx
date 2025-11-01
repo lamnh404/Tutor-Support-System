@@ -17,7 +17,6 @@ import { setupAxiosInterceptors } from '~/utils/authorizedAxiosInstance.ts'
 import TutorCommunityPlatform from '~/pages/Course/TutorCommunityPlatform.tsx'
 import AnimationBackground from '~/components/AnimationBackground/AnimationBackground.tsx'
 import { ActiveTabContextProvider } from '~/context/CourseContext/ActiveTabContext.tsx'
-import StudentSearchPage from '~/pages/StudentSearch/StudentSearch.tsx'
 import { NotificationProvider } from '~/context/NotificationContext/NotificationContext'
 import NotificationDemo from '~/components/NotificationDemo/NotificationDemo'
 import BackToTop from '~/components/Header/BackToTop.tsx'
@@ -59,29 +58,39 @@ function App() {
         {showHeader && <Header />}
         <main className={showHeader ? 'mt-[71px]' : ''}>
           <Routes>
+
+            # Routes accessible by any authenticated user
             <Route element={<ProtectedRoute user={user} />}>
               <Route path="/settings" element={ <Setting /> } />
             </Route>
+
+            # Routes accessible by STUDENT and TUTOR roles
             <Route element={<ProtectedRoute user={user} allowedRoles={['STUDENT', 'TUTOR']} />}>
               <Route path="/search" element={ <TutorSearchPage /> } />
               <Route path="/library" element={ <LibraryPage /> } />
-              <Route path='/:id' element={ <TutorProfile />} />
+
+              # Routes to view profiles of tutors and students
+              <Route path='/tutor/:id' element={ <TutorProfile />} />
+              <Route path='/student/:id' element={ <StudentProfile />} />
+
+              <Route path='/dashboard' element={ <Dashboard />} />
+
               <Route path='/course/:id' element={
                 <ActiveTabContextProvider>
                   <TutorCommunityPlatform/>
                 </ActiveTabContextProvider>
               } />
-              <Route path='/dashboard' element={ <Dashboard />} />
-              <Route path='/students' element={ <StudentSearchPage />} />
-              <Route path='/student/:id' element={ <StudentProfile />} />
               {/* <Route path='/mymentees' element={ <StudentList />} /> */}
             </Route>
+
+            # Routes only accessible by ADMIN role
             <Route element={<ProtectedRoute user={user} allowedRoles={['ADMIN']} />}>
               <Route path='/admin/overview' element={ <Overview/>} />
               <Route path='/admin/users' element={<UserManagement />}/>
               <Route path='admin/analytics' element={ <Analytics /> }/>
               <Route path ='/admin/logs' element={<Logs/>} />
             </Route>
+
             <Route path='/login' element={ <Auth />} />
             <Route path='/register' element={ <Auth />} />
             <Route path="/" element={ <Home />} />
