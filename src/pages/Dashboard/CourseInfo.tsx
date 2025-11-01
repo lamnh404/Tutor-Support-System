@@ -21,19 +21,19 @@ export const myTaughtCourses: TutorCourse[] = [
   {
     id: 'course-2',
     name: 'Mạng máy tính',
-    code: 'CO3005',
+    code: 'CO3093',
     studentCount: 28,
-    lastActivity: 'Đã cập nhật tiến độ cho 2 học sinh',
+    lastActivity: 'Đã cập nhật tài liệu mới',
     hasNotification: false,
     gradient: 'from-green-100 to-teal-100'
   },
   {
     id: 'course-3',
     name: 'Vật lý 1',
-    code: 'ME1001',
+    code: 'PH1007',
     studentCount: 45,
-    lastActivity: '3 lịch hẹn mới được xác nhận',
-    hasNotification: true,
+    lastActivity: '3 tháng trước',
+    hasNotification: false,
     gradient: 'from-purple-100 to-indigo-100'
   }
 ]

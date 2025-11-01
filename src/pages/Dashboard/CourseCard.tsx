@@ -22,7 +22,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
         )}
 
         <p className="text-sm font-semibold text-gray-500">{course.code}</p>
-        <h3 className="text-lg font-bold text-gray-900 mt-1 mb-3 line-clamp-2" style={{ minHeight: '3rem' }}>
+        <h3 className="text-lg font-bold text-gray-900 mt-1 mb-3 line-clamp-2" style={{ minHeight: '2rem' }}>
           {course.name}
         </h3>
 

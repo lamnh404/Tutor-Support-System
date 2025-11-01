@@ -52,44 +52,46 @@ const MyCalendar: React.FC = () => {
   }
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-md border border-gray-300">
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 gap-4">
-        <h2 className="text-xl font-bold text-gray-800">{getTitle()}</h2>
-        <div className="flex items-center gap-2">
-          <Button
-            icon={<LeftOutlined />}
-            onClick={handlePrev}
-            aria-label={calendarView === 'week' ? 'Tuần trước' : 'Tháng trước'}
-          />
-          <Button
-            icon={<RightOutlined />}
-            onClick={handleNext}
-            aria-label={calendarView === 'week' ? 'Tuần sau' : 'Tháng sau'}
-          />
-          <div className="ml-4 flex rounded-md bg-gray-100 p-0.5">
-            <button
-              onClick={() => setCalendarView('week')}
-              className={`p-1.5 rounded ${calendarView === 'week' ? 'bg-white shadow-sm' : 'text-gray-500'} transition-all`}
-              aria-label="Xem theo tuần"
-            >
-              <UnorderedListOutlined />
-            </button>
-            <button
-              onClick={() => setCalendarView('month')}
-              className={`p-1.5 rounded ${calendarView === 'month' ? 'bg-white shadow-sm' : 'text-gray-500'} transition-all`}
-              aria-label="Xem theo tháng"
-            >
-              <CalendarOutlined />
-            </button>
+    <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+      <div className="bg-white p-6 max-w-7xl mx-auto rounded-xl shadow-md border top-[64px] border-gray-300">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 gap-4">
+          <h2 className="text-xl font-bold text-gray-800">{getTitle()}</h2>
+          <div className="flex items-center gap-2">
+            <Button
+              icon={<LeftOutlined />}
+              onClick={handlePrev}
+              aria-label={calendarView === 'week' ? 'Tuần trước' : 'Tháng trước'}
+            />
+            <Button
+              icon={<RightOutlined />}
+              onClick={handleNext}
+              aria-label={calendarView === 'week' ? 'Tuần sau' : 'Tháng sau'}
+            />
+            <div className="ml-4 flex rounded-md bg-gray-100 p-0.5">
+              <button
+                onClick={() => setCalendarView('week')}
+                className={`p-1.5 rounded ${calendarView === 'week' ? 'bg-white shadow-sm' : 'text-gray-500'} transition-all`}
+                aria-label="Xem theo tuần"
+              >
+                <UnorderedListOutlined />
+              </button>
+              <button
+                onClick={() => setCalendarView('month')}
+                className={`p-1.5 rounded ${calendarView === 'month' ? 'bg-white shadow-sm' : 'text-gray-500'} transition-all`}
+                aria-label="Xem theo tháng"
+              >
+                <CalendarOutlined />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {calendarView === 'week' ? (
-        <WeeklyCalendarView events={myCalendarEvents} weekDays={currentWeekDays} />
-      ) : (
-        <MonthlyCalendarView events={myCalendarEvents} year={currentYear} month={currentMonth} />
-      )}
+        {calendarView === 'week' ? (
+          <WeeklyCalendarView events={myCalendarEvents} weekDays={currentWeekDays} />
+        ) : (
+          <MonthlyCalendarView events={myCalendarEvents} year={currentYear} month={currentMonth} />
+        )}
+      </div>
     </div>
   )
 }

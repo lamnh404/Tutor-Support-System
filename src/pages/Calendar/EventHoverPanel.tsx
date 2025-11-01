@@ -5,19 +5,20 @@ import { motion } from 'framer-motion'
 
 interface EventHoverPanelProps {
   event: CalendarEvent;
+  gradientClass: string;
 }
 
 const formatTime = (date: Date) => date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
 const formatDate = (date: Date) => date.toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'long' })
 
-const EventHoverPanel: React.FC<EventHoverPanelProps> = ({ event }) => {
+const EventHoverPanel: React.FC<EventHoverPanelProps> = ({ event, gradientClass }) => {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.15 }}
-      className="absolute z-50 left-full top-0 ml-2 w-72 bg-gradient-to-bl from-green-200 to-green-300 rounded-lg shadow-xl border border-gray-200 p-4"
+      className={`absolute z-50 left-full top-0 ml-2 w-72 bg-gradient-to-bl ${gradientClass} rounded-lg shadow-xl border border-gray-200 p-4`}
     >
       <h4 className="font-bold text-gray-800">{event.title}</h4>
       <p className="text-sm text-gray-600 flex items-center gap-2 mt-2">

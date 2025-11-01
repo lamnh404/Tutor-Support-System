@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { type CalendarEvent } from './MyCalendarData'
+import { getEventTypeStyle, type CalendarEvent } from './MyCalendarData'
 import { getEventTypeColor } from './MyCalendarData'
 import EventHoverPanel from './EventHoverPanel'
 import { AnimatePresence } from 'framer-motion'
@@ -43,13 +43,13 @@ const WeeklyCalendarView: React.FC<WeeklyCalendarViewProps> = ({ events, weekDay
                   onMouseEnter={() => setHoveredEvent(event)}
                   onMouseLeave={() => setHoveredEvent(null)}
                 >
-                  <div className={`flex items-center gap-2 p-1.5 rounded cursor-pointer ${getEventTypeColor(event.type)}`}>
+                  <div className={`flex items-center gap-2 p-1.5 rounded min-h-[36px] cursor-pointer ${getEventTypeColor(event.type)}`}>
                     <span className="font-bold text-white text-[10px]">{formatTime(event.dateTime)}</span>
                     <span className="text-white text-xs font-medium truncate">{event.title}</span>
                   </div>
                   <AnimatePresence>
                     {hoveredEvent && hoveredEvent.id === event.id && (
-                      <EventHoverPanel event={event} />
+                      <EventHoverPanel event={event} gradientClass={getEventTypeStyle(event.type).gradient} />
                     )}
                   </AnimatePresence>
                 </div>

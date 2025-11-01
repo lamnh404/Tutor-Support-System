@@ -25,7 +25,7 @@ const TutorListCard: React.FC<TutorListCardProps> = ({ tutor }) => {
       to={`/course/${tutor.id}`}
       className="block group rounded-lg overflow-hidden shadow-md border border-gray-200 bg-white transition-all duration-300 hover:shadow-lg hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-400"
     >
-      <div className={`h-24 bg-gradient-to-bl ${gradientClass}`}>
+      <div className={`h-16 bg-gradient-to-bl ${gradientClass}`}>
       </div>
 
       <div className="p-6 pt-2 -mt-10 relative">
@@ -35,7 +35,7 @@ const TutorListCard: React.FC<TutorListCardProps> = ({ tutor }) => {
             alt={`${tutor.lastName} ${tutor.firstName}`}
             className="w-16 h-16 rounded-full object-cover border-3 border-blue-300 shadow-md mr-3"
           />
-          <p className="text-xl font-bold text-gray-700 line-clamp-1">
+          <p className="text-lg font-bold text-gray-700 line-clamp-1">
             {tutor.lastName} {tutor.firstName}
           </p>
         </div>

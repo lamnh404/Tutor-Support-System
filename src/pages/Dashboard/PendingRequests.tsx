@@ -35,7 +35,7 @@ const PendingRequests: React.FC<PendingRequestsProps> = ({ requests, onAccept, o
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="border border-blue-100 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-gradient-to-r from-blue-50/50 to-sky-50/50"
+              className="border border-blue-100 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-gradient-to-bl from-blue-200 to-sky-200"
             >
               <div className="flex items-center gap-4 flex-grow min-w-0">
                 <img src={req.studentAvatar} alt={req.studentName} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow"/>

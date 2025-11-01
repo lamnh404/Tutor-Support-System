@@ -94,7 +94,7 @@ const studentTabs = [
 const tutorTabs = [
   { id: 'requests', label: 'Yêu cầu đang chờ', icon: <BellOutlined />, gradient: 'from-blue-500 to-blue-600' },
   { id: 'appointments', label: 'Lịch hẹn sắp tới', icon: <CalendarOutlined />, gradient: 'from-green-500 to-green-600' },
-  { id: 'community', label: 'Các khóa học', icon: <TeamOutlined />, gradient: 'from-purple-500 to-purple-600' },
+  { id: 'community', label: 'Cộng đồng', icon: <TeamOutlined />, gradient: 'from-purple-500 to-purple-600' },
   { id: 'availability', label: 'Quản lý lịch trống', icon: <ClockCircleOutlined />, gradient: 'from-orange-500 to-red-500' }
 ]
 
