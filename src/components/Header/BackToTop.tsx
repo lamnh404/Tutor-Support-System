@@ -1,29 +1,25 @@
-// src/components/BackToTop/BackToTop.tsx
 import React, { useState, useEffect } from 'react'
 import { UpOutlined } from '@ant-design/icons'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const BackToTop: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false)
 
-  // Show button when page is scrolled down
   const toggleVisibility = () => {
-    if (window.scrollY > 300) { // Show after scrolling 300px
+    if (window.scrollY > 300) {
       setIsVisible(true)
     } else {
       setIsVisible(false)
     }
   }
 
-  // Set up scroll listener
   useEffect(() => {
     window.addEventListener('scroll', toggleVisibility)
-    // Cleanup listener on component unmount
     return () => {
       window.removeEventListener('scroll', toggleVisibility)
     }
   }, [])
 
-  // Scroll to top smoothly
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -32,20 +28,28 @@ const BackToTop: React.FC = () => {
   }
 
   return (
-    <button
-      type="button"
-      onClick={scrollToTop}
-      // Apply Tailwind classes for styling and conditional visibility
-      className={`
-        fixed bottom-6 right-6 z-50 p-3 bg-gradient-to-t from-blue-800 to-blue-400 text-white rounded-md shadow-lg 
-        hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500
-        transition-opacity duration-300 ease-in-out cursor-pointer ring-2 ring-indigo-500
-        ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'} 
-      `}
-      aria-label="Scroll back to top"
-    >
-      <UpOutlined className="text-xl" />
-    </button>
+    <AnimatePresence>
+      {isVisible && (
+        <motion.button
+          type="button"
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 z-50 w-12 h-12 flex items-center justify-center
+                     bg-gradient-to-br from-blue-500 to-indigo-600 text-white
+                     rounded-full shadow-lg
+                     cursor-pointer
+                     focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2"
+          aria-label="Scroll back to top"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          whileHover={{ scale: 1.1, y: -5, boxShadow: '0 10px 20px rgba(0, 0, 0, 0.15)' }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
+        >
+          <UpOutlined className="text-xl" />
+        </motion.button>
+      )}
+    </AnimatePresence>
   )
 }
 

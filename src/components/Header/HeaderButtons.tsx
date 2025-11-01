@@ -9,6 +9,7 @@ const allNavLinks = [
   { path: '/', label: 'Trang Chủ', requiredRoles: ['STUDENT', 'TUTOR', 'ADMIN'] },
   { path: '/students', label: 'Trang Cá Nhân', requiredRoles: ['STUDENT', 'TUTOR'] },
   { path: '/dashboard', label: 'Bảng điều khiển', requiredRoles: ['STUDENT', 'TUTOR'] },
+  { path: '/calendar', label: 'Lịch', requiredRoles: ['STUDENT', 'TUTOR'] },
   { path: '/search', label: 'Tìm kiếm', requiredRoles: ['STUDENT', 'TUTOR'] },
   { path: '/library', label: 'Thư Viện', requiredRoles: ['STUDENT', 'TUTOR'] },
   { path: '/admin/overview', label: 'Tổng Quan', requiredRoles: ['ADMIN'] },
