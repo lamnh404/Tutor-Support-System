@@ -25,6 +25,7 @@ import UserManagement from '~/pages/admin/UserManagement.tsx'
 import Analytics from '~/pages/admin/Analytics.tsx'
 import Logs from '~/pages/admin/Logs.tsx'
 import Dashboard from '~/pages/TutorList/Dashboard.tsx'
+import MyCalendar from '~/pages/TutorList/MyCalendar.tsx'
 import StudentProfile from '~/pages/StudentProfile/StudentProfile.tsx'
 interface ProtectedRouteProps {
   user: User | null
@@ -80,6 +81,9 @@ function App() {
                   <TutorCommunityPlatform/>
                 </ActiveTabContextProvider>
               } />
+              <Route path='/dashboard' element={ <Dashboard />} />
+              <Route path='/calendar' element={ <MyCalendar />} />
+              <Route path='/student/:id' element={ <StudentProfile />} />
               {/* <Route path='/mymentees' element={ <StudentList />} /> */}
             </Route>
 
