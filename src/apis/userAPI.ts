@@ -37,3 +37,13 @@ export const refreshTokenAPI = async () => {
   const res = await authorizedAxiosInstance.post(`${API_ROOT}/api/auth/refresh`)
   return res.data
 }
+
+export const userIdentityAPI = async (userId: string) => {
+  return await authorizedAxiosInstance.get(`${API_ROOT}/api/identify-role`,
+    {
+      params: {
+        userId
+      }
+    }
+  )
+}

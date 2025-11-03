@@ -72,15 +72,7 @@ authorizedAxiosInstance.interceptors.response.use((res) => {
 }
 , async (error) => {
   interceptorLoadingElements(false)
-  // if (error?.response?.status === 401) {
-  //   // toast.error(error?.response?.data?.errors?.[0]?.message)
-  //   await userLogoutAPI(false)
-  //   if (logoutFn) logoutFn()
-  //   if (navigateFn) navigateFn('/login')
-  //   return null
-  //
-  // }
-  // console.log('Error response: ', error)
+
   let errorMessage = error?.message
   const originalRequests = error.config
   // console.log('Original request: ', originalRequests)
@@ -88,8 +80,9 @@ authorizedAxiosInstance.interceptors.response.use((res) => {
     return handleTokenRefresh(originalRequests)
   }
   else if (error.response?.status === 401) {
-    if (error.response?.data?.title) {
-      errorMessage = error.response?.data?.title
+    if (error.response?.data) {
+      if (error.response?.data?.title) errorMessage = error.response?.data?.title
+      if (error.response?.data?.message) errorMessage = error.response?.data?.message
       toast.error(errorMessage)
     }
     await userLogoutAPI(false)
@@ -97,7 +90,7 @@ authorizedAxiosInstance.interceptors.response.use((res) => {
     if (navigateFn) navigateFn('/login')
     return Promise.reject(error)
   }
-  console.error(error)
+  // console.error(error)
   if (errorMessage=='Network Error') errorMessage = 'Lỗi mạng - Vui lòng kiểm tra kết nối của bạn hoặc thử lại sau.'
   else if (errorMessage=='timeout of 180000 ms exceeded') errorMessage = 'Hết thời gian chờ phản hồi từ máy chủ - Vui lòng thử lại sau.'
   else if (errorMessage=='Request failed with status code 500') errorMessage = 'Lỗi máy chủ nội bộ - Vui lòng thử lại sau.'

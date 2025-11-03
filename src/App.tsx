@@ -7,7 +7,7 @@ import { type User } from './context/User/userContext.tsx'
 import { ToastContainer } from 'react-toastify'
 import { userContext } from '~/context/User/userContext.tsx'
 import TutorSearchPage from '~/pages/TutorSearch/TutorSearch.tsx'
-import TutorProfile from '~/pages/TutorProfile/TutorProfile.tsx'
+// import TutorProfile from '~/pages/TutorProfile/TutorProfile.tsx'
 import ScrollToTop from '~/components/ScrollToTop/ScrollToTop.tsx'
 import Home from '~/pages/Homepage/Home.tsx'
 import Setting from '~/pages/Setting/Settings.tsx'
@@ -18,7 +18,6 @@ import TutorCommunityPlatform from '~/pages/Course/TutorCommunityPlatform.tsx'
 import AnimationBackground from '~/components/AnimationBackground/AnimationBackground.tsx'
 import { ActiveTabContextProvider } from '~/context/CourseContext/ActiveTabContext.tsx'
 import { NotificationProvider } from '~/context/NotificationContext/NotificationContext'
-import NotificationDemo from '~/components/NotificationDemo/NotificationDemo'
 import BackToTop from '~/components/Header/BackToTop.tsx'
 import Overview from '~/pages/admin/Overview.tsx'
 import UserManagement from '~/pages/admin/UserManagement.tsx'
@@ -26,7 +25,8 @@ import Analytics from '~/pages/admin/Analytics.tsx'
 import Logs from '~/pages/admin/Logs.tsx'
 import Dashboard from '~/pages/Dashboard/Dashboard.tsx'
 import MyCalendar from '~/pages/Calendar/MyCalendar.tsx'
-import StudentProfile from '~/pages/StudentProfile/StudentProfile.tsx'
+// import StudentProfile from '~/pages/StudentProfile/StudentProfile.tsx'
+import Profile from '~/pages/Profile/Profile.tsx';
 interface ProtectedRouteProps {
   user: User | null
   allowedRoles?: string[]
@@ -71,8 +71,10 @@ function App() {
               <Route path="/library" element={ <LibraryPage /> } />
 
               # Routes to view profiles of tutors and students
-              <Route path='/tutor/:id' element={ <TutorProfile />} />
-              <Route path='/student/:id' element={ <StudentProfile />} />
+              {/*<Route path='/tutor/:id' element={ <TutorProfile />} />*/}
+              {/*<Route path='/student/:id' element={ <StudentProfile />} />*/}
+              <Route path='/:id' element={<Profile />} />
+
 
               <Route path='/dashboard' element={ <Dashboard />} />
 
@@ -83,7 +85,6 @@ function App() {
               } />
               <Route path='/dashboard' element={ <Dashboard />} />
               <Route path='/calendar' element={ <MyCalendar />} />
-              <Route path='/student/:id' element={ <StudentProfile />} />
               {/* <Route path='/mymentees' element={ <StudentList />} /> */}
             </Route>
 
@@ -103,7 +104,6 @@ function App() {
           </Routes>
         </main>
         <ToastContainer position="top-right" autoClose={3000} />
-        <NotificationDemo />
         <BackToTop />
       </NotificationProvider>
     </>

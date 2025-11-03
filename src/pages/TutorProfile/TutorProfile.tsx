@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+// import { useParams } from 'react-router-dom'
 import {
   UserOutlined,
   MailOutlined,
@@ -11,117 +12,23 @@ import {
   TrophyOutlined,
   CheckCircleFilled,
   StarFilled,
-  StarOutlined,
   TeamOutlined,
   SafetyCertificateOutlined,
   UserAddOutlined,
   HistoryOutlined,
   PlusOutlined
 } from '@ant-design/icons'
-import { Card, Avatar, Button, Tag, Input, Select, Progress, Divider, Upload, Modal, message, Tabs } from 'antd'
+import { Card, Avatar, Button, Tag, Input, Select, Divider, Upload, Modal, message, Tabs } from 'antd'
+import { mockTutorData, distribution } from './ProfileData'
+import { DEPARTMENTS, EXPERTISE_OPTIONS } from './TutorProfileConfig'
+import Achievement from '~/pages/TutorProfile/Achievement.tsx'
+import RatingDistribution from '~/pages/TutorProfile/RatingDistribution.tsx'
+import ReviewCard from '~/components/Review/Review'
+import { mockReviews } from '~/components/Review/mockReviews'
 
 const { TextArea } = Input
 const { Option } = Select
 
-// Mock data structures
-const DEPARTMENTS = [
-  { code: 'CS', name: 'Khoa học máy tính' },
-  { code: 'EE', name: 'Điện - Điện tử' },
-  { code: 'ME', name: 'Cơ khí' },
-  { code: 'CE', name: 'Hóa học' }
-]
-
-const EXPERTISE_OPTIONS = [
-  { code: 'MACHINE_LEARNING', name: 'Học máy' },
-  { code: 'ARTIFICIAL_INTELLIGENCE', name: 'Trí tuệ nhân tạo' },
-  { code: 'CYBERSECURITY', name: 'An ninh mạng' },
-  { code: 'WEB_DEVELOPMENT', name: 'Phát triển web' },
-  { code: 'DATA_SCIENCE', name: 'Khoa học dữ liệu' }
-]
-
-const mockTutorData = {
-  id: 'tutor1',
-  firstName: 'Tùng',
-  lastName: 'Nguyễn Thanh',
-  avatarUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7zEEISvcs1XuhHOPNI0aUElsa46Fmv5NLDg&s',
-  department: 'EE',
-  expertise: ['MACHINE_LEARNING', 'ARTIFICIAL_INTELLIGENCE'],
-  rating_count: 8,
-  rating_avg: 4.9,
-  currMentee: 7,
-  maxMentee: 8,
-  totalStudentsTaught: 45,
-  yearsOfExperience: 8,
-  description: 'Giảng viên chuyên ngành vi mạch. Có hơn 8 năm kinh nghiệm trong nghiên cứu và phát triển các hệ thống âm nhạc bằng vi mạch.',
-  email: 'tungnt@university.edu.vn',
-  phone: '0123 456 789',
-  certificates: [
-    {
-      id: 'cert1',
-      name: 'AWS Certified Machine Learning',
-      issuer: 'Amazon Web Services',
-      year: '2023',
-      icon: '🏆'
-    },
-    {
-      id: 'cert2',
-      name: 'Deep Learning Specialization',
-      issuer: 'Coursera',
-      year: '2022',
-      icon: '🎓'
-    },
-    {
-      id: 'cert3',
-      name: 'Professional AI Engineer',
-      issuer: 'Google Cloud',
-      year: '2021',
-      icon: '⭐'
-    }
-  ]
-}
-
-const mockReviews = [
-  {
-    id: '1',
-    studentName: 'Minh Anh',
-    date: 'September 19, 2025',
-    rating: 5,
-    comment: 'Thầy dạy rất tận tâm và dễ hiểu. Mình đã hiểu được nhiều khái niệm phức tạp nhờ cách giảng dạy của thầy!',
-    avatar: null
-  },
-  {
-    id: '2',
-    studentName: 'Hoàng Long',
-    date: 'September 18, 2025',
-    rating: 5,
-    comment: 'Rất hài lòng với phương pháp giảng dạy của thầy. Thầy luôn kiên nhẫn giải đáp mọi thắc mắc.',
-    avatar: null
-  },
-  {
-    id: '3',
-    studentName: 'Thu Hương',
-    date: 'September 15, 2025',
-    rating: 5,
-    comment: 'Thầy rất chuyên nghiệp và am hiểu. Điểm số của mình đã cải thiện đáng kể sau khi học với thầy.',
-    avatar: null
-  },
-  {
-    id: '4',
-    studentName: 'Đức Anh',
-    date: 'September 10, 2025',
-    rating: 4,
-    comment: 'Trải nghiệm tốt. Thầy có phương pháp giảng dạy hiệu quả và dễ tiếp cận.',
-    avatar: null
-  }
-]
-
-const ratingDistribution = {
-  5: 85,
-  4: 10,
-  3: 3,
-  2: 1,
-  1: 1
-}
 
 const TutorProfile: React.FC = () => {
   const [tutorData, setTutorData] = useState(mockTutorData)
@@ -129,6 +36,7 @@ const TutorProfile: React.FC = () => {
   const [editedData, setEditedData] = useState(mockTutorData)
   const [isEnrollModalVisible, setIsEnrollModalVisible] = useState(false)
   const [enrollMessage, setEnrollMessage] = useState('')
+
 
   const isAcceptingStudents = tutorData.currMentee < tutorData.maxMentee
 
@@ -164,18 +72,6 @@ const TutorProfile: React.FC = () => {
       reader.readAsDataURL(file)
       return false
     }
-  }
-
-  const renderStars = (rating) => {
-    return (
-      <div className="flex gap-1">
-        {[1, 2, 3, 4, 5].map((star) => (
-          star <= rating ?
-            <StarFilled key={star} className="text-yellow-400 text-lg" /> :
-            <StarOutlined key={star} className="text-gray-300 text-lg" />
-        ))}
-      </div>
-    )
   }
 
   const handleEnrollRequest = () => {
@@ -446,8 +342,8 @@ const TutorProfile: React.FC = () => {
                       onClick={handleEnrollRequest}
                       disabled={!isAcceptingStudents}
                       className={isAcceptingStudents
-                        ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 border-0 shadow-lg h-12 px-8 text-lg font-bold"
-                        : "h-12 px-8"}
+                        ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 border-0 shadow-lg h-12 px-8 text-lg font-bold'
+                        : 'h-12 px-8'}
                     >
                       Gửi yêu cầu nhập học
                     </Button>
@@ -592,16 +488,7 @@ const TutorProfile: React.FC = () => {
                         ) : (
                           <div className="grid md:grid-cols-2 gap-4">
                             {tutorData.certificates.map((cert) => (
-                              <div key={cert.id} className="p-5 bg-gradient-to-br from-orange-50 to-yellow-50 rounded-2xl border-l-4 border-orange-400 hover:shadow-lg transition-all">
-                                <div className="flex items-start gap-4">
-                                  <div className="text-4xl">{cert.icon}</div>
-                                  <div className="flex-1">
-                                    <h4 className="font-bold text-gray-900 mb-1">{cert.name}</h4>
-                                    <p className="text-sm text-gray-600">{cert.issuer}</p>
-                                    <p className="text-xs text-gray-500 mt-1">Năm {cert.year}</p>
-                                  </div>
-                                </div>
-                              </div>
+                              <Achievement key={cert.id} cert={cert} />
                             ))}
                           </div>
                         )}
@@ -619,67 +506,10 @@ const TutorProfile: React.FC = () => {
                     children: (
                       <div className="space-y-6">
                         {/* Rating Distribution */}
-                        <div className="grid md:grid-cols-2 gap-6 p-6 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl">
-                          <div className="flex flex-col items-center justify-center">
-                            <div className="text-6xl font-bold text-yellow-600 mb-2">
-                              {tutorData.rating_avg.toFixed(1)}
-                            </div>
-                            <div className="flex gap-1 mb-2">
-                              {renderStars(Math.round(tutorData.rating_avg))}
-                            </div>
-                            <div className="text-gray-600">
-                              Dựa trên {tutorData.rating_count} đánh giá
-                            </div>
-                          </div>
-
-                          <div className="space-y-3">
-                            {[5, 4, 3, 2, 1].map(stars => (
-                              <div key={stars} className="flex items-center gap-3">
-                                <div className="flex items-center gap-1 w-16">
-                                  <span className="text-sm font-medium">{stars}</span>
-                                  <StarFilled className="text-yellow-400 text-xs" />
-                                </div>
-                                <Progress
-                                  percent={ratingDistribution[stars]}
-                                  strokeColor="#fadb14"
-                                  showInfo={false}
-                                  className="flex-1"
-                                />
-                                <span className="text-sm text-gray-600 w-12 text-right">
-                                  {ratingDistribution[stars]}%
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
+                        <RatingDistribution tutorData={tutorData} distribution={distribution} />
 
                         {/* Reviews List */}
-                        <div>
-                          <h3 className="text-lg font-bold text-gray-900 mb-4">Nhận xét từ học viên</h3>
-                          <div className="space-y-4">
-                            {mockReviews.map(review => (
-                              <div key={review.id} className="p-5 bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl border border-gray-100">
-                                <div className="flex items-start gap-4">
-                                  <Avatar size={48} className="bg-gradient-to-br from-blue-500 to-purple-500 flex-shrink-0">
-                                    {review.studentName[0].toUpperCase()}
-                                  </Avatar>
-                                  <div className="flex-1">
-                                    <div className="flex items-center justify-between mb-2">
-                                      <div>
-                                        <div className="font-semibold text-gray-900">{review.studentName}</div>
-                                        <div className="text-xs text-gray-500">{review.date}</div>
-                                      </div>
-                                      <div className="flex gap-1">
-                                        {renderStars(review.rating)}
-                                      </div>
-                                    </div>
-                                    <p className="text-gray-700 leading-relaxed">{review.comment}</p>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
+                        <ReviewCard reviews={mockReviews} />
                       </div>
                     )
                   }
@@ -703,11 +533,11 @@ const TutorProfile: React.FC = () => {
           okText="Gửi yêu cầu"
           cancelText="Hủy"
           okButtonProps={{
-            className: "bg-blue-500 hover:bg-blue-600",
-            size: "large"
+            className: 'bg-blue-500 hover:bg-blue-600',
+            size: 'large'
           }}
           cancelButtonProps={{
-            size: "large"
+            size: 'large'
           }}
           width={600}
         >
