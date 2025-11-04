@@ -7,7 +7,7 @@ import { type User } from './context/User/userContext.tsx'
 import { ToastContainer } from 'react-toastify'
 import { userContext } from '~/context/User/userContext.tsx'
 import TutorSearchPage from '~/pages/TutorSearch/TutorSearch.tsx'
-import Profile from '~/pages/TutorProfile/Profile.tsx'
+// import TutorProfile from '~/pages/TutorProfile/TutorProfile.tsx'
 import ScrollToTop from '~/components/ScrollToTop/ScrollToTop.tsx'
 import Home from '~/pages/Homepage/Home.tsx'
 import Setting from '~/pages/Setting/Settings.tsx'
@@ -17,16 +17,27 @@ import { setupAxiosInterceptors } from '~/utils/authorizedAxiosInstance.ts'
 import TutorCommunityPlatform from '~/pages/Course/TutorCommunityPlatform.tsx'
 import AnimationBackground from '~/components/AnimationBackground/AnimationBackground.tsx'
 import { ActiveTabContextProvider } from '~/context/CourseContext/ActiveTabContext.tsx'
-
-import TutorList from '~/pages/TutorList/TutorList.tsx'
-import BackToTop from './components/Header/BackToTop.tsx'
-// import StudentList from './pages/StudentList/StudentList.tsx'
+import { NotificationProvider } from '~/context/NotificationContext/NotificationContext'
+import BackToTop from '~/components/Header/BackToTop.tsx'
+import Overview from '~/pages/admin/Overview.tsx'
+import UserManagement from '~/pages/admin/UserManagement.tsx'
+import Analytics from '~/pages/admin/Analytics.tsx'
+import Logs from '~/pages/admin/Logs.tsx'
+import Dashboard from '~/pages/Dashboard/Dashboard.tsx'
+import MyCalendar from '~/pages/Calendar/MyCalendar.tsx'
+// import StudentProfile from '~/pages/StudentProfile/StudentProfile.tsx'
+import Profile from '~/pages/Profile/Profile.tsx';
 interface ProtectedRouteProps {
   user: User | null
+  allowedRoles?: string[]
 }
 
-const ProtectedRoute = ({ user }: ProtectedRouteProps) => {
-  if (!user) return <Navigate to="/login" replace />
+const ProtectedRoute = ({ user, allowedRoles }: ProtectedRouteProps) => {
+  if (!user)
+    return <Navigate to="/login" replace />
+
+  if (allowedRoles && !user.roles.some(role => allowedRoles.includes(role)))
+    return <Navigate to="/404" replace />
   return <Outlet />
 }
 
@@ -42,34 +53,59 @@ function App() {
 
   return (
     <>
-      <ScrollToTop />
-      <AnimationBackground />
-      {showHeader && <Header />}
-      <main className={showHeader ? 'mt-[71px]' : ''}>
-        <Routes>
-          <Route element={<ProtectedRoute user={user} />}>
-            <Route path="/settings" element={ <Setting /> } />
-            <Route path="/dashboard" element={ <TutorSearchPage /> } />
-            <Route path="/library" element={ <LibraryPage /> } />
-            <Route path='/:id' element={ <Profile />} />
-            <Route path='/course/:id' element={
-              <ActiveTabContextProvider>
-                <TutorCommunityPlatform/>
-              </ActiveTabContextProvider>
-            } />
+      <NotificationProvider>
+        <ScrollToTop />
+        <AnimationBackground />
+        {showHeader && <Header />}
+        <main className={showHeader ? 'mt-[71px]' : ''}>
+          <Routes>
 
-            <Route path='/mytutors' element={ <TutorList />} />
-            {/* <Route path='/mymentees' element={ <StudentList />} /> */}
-          </Route>
-          <Route path='/login' element={ <Auth />} />
-          <Route path='/register' element={ <Auth />} />
-          <Route path="/" element={ <Home />} />
-          <Route path="/404" element={ <NotFound />} />
-          <Route path="*" element={ <Navigate to="/404" replace/> }/>
-        </Routes>
-      </main>
-      <ToastContainer position="top-right" autoClose={3000} />
-      <BackToTop />
+            # Routes accessible by any authenticated user
+            <Route element={<ProtectedRoute user={user} />}>
+              <Route path="/settings" element={ <Setting /> } />
+            </Route>
+
+            # Routes accessible by STUDENT and TUTOR roles
+            <Route element={<ProtectedRoute user={user} allowedRoles={['STUDENT', 'TUTOR']} />}>
+              <Route path="/search" element={ <TutorSearchPage /> } />
+              <Route path="/library" element={ <LibraryPage /> } />
+
+              # Routes to view profiles of tutors and students
+              {/*<Route path='/tutor/:id' element={ <TutorProfile />} />*/}
+              {/*<Route path='/student/:id' element={ <StudentProfile />} />*/}
+              <Route path='/:id' element={<Profile />} />
+
+
+              <Route path='/dashboard' element={ <Dashboard />} />
+
+              <Route path='/course/:id' element={
+                <ActiveTabContextProvider>
+                  <TutorCommunityPlatform/>
+                </ActiveTabContextProvider>
+              } />
+              <Route path='/dashboard' element={ <Dashboard />} />
+              <Route path='/calendar' element={ <MyCalendar />} />
+              {/* <Route path='/mymentees' element={ <StudentList />} /> */}
+            </Route>
+
+            # Routes only accessible by ADMIN role
+            <Route element={<ProtectedRoute user={user} allowedRoles={['ADMIN']} />}>
+              <Route path='/admin/overview' element={ <Overview/>} />
+              <Route path='/admin/users' element={<UserManagement />}/>
+              <Route path='admin/analytics' element={ <Analytics /> }/>
+              <Route path ='/admin/logs' element={<Logs/>} />
+            </Route>
+
+            <Route path='/login' element={ <Auth />} />
+            <Route path='/register' element={ <Auth />} />
+            <Route path="/" element={ <Home />} />
+            <Route path="/404" element={ <NotFound />} />
+            <Route path="*" element={ <Navigate to="/404" replace/> }/>
+          </Routes>
+        </main>
+        <ToastContainer position="top-right" autoClose={3000} />
+        <BackToTop />
+      </NotificationProvider>
     </>
   )
 }

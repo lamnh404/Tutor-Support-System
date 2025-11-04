@@ -37,6 +37,7 @@ export const getTypeIcon = (type: DocumentType): string => {
 export const Tabs: Tab[] = [
   { id: 'documents' as ActiveTab, label: 'Tài liệu & Bài giảng', icon: BookOpen, gradient: 'from-blue-500 to-cyan-500' },
   { id: 'assignments' as ActiveTab, label: 'Bài tập', icon: FileText, gradient: 'from-purple-500 to-pink-500' },
+  { id: 'students' as ActiveTab, label: 'Học viên', icon: Users, gradient: 'from-yellow-500 to-amber-500' },
   { id: 'sessions' as ActiveTab, label: 'Buổi tư vấn', icon: Users, gradient: 'from-green-500 to-emerald-500' },
   { id: 'availability' as ActiveTab, label: 'Lịch trống', icon: Calendar, gradient: 'from-orange-500 to-red-500' }
 ]

@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import React, { useContext } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Dropdown, Button } from 'antd'
 import type { MenuProps } from 'antd'
@@ -6,12 +6,16 @@ import { MenuOutlined } from '@ant-design/icons'
 import { userContext } from '~/context/User/userContext'
 
 const allNavLinks = [
-  { path: '/', label: 'Trang Chủ', requiredRoles: ['STUDENT', 'TUTOR'] },
-  { path: '/student', label: 'Trang Cá Nhân', requiredRoles: ['STUDENT', 'TUTOR'] },
-  { path: '/mytutors', label: 'Các gia sư của tôi', requiredRoles: ['STUDENT'] }, // Specifically for STUDENT
-  { path: '/mymentees', label: 'Các học sinh của tôi', requiredRoles: ['TUTOR'] }, // Specifically for TUTOR
-  { path: '/dashboard', label: 'Bảng Điều Khiển', requiredRoles: ['STUDENT', 'TUTOR'] },
-  { path: '/library', label: 'Thư Viện', requiredRoles: ['STUDENT', 'TUTOR'] }
+  { path: '/', label: 'Trang Chủ', requiredRoles: ['STUDENT', 'TUTOR', 'ADMIN'] },
+  { path: '/students', label: 'Trang Cá Nhân', requiredRoles: ['STUDENT', 'TUTOR'] },
+  { path: '/dashboard', label: 'Bảng điều khiển', requiredRoles: ['STUDENT', 'TUTOR'] },
+  { path: '/calendar', label: 'Lịch', requiredRoles: ['STUDENT', 'TUTOR'] },
+  { path: '/search', label: 'Tìm kiếm', requiredRoles: ['STUDENT', 'TUTOR'] },
+  { path: '/library', label: 'Thư Viện', requiredRoles: ['STUDENT', 'TUTOR'] },
+  { path: '/admin/overview', label: 'Tổng Quan', requiredRoles: ['ADMIN'] },
+  { path: '/admin/users', label: 'Người Dùng', requiredRoles: ['ADMIN'] },
+  { path: '/admin/analytics', label: 'Phân Tích', requiredRoles: ['ADMIN'] },
+  { path: '/admin/logs', label: 'Hoạt Động', requiredRoles: ['ADMIN'] }
 ]
 
 const HeaderButtons: React.FC = () => {
@@ -24,7 +28,7 @@ const HeaderButtons: React.FC = () => {
     })
     : []
 
-  const baseStyle = 'text-white py-4 px-3 rounded-xl text-lg transition-colors cursor-pointer'
+  const baseStyle = 'text-white py-4 px-3 rounded-xl text-lg transition-colors min-w-24 cursor-pointer'
   const activeStyle = 'bg-[#044CC8]'
   const inactiveStyle = 'bg-[#0388B4] hover:bg-[#045a77]'
 

@@ -8,15 +8,19 @@ import {
   PASSWORD_RULE_MESSAGE
 } from '~/utils/validators.ts'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert.tsx'
-import { userContext } from '~/context/User/userContext.tsx'
+import { type User, userContext } from '~/context/User/userContext.tsx'
 import { toast } from 'react-toastify'
 import { userLoginAPI } from '~/apis/userAPI'
 // import { AxiosError } from 'axios'
-import { type User } from '~/context/User/userContext.tsx'
 
 type LoginFormData = {
   username: string
   password: string
+}
+interface UserResponse {
+  accessToken?: string
+  tokenType?: string
+  user: User
 }
 
 const Login: React.FC = () => {
@@ -33,15 +37,16 @@ const Login: React.FC = () => {
 
   const handleLogin = (data: LoginFormData) => {
     const { username, password } = data
-    toast.promise<unknown>(
+    toast.promise<UserResponse>(
       userLoginAPI(username, password),
       {
         pending: 'Đang đăng nhập...',
         success: 'Đăng nhập thành công!'
         // error: 'Đăng nhập thất bại!'
       }
-    ).then(res => {
-      const { accessToken, tokenType, ...userData } = res
+    ).then((res) => {
+      //eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { accessToken='', tokenType= 'Bearer', ...userData } = res || {}
       login(userData)
       setError(null)
       navigate('/')

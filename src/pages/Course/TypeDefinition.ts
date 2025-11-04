@@ -2,7 +2,7 @@ import * as react from 'react'
 import type { LucideProps } from 'lucide-react'
 
 
-export type ActiveTab = 'documents' | 'assignments' | 'sessions' | 'availability';
+export type ActiveTab = 'documents' | 'assignments' | 'sessions' | 'availability' | 'students';
 
 export type DocumentType = 'video' | 'pdf' | 'document' | 'link';
 

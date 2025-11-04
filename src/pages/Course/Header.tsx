@@ -30,7 +30,7 @@ const Header: React.FC<HeaderProps> = ({ tutor }) => {
             </h1>
             <p className="text-sm text-gray-600 flex items-center space-x-2 mt-1">
               <Mail className="w-3 h-3" />
-              <span>{tutor!.email}</span>
+              <span>{tutor!.username + '@hcmut.edu.vn'}</span>
               <motion.span
                 whileHover={{ scale: 1.1 }}
                 className="px-3 py-1 bg-gradient-to-r from-blue-100 to-purple-100 text-indigo-700 rounded-full text-xs font-bold shadow-sm"

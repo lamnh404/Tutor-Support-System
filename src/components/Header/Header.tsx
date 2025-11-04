@@ -1,10 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { Button, Dropdown, Avatar } from 'antd'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBell } from '@fortawesome/free-solid-svg-icons'
+import { BellOutlined, CheckOutlined } from '@ant-design/icons'
 import { useState, useContext } from 'react'
 import Noti from './Noti'
 import { userContext } from '~/context/User/userContext.tsx'
+import { useNotifications } from '~/context/NotificationContext/NotificationContext'
 import type { MenuProps } from 'antd'
 import { userLogoutAPI } from '~/apis/userAPI'
 import HeaderButtons from './HeaderButtons'
@@ -12,9 +12,7 @@ import HeaderButtons from './HeaderButtons'
 export default function Header() {
   const [isOpenNoti, setIsOpenNoti] = useState(false)
   const navigate = useNavigate()
-  const notifications = [
-    'Thông báo 1', 'Thông báo 2', 'Thông báo 3', 'Thông báo 4', 'Thông báo 5'
-  ]
+  const { notifications, unreadCount, markAllAsRead } = useNotifications()
 
   const { user, logout } = useContext(userContext)
 
@@ -43,22 +41,44 @@ export default function Header() {
             <>
               <div className="h-full flex items-center mr-3 sm:mr-5">
                 <div className="relative cursor-pointer" onClick={() => setIsOpenNoti(!isOpenNoti)}>
-                  <FontAwesomeIcon icon={faBell} className="text-xl sm:text-2xl text-white hover:text-gray-200" />
-                  {notifications.length > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full leading-tight">
-                      {notifications.length}
-                    </span>
-                  )}
+                  <div className="relative">
+                    <BellOutlined className="text-xl sm:text-2xl text-white hover:text-gray-200 transition-colors" />
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full leading-tight min-w-[18px] text-center">
+                        {unreadCount > 99 ? '99+' : unreadCount}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 {isOpenNoti && (
-                  <div className="absolute right-0 top-[60px] w-64 bg-white shadow-lg rounded-md overflow-hidden border border-gray-200 z-30">
-                    <ul className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
-                      {notifications.length > 0 ? (
-                        notifications.map((n, idx) => <Noti noti={n} key={idx} />)
-                      ) : (
-                        <li className="p-3 text-sm text-gray-500 text-center">Không có thông báo mới</li>
+                  <div className="absolute right-0 top-[60px] w-80 bg-white shadow-2xl rounded-lg overflow-hidden border border-gray-200 z-30">
+                    {/* Header */}
+                    <div className="px-4 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+                      <h3 className="text-sm font-semibold text-gray-900">Thông báo</h3>
+                      {unreadCount > 0 && (
+                        <button
+                          onClick={() => markAllAsRead()}
+                          className="text-xs text-blue-600 hover:text-blue-800 cursor-pointer flex items-center gap-1"
+                        >
+                          <CheckOutlined className="text-xs" />
+                          Đánh dấu đã đọc
+                        </button>
                       )}
-                    </ul>
+                    </div>
+
+                    {/* Notifications List */}
+                    <div className="max-h-96 overflow-y-auto">
+                      {notifications.length > 0 ? (
+                        notifications.map((notification) => (
+                          <Noti notification={notification} key={notification.id} />
+                        ))
+                      ) : (
+                        <div className="p-8 text-center">
+                          <BellOutlined className="text-4xl text-gray-300 mb-2" />
+                          <p className="text-sm text-gray-500">Không có thông báo mới</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

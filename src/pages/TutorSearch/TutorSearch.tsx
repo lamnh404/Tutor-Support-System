@@ -9,7 +9,7 @@ import {
   DEPARTMENT_EXPERTISE_MAP,
   type DepartmentCode,
   type ExpertiseCode
-} from './TutorDefinitions'
+} from '../../utils/definitions.tsx'
 import tutorSearchAPI, { type tutorSearchParams } from '~/apis/TutorSearchAPI'
 import { toast } from 'react-toastify'
 

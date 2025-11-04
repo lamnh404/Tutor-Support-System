@@ -4,40 +4,40 @@ export interface Review {
   date: string
   rating: number
   comment: string
-  avatar: string | null
+  avatarUrl: string | null
 }
 
-export const mockReviews : Review[] = [
+export const mockReviews: Review[] = [
   {
     id: '1',
-    studentName: 'beyza',
+    studentName: 'Minh Anh',
     date: 'September 19, 2025',
     rating: 5,
-    comment: 'My class with Racy was both informative and fun. She made complex topics easy to understand!',
-    avatar: null
+    comment: 'Thầy dạy rất tận tâm và dễ hiểu. Mình đã hiểu được nhiều khái niệm phức tạp nhờ cách giảng dạy của thầy!',
+    avatarUrl: null
   },
   {
     id: '2',
-    studentName: 'Simge',
+    studentName: 'Hoàng Long',
     date: 'September 18, 2025',
     rating: 5,
-    comment: 'I had the pleasure of preparing for the OET with Racy and I would definitely recommend her to others.',
-    avatar: null
+    comment: 'Rất hài lòng với phương pháp giảng dạy của thầy. Thầy luôn kiên nhẫn giải đáp mọi thắc mắc.',
+    avatarUrl: null
   },
   {
     id: '3',
-    studentName: 'Sarah M.',
+    studentName: 'Thu Hương',
     date: 'September 15, 2025',
     rating: 5,
-    comment: 'Excellent tutor! Very patient and knowledgeable. My English has improved significantly.',
-    avatar: null
+    comment: 'Thầy rất chuyên nghiệp và am hiểu. Điểm số của mình đã cải thiện đáng kể sau khi học với thầy.',
+    avatarUrl: null
   },
   {
     id: '4',
-    studentName: 'John D.',
+    studentName: 'Đức Anh',
     date: 'September 10, 2025',
     rating: 4,
-    comment: 'Great experience overall. Racy is very professional and her teaching methods are effective.',
-    avatar: null
+    comment: 'Trải nghiệm tốt. Thầy có phương pháp giảng dạy hiệu quả và dễ tiếp cận.',
+    avatarUrl: null
   }
 ]

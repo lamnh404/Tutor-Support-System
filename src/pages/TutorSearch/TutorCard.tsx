@@ -5,7 +5,7 @@ import {
   type DepartmentCode,
   DEPARTMENTS, // Import the array of department objects
   EXPERTISES // Import the array of expertise objects
-} from './TutorDefinitions'
+} from '../../utils/definitions.tsx'
 
 interface TutorCardProps {
   tutor: Tutor;
