@@ -1,6 +1,6 @@
 // TutorData.tsx
 
-import type { DepartmentCode, ExpertiseCode } from './TutorDefinitions'
+import type { DepartmentCode, ExpertiseCode } from '../../utils/definitions.tsx'
 
 export type Department = DepartmentCode;
 

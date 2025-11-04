@@ -1,3 +1,5 @@
+import type { Certificate } from '~/pages/TutorProfile/TutorProfileConfig.ts'
+
 export const mockTutorData = {
   id: 'tutor1',
   firstName: 'Tùng',
@@ -39,6 +41,29 @@ export const mockTutorData = {
   ]
 }
 
+export const certificates: Certificate[] = [
+  {
+    id: 'cert1',
+    name: 'AWS Certified Machine Learning',
+    issuer: 'Amazon Web Services',
+    year: '2023',
+    icon: '🏆'
+  },
+  {
+    id: 'cert2',
+    name: 'Deep Learning Specialization',
+    issuer: 'Coursera',
+    year: '2022',
+    icon: '🎓'
+  },
+  {
+    id: 'cert3',
+    name: 'Professional AI Engineer',
+    issuer: 'Google Cloud',
+    year: '2021',
+    icon: '⭐'
+  }
+]
 
 export const distribution = {
   5: 85,

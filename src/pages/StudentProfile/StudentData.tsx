@@ -1,4 +1,4 @@
-import type { DepartmentCode } from '~/pages/TutorSearch/TutorDefinitions'
+import type { DepartmentCode } from '~/utils/definitions.tsx'
 
 export interface Student {
   id: string

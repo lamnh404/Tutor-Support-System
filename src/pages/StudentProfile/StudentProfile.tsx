@@ -16,7 +16,7 @@ import {
   GlobalOutlined
 } from '@ant-design/icons'
 import { Card, Avatar, Button, Tag, Input, Select, message, Divider, Upload, type UploadProps } from 'antd'
-import { DEPARTMENTS } from '~/pages/TutorSearch/TutorDefinitions'
+import { DEPARTMENTS } from '~/utils/definitions.tsx'
 
 const { TextArea } = Input
 const { Option } = Select

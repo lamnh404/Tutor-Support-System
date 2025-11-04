@@ -16,13 +16,13 @@ const Profile: React.FC = () => {
       })
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .catch(_error => {
-        navigate('/404')
+        navigate('/404', { replace: true })
       })
   }, [id, navigate])
   return (
     <>
       { role === 'STUDENT' && <StudentProfile /> }
-      { role === 'TUTOR' && <TutorProfile /> }
+      { role === 'TUTOR' && <TutorProfile id={id!} /> }
       {role === 'BOTH' && (
         <div>
           {/* Nút chuyển đổi */}
@@ -50,7 +50,7 @@ const Profile: React.FC = () => {
           </div>
 
           {/* Hiển thị profile tương ứng */}
-          {activeProfile === 'STUDENT' ? <StudentProfile /> : <TutorProfile />}
+          {activeProfile === 'STUDENT' ? <StudentProfile /> : <TutorProfile id = {id!}/>}
         </div>
       )}
     </>

@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
-// import { useParams } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { certificates } from './ProfileData'
+import { basicTutorInfoAPI } from '~/apis/profileAPI.tsx'
 import {
   UserOutlined,
   MailOutlined,
@@ -18,9 +19,10 @@ import {
   HistoryOutlined,
   PlusOutlined
 } from '@ant-design/icons'
-import { Card, Avatar, Button, Tag, Input, Select, Divider, Upload, Modal, message, Tabs } from 'antd'
+import { Card, Avatar, Button, Tag, Input, Select, Divider, Upload, Modal, message, Tabs, Spin } from 'antd'
 import { mockTutorData, distribution } from './ProfileData'
-import { DEPARTMENTS, EXPERTISE_OPTIONS } from './TutorProfileConfig'
+import { type TutorProfileData } from './TutorProfileConfig'
+import { type DepartmentCode, DEPARTMENTS, type ExpertiseCode, EXPERTISES } from '~/utils/definitions.tsx'
 import Achievement from '~/pages/TutorProfile/Achievement.tsx'
 import RatingDistribution from '~/pages/TutorProfile/RatingDistribution.tsx'
 import ReviewCard from '~/components/Review/Review'
@@ -30,23 +32,42 @@ const { TextArea } = Input
 const { Option } = Select
 
 
-const TutorProfile: React.FC = () => {
-  const [tutorData, setTutorData] = useState(mockTutorData)
+const TutorProfile: React.FC<{id:string}> = ({ id }) => {
+  const [tutorData, setTutorData] = useState<TutorProfileData | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [editedData, setEditedData] = useState(mockTutorData)
   const [isEnrollModalVisible, setIsEnrollModalVisible] = useState(false)
   const [enrollMessage, setEnrollMessage] = useState('')
 
+  useEffect(() => {
+    basicTutorInfoAPI(id).then((data) => {
+      setTutorData(data)
+      setEditedData(data)
+    }).catch(() => {
+      message.error('Không thể tải thông tin giảng viên.')
+    })
 
-  const isAcceptingStudents = tutorData.currMentee < tutorData.maxMentee
+  }, [id])
 
-  const getDepartmentName = (code) => {
+  if (!tutorData) {
+    return (
+      <Spin
+        size="large"
+        tip="Đang tải thông tin giảng viên..."
+        fullscreen
+      />
+    )}
+
+  const isAcceptingStudents = tutorData.currMenteeCount < tutorData.maximumCapacity
+
+
+  const getDepartmentName = (code: DepartmentCode) => {
     const dept = DEPARTMENTS.find(d => d.code === code)
     return dept?.name || code
   }
 
-  const getExpertiseName = (code) => {
-    const exp = EXPERTISE_OPTIONS.find(e => e.code === code)
+  const getExpertiseName = (code: ExpertiseCode) => {
+    const exp = EXPERTISES.find(e => e.code === code)
     return exp?.name || code
   }
 
@@ -231,16 +252,16 @@ const TutorProfile: React.FC = () => {
                     <div className="flex items-center justify-center gap-1 mb-1">
                       <StarFilled className="text-yellow-500 text-lg" />
                       <span className="text-lg font-bold text-yellow-600">
-                        {tutorData.rating_avg.toFixed(1)}
+                        {tutorData.ratingAvg.toFixed(1)}
                       </span>
                     </div>
-                    <div className="text-xs text-gray-600">{tutorData.rating_count} đánh giá</div>
+                    <div className="text-xs text-gray-600">{tutorData.ratingCount} đánh giá</div>
                   </div>
                   <div className="text-center bg-gradient-to-br from-purple-50 to-purple-100 p-2.5 rounded-xl">
                     <div className="flex items-center justify-center gap-1 mb-1">
                       <TeamOutlined className="text-purple-500 text-lg" />
                       <span className="text-lg font-bold text-purple-600">
-                        {tutorData.currMentee}/{tutorData.maxMentee}
+                        {tutorData.currMenteeCount}/{tutorData.maximumCapacity}
                       </span>
                     </div>
                     <div className="text-xs text-gray-600">Học viên</div>
@@ -249,7 +270,7 @@ const TutorProfile: React.FC = () => {
                     <div className="flex items-center justify-center gap-1 mb-1">
                       <HistoryOutlined className="text-blue-500 text-lg" />
                       <span className="text-lg font-bold text-blue-600">
-                        {tutorData.totalStudentsTaught}
+                        {tutorData.totalStudentTaught}
                       </span>
                     </div>
                     <div className="text-xs text-gray-600">Đã dạy</div>
@@ -309,7 +330,7 @@ const TutorProfile: React.FC = () => {
                           size="small"
                         />
                       ) : (
-                        <p className="font-semibold text-gray-800 text-sm">{tutorData.phone}</p>
+                        <p className="font-semibold text-gray-800 text-sm">{tutorData.phoneNumber}</p>
                       )}
                     </div>
                   </div>
@@ -331,7 +352,7 @@ const TutorProfile: React.FC = () => {
                       </h3>
                       <p className="text-gray-600">
                         {isAcceptingStudents
-                          ? `Giảng viên đang nhận thêm ${tutorData.maxMentee - tutorData.currMentee} học viên`
+                          ? `Giảng viên đang nhận thêm ${tutorData.maximumCapacity - tutorData.currMenteeCount} học viên`
                           : 'Giảng viên hiện đã đủ số lượng học viên'}
                       </p>
                     </div>
@@ -402,7 +423,7 @@ const TutorProfile: React.FC = () => {
                   className="w-full"
                   size="large"
                 >
-                  {EXPERTISE_OPTIONS.map(exp => (
+                  {EXPERTISES.map(exp => (
                     <Option key={exp.code} value={exp.code}>{exp.name}</Option>
                   ))}
                 </Select>
@@ -487,7 +508,7 @@ const TutorProfile: React.FC = () => {
                           </div>
                         ) : (
                           <div className="grid md:grid-cols-2 gap-4">
-                            {tutorData.certificates.map((cert) => (
+                            {certificates.map((cert) => (
                               <Achievement key={cert.id} cert={cert} />
                             ))}
                           </div>
