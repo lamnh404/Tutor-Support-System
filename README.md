@@ -1,489 +1,214 @@
 <div align="center">
 
-# 🚀 React + Vite + TypeScript Frontend
+# ⚡ React + Vite + TypeScript
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-18.x-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
-[![Nginx](https://img.shields.io/badge/Nginx-Optimized-009639?style=for-the-badge&logo=nginx&logoColor=white)](https://nginx.org/)
+<p align="center">
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
+  <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" />
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
+</p>
 
-**A cutting-edge, production-ready React frontend featuring lightning-fast HMR, enterprise-grade architecture, and containerized deployment.**
+<p align="center">
+  <strong>Modern React frontend with blazing-fast development and production-ready deployment</strong>
+</p>
 
-[Features](#-features) • [Quick Start](#-quick-start) • [Architecture](#-architecture) • [Deployment](#-deployment) • [Documentation](#-documentation)
-
----
+<p align="center">
+  <a href="#-features">Features</a> •
+  <a href="#-quick-start">Quick Start</a> •
+  <a href="#-project-structure">Structure</a> •
+  <a href="#-deployment">Deployment</a>
+</p>
 
 </div>
+
+---
 
 ## ✨ Features
 
 <table>
 <tr>
-<td width="50%">
+<td>
 
-### ⚡ Performance
-- **Sub-100ms HMR** - Vite-powered instant updates
-- **Optimized Builds** - Tree-shaking & code-splitting
-- **Lazy Loading** - Route-based code splitting
-- **Asset Optimization** - Automatic minification
-
-</td>
-<td width="50%">
-
-### 🔒 Type Safety
-- **Full TypeScript Coverage** - Strict mode enabled
-- **Type-Safe APIs** - End-to-end type checking
-- **IntelliSense Support** - Enhanced DX
-- **Compile-Time Validation** - Catch errors early
+⚡ **Lightning Fast**
+- Sub-100ms HMR with Vite
+- Optimized production builds
+- Automatic code splitting
 
 </td>
-</tr>
-<tr>
-<td width="50%">
+<td>
 
-### 🏗️ Architecture
-- **Feature-Based Structure** - Scalable organization
-- **State Management** - Redux/Zustand ready
-- **Context API** - Efficient global state
-- **Custom Hooks** - Reusable logic
+🔒 **Type Safe**
+- Full TypeScript coverage
+- Strict mode enabled
+- IntelliSense support
 
 </td>
-<td width="50%">
+<td>
 
-### 🐳 DevOps
-- **Multi-Stage Docker Builds** - Optimized images
-- **Nginx Production Server** - High performance
-- **Docker Compose** - Orchestration ready
-- **CI/CD Ready** - Easy integration
+🐳 **Deploy Ready**
+- Docker multi-stage builds
+- Nginx optimized (~20MB)
+- CI/CD friendly
 
 </td>
 </tr>
 </table>
-
----
-
-## 📁 Architecture
-
-```
-project-root/
-│
-├── 📦 Configuration Files
-│   ├── docker-compose.yml         # Multi-container orchestration
-│   ├── Dockerfile                 # Multi-stage production build
-│   ├── nginx.conf                 # SPA-optimized server config
-│   ├── vite.config.ts             # Vite build configuration
-│   ├── tsconfig.json              # TypeScript base config
-│   ├── tsconfig.app.json          # App TypeScript settings
-│   ├── tsconfig.node.json         # Node/tooling TS settings
-│   ├── eslint.config.js           # Flat config ESLint setup
-│   └── package.json               # Dependencies & scripts
-│
-├── 🌐 Public Assets
-│   └── public/                    # Static files (served as-is)
-│       ├── background.png
-│       └── vite.svg
-│
-└── 💻 Source Code
-    └── src/
-        ├── 🤖 ai_data/            # AI/ML datasets & resources
-        ├── 🌐 api/                # API client & request handlers
-        │   ├── client.ts          # HTTP client configuration
-        │   ├── endpoints/         # API endpoint definitions
-        │   └── types.ts           # Request/Response types
-        │
-        ├── 🧩 components/         # Reusable UI components
-        │   ├── common/            # Shared components
-        │   ├── layout/            # Layout components
-        │   └── features/          # Feature-specific components
-        │
-        ├── 🔄 contexts/           # React Context providers
-        │   ├── AuthContext.tsx    # Authentication context
-        │   ├── ThemeContext.tsx   # Theme management
-        │   └── index.ts           # Context exports
-        │
-        ├── 🎣 hooks/              # Custom React hooks
-        │   ├── useAuth.ts         # Authentication hook
-        │   ├── useFetch.ts        # Data fetching hook
-        │   └── index.ts           # Hook exports
-        │
-        ├── 📄 pages/              # Route-level components
-        │   ├── Home/              # Home page
-        │   ├── Dashboard/         # Dashboard page
-        │   └── index.ts           # Page exports
-        │
-        ├── 🗄️ store/              # State management
-        │   ├── index.ts           # Store configuration
-        │   ├── slices/            # Redux slices
-        │   └── hooks.ts           # Typed hooks
-        │
-        ├── 📐 types/              # TypeScript definitions
-        │   ├── index.ts           # Type exports
-        │   ├── models.ts          # Data models
-        │   └── api.ts             # API types
-        │
-        ├── 🛠️ utils/              # Helper functions
-        │   ├── format.ts          # Formatters
-        │   ├── validation.ts      # Validators
-        │   └── constants.ts       # Constants
-        │
-        ├── 🎨 assets/             # Images, fonts, icons
-        ├── 🚀 main.tsx            # Application entry point
-        ├── 📱 App.tsx             # Root component
-        ├── App.css                # Root styles
-        ├── index.css              # Global styles
-        └── vite-env.d.ts          # Vite type definitions
-```
 
 ---
 
 ## 🚀 Quick Start
 
-### Prerequisites
-
 ```bash
-# Required
-Node.js >= 18.x
-npm >= 9.x (or yarn >= 1.22.x)
-
-# Optional (for Docker)
-Docker >= 20.x
-Docker Compose >= 2.x
-```
-
-### Installation
-
-```bash
-# 1. Clone the repository
-git clone <repository-url>
-cd <project-directory>
-
-# 2. Install dependencies
+# Install and run
 npm install
-
-# 3. Start development server
 npm run dev
 ```
 
-🎉 **Your app is now running at** [http://localhost:5173](http://localhost:5173)
+> 🌐 Open [http://localhost:5173](http://localhost:5173)
+
+### Development Commands
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | 🔥 Start development server |
+| `npm run build` | 📦 Build for production |
+| `npm run preview` | 👁️ Preview production build |
+| `npm run lint` | ✅ Lint code |
+| `npm run type-check` | 🔍 Check TypeScript types |
+
+---
+
+## 📂 Project Structure
+
+```
+src/
+├── 🔌 api/              # API client & endpoints
+├── 🧩 components/       # Reusable UI components
+│   ├── common/          # Buttons, Inputs, Modals
+│   ├── layout/          # Header, Footer, Sidebar
+│   └── features/        # Feature-specific components
+├── 🌐 contexts/         # React Context providers
+├── 🎣 hooks/            # Custom React hooks
+├── 📄 pages/            # Route-level pages
+├── 🗄️ store/            # State management
+├── 📐 types/            # TypeScript definitions
+└── 🛠️ utils/            # Helper functions
+```
+
+---
+
+## 🛠️ Tech Stack
+
+<div align="center">
+
+| Layer | Technology | Why? |
+|:-----:|:----------:|:-----|
+| **UI** | React 18 | Modern, concurrent rendering |
+| **Language** | TypeScript 5 | Type safety at scale |
+| **Build** | Vite 5 | 10-100x faster than webpack |
+| **Deploy** | Docker + Nginx | Production-grade performance |
+
+</div>
 
 ---
 
 ## 💻 Development
 
-### Available Scripts
-
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | 🔥 Start development server with HMR |
-| `npm run build` | 📦 Create optimized production build |
-| `npm run preview` | 👀 Preview production build locally |
-| `npm run lint` | 🔍 Run ESLint checks |
-| `npm run lint:fix` | 🔧 Auto-fix linting issues |
-| `npm run type-check` | ✅ TypeScript type validation |
-
-### Development Workflow
+### Environment Variables
 
 ```bash
-# Start development with hot reload
-npm run dev
+# .env.local
+VITE_API_URL=http://localhost:3000
+VITE_APP_NAME=My App
+```
 
-# Run type checking (in separate terminal)
-npm run type-check -- --watch
-
-# Lint and fix code
-npm run lint:fix
-
-# Build for production
-npm run build
-
-# Test production build locally
-npm run preview
+```typescript
+// Usage
+const apiUrl = import.meta.env.VITE_API_URL;
 ```
 
 ### Code Quality
 
-**ESLint Configuration** - TypeScript-aware rules with React hooks validation
-```bash
-# Run linter
-npx eslint "src/**/*.{ts,tsx}"
-
-# Auto-fix issues
-npx eslint "src/**/*.{ts,tsx}" --fix
-```
-
-**Type Safety** - Strict TypeScript configuration for maximum safety
-```bash
-# Check types without building
-npm run type-check
-
-# Build with type checking
-npm run build
-```
+- ✅ TypeScript strict mode
+- ✅ ESLint with React hooks
+- ✅ Pre-commit validation
 
 ---
 
 ## 🐳 Deployment
 
-### Docker (Production)
-
-#### Standard Docker Build
+### Quick Deploy
 
 ```bash
-# Build optimized production image
-docker build -t my-frontend:latest .
-
-# Run container (exposed on port 80)
-docker run -d \
-  -p 80:80 \
-  --name frontend \
-  --restart unless-stopped \
-  my-frontend:latest
-```
-
-#### Docker Compose (Recommended)
-
-```bash
-# Start all services
 docker-compose up -d --build
-
-# View logs
-docker-compose logs -f
-
-# Stop services
-docker-compose down
-
-# Restart services
-docker-compose restart
 ```
 
-### Multi-Stage Build Benefits
-
-✅ **Minimal Image Size** - ~20MB with Nginx Alpine  
-✅ **No Dev Dependencies** - Production-only packages  
-✅ **Optimized Layers** - Smart caching for faster builds  
-✅ **Security** - Reduced attack surface  
-
-### Nginx Configuration
-
-The included `nginx.conf` provides:
-- ✅ SPA fallback routing (all routes → `index.html`)
-- ✅ Gzip compression for assets
-- ✅ Cache headers for static files
-- ✅ Security headers (CSP, X-Frame-Options, etc.)
-
----
-
-## 🏗️ Architecture Patterns
-
-### State Management Strategy
-
-```typescript
-// Centralized Redux store with TypeScript
-src/store/
-  ├── index.ts              # Store configuration
-  ├── slices/
-  │   ├── authSlice.ts      # Authentication state
-  │   ├── uiSlice.ts        # UI state
-  │   └── dataSlice.ts      # Application data
-  └── hooks.ts              # Typed useSelector/useDispatch
-```
-
-### API Layer Design
-
-```typescript
-// Type-safe API client with interceptors
-src/api/
-  ├── client.ts             # Axios instance with config
-  ├── interceptors.ts       # Request/Response interceptors
-  ├── endpoints/
-  │   ├── auth.ts           # Authentication endpoints
-  │   ├── users.ts          # User management
-  │   └── data.ts           # Data endpoints
-  └── types.ts              # API types & interfaces
-```
-
-### Component Organization
-
-```typescript
-// Feature-based component structure
-src/components/
-  ├── common/               # Shared UI components
-  │   ├── Button/
-  │   ├── Input/
-  │   └── Modal/
-  ├── layout/               # Layout components
-  │   ├── Header/
-  │   ├── Sidebar/
-  │   └── Footer/
-  └── features/             # Feature-specific components
-      ├── Auth/
-      ├── Dashboard/
-      └── Profile/
-```
-
----
-
-## 🔧 Configuration
-
-### Environment Variables
-
-Create `.env` files for different environments:
+### Manual Deploy
 
 ```bash
-# .env.development
-VITE_API_URL=http://localhost:3000/api
-VITE_APP_NAME=My App (Dev)
-VITE_ENABLE_ANALYTICS=false
+# Build image
+docker build -t frontend:latest .
 
-# .env.production
-VITE_API_URL=https://api.example.com
-VITE_APP_NAME=My App
-VITE_ENABLE_ANALYTICS=true
+# Run container
+docker run -d -p 80:80 --name app frontend:latest
 ```
 
-Access in code:
-```typescript
-const apiUrl = import.meta.env.VITE_API_URL;
-```
+### What's Included
 
-### TypeScript Configuration
+<div align="center">
 
-| File | Purpose |
-|------|---------|
-| `tsconfig.json` | Base configuration (shared settings) |
-| `tsconfig.app.json` | Application code settings |
-| `tsconfig.node.json` | Node.js/tooling settings (Vite config) |
+| Feature | Status |
+|---------|:------:|
+| Multi-stage builds | ✅ |
+| Gzip compression | ✅ |
+| SPA routing | ✅ |
+| Security headers | ✅ |
+| Asset caching | ✅ |
 
-### Vite Configuration
-
-Key features in `vite.config.ts`:
-- ⚡ Path aliases (`@/` → `src/`)
-- 📦 Optimized chunk splitting
-- 🔌 Plugin configuration
-- 🌐 Proxy for API calls
+</div>
 
 ---
 
-## 📚 Tech Stack
+## 📝 Configuration Files
 
-### Core Technologies
-
-<table>
-<tr>
-<td align="center" width="25%">
-<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg" width="48" height="48" alt="React" />
-<br><strong>React 18</strong>
-<br>UI Library
-</td>
-<td align="center" width="25%">
-<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg" width="48" height="48" alt="TypeScript" />
-<br><strong>TypeScript 5</strong>
-<br>Type Safety
-</td>
-<td align="center" width="25%">
-<img src="https://vitejs.dev/logo.svg" width="48" height="48" alt="Vite" />
-<br><strong>Vite 5</strong>
-<br>Build Tool
-</td>
-<td align="center" width="25%">
-<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original.svg" width="48" height="48" alt="Docker" />
-<br><strong>Docker</strong>
-<br>Containerization
-</td>
-</tr>
-</table>
-
-### Development Tools
-
-- **ESLint** - Linting with TypeScript support
-- **TypeScript-ESLint** - Type-aware lint rules
-- **React Hooks ESLint** - Hooks validation
-- **Vite** - Lightning-fast HMR
-
-### Production Stack
-
-- **Nginx** - High-performance web server
-- **Docker Multi-Stage** - Optimized builds
-- **Alpine Linux** - Minimal base image
+```
+├── vite.config.ts          # Build configuration
+├── tsconfig.json           # TypeScript settings
+├── nginx.conf              # Web server config
+├── Dockerfile              # Container build
+└── docker-compose.yml      # Orchestration
+```
 
 ---
 
 ## 🤝 Contributing
 
 ```bash
-# 1. Fork the repository
-# 2. Create feature branch
+# Create feature branch
 git checkout -b feature/amazing-feature
 
-# 3. Commit changes
-git commit -m 'Add amazing feature'
+# Commit changes
+git commit -m "✨ Add amazing feature"
 
-# 4. Push to branch
+# Push and create PR
 git push origin feature/amazing-feature
-
-# 5. Open Pull Request
 ```
 
-### Code Standards
-
-- ✅ TypeScript strict mode
-- ✅ ESLint passing
-- ✅ No console.log in production
-- ✅ Component documentation
-- ✅ Unit tests for utilities
-
----
-
-## 📖 Documentation
-
-### Additional Resources
-
-- [Vite Documentation](https://vitejs.dev/) - Build tool & configuration
-- [React Documentation](https://react.dev/) - React features & patterns
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/) - TypeScript guide
-- [typescript-eslint](https://typescript-eslint.io/) - TypeScript linting
-- [Nginx Configuration](https://nginx.org/en/docs/) - Server optimization
-
-### Useful Commands
-
-```bash
-# Analyze bundle size
-npm run build -- --mode analyze
-
-# Clear node_modules and reinstall
-rm -rf node_modules package-lock.json && npm install
-
-# Update dependencies
-npm update
-
-# Check for outdated packages
-npm outdated
-```
-
----
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-Built with ❤️ using modern web technologies
-
-- React Team for the amazing library
-- Vite Team for the blazing-fast tooling
-- TypeScript Team for type safety
-- Open Source Community for inspiration
+**Standards:** TypeScript strict • ESLint passing • Documentation
 
 ---
 
 <div align="center">
 
-**[⬆ Back to Top](#-react--vite--typescript-frontend)**
+### 📄 License
 
-Made with ⚡ by ProMTP
+MIT Licensed
+
+---
+
+**Built with ⚡ by developers, for developers**
+
+[⬆ Back to Top](#-react--vite--typescript)
 
 </div>
