@@ -484,6 +484,6 @@ Built with ❤️ using modern web technologies
 
 **[⬆ Back to Top](#-react--vite--typescript-frontend)**
 
-Made with ⚡ by [Your Team Name]
+Made with ⚡ by ProMTP
 
 </div>
