@@ -1,11 +1,11 @@
-import type {DepartmentCode, ExpertiseCode} from "~/utils/definitions.tsx";
+import type { DepartmentCode, ExpertiseCode } from '~/utils/definitions.tsx'
 
 export interface Certificate {
   id: string
-  name: string
-  issuer: string
+  title: string
+  description: string
   year: string
-  icon: string
+  type: string
 }
 
 export interface TutorProfileData {

@@ -13,13 +13,13 @@ const RatingDistribution: React.FC<RatingDistributionProps> = ({ tutorData, dist
     <div className="grid md:grid-cols-2 gap-6 p-6 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl">
       <div className="flex flex-col items-center justify-center">
         <div className="text-6xl font-bold text-yellow-600 mb-2">
-          {tutorData.rating_avg.toFixed(1)}
+          {tutorData.ratingAvg.toFixed(1)}
         </div>
         <div className="flex gap-1 mb-2">
-          {<RenderStar rating={tutorData.rating_avg} />}
+          {<RenderStar rating={tutorData.ratingAvg} />}
         </div>
         <div className="text-gray-600">
-          Dựa trên {tutorData.rating_count} đánh giá
+          Dựa trên {tutorData.ratingCount} đánh giá
         </div>
       </div>
 

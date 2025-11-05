@@ -9,8 +9,8 @@ const Settings: React.FC = () => {
   const [formData, setFormData] = useState({
     firstName: user?.firstName,
     lastName: user?.lastName,
-    username: user?.username || user?.email?.split('@')[0] || '',
-    email: user?.email,
+    username: user?.username || '',
+    email: user?.username + '@hcmut.edu.vn' || '',
     phone: '+84 123 456 789',
     bio: 'Sinh viên năm 3 ngành Công nghệ Thông tin'
   })
@@ -38,7 +38,7 @@ const Settings: React.FC = () => {
           ...user,
           firstName: formData.firstName ?? user.firstName,
           lastName: formData.lastName ?? user.lastName,
-          email: formData.email ?? user.email,
+          email: formData.email ?? user.username + '@hcmut.edu.vn',
           roles: user.roles ?? []
         }
         setUser(updatedUser)

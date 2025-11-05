@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { certificates } from './ProfileData'
-import { basicTutorInfoAPI } from '~/apis/profileAPI.tsx'
+import { basicTutorInfoAPI, TutorAchievementsAPI } from '~/apis/profileAPI.tsx'
 import {
   UserOutlined,
   MailOutlined,
@@ -20,8 +19,8 @@ import {
   PlusOutlined
 } from '@ant-design/icons'
 import { Card, Avatar, Button, Tag, Input, Select, Divider, Upload, Modal, message, Tabs, Spin } from 'antd'
-import { mockTutorData, distribution } from './ProfileData'
-import { type TutorProfileData } from './TutorProfileConfig'
+import type { UploadProps, TabsProps } from 'antd'
+import { type Certificate, type TutorProfileData } from './TutorProfileConfig'
 import { type DepartmentCode, DEPARTMENTS, type ExpertiseCode, EXPERTISES } from '~/utils/definitions.tsx'
 import Achievement from '~/pages/TutorProfile/Achievement.tsx'
 import RatingDistribution from '~/pages/TutorProfile/RatingDistribution.tsx'
@@ -31,71 +30,98 @@ import { mockReviews } from '~/components/Review/mockReviews'
 const { TextArea } = Input
 const { Option } = Select
 
+interface TutorProfileProps {
+  id: string
+}
 
-const TutorProfile: React.FC<{id:string}> = ({ id }) => {
+interface RatingDistribution {
+  [key: number]: number
+}
+
+// Mock distribution data - replace with actual data from API
+const distribution: RatingDistribution = {
+  5: 45,
+  4: 30,
+  3: 15,
+  2: 7,
+  1: 3
+}
+
+const TutorProfile: React.FC<TutorProfileProps> = ({ id }) => {
   const [tutorData, setTutorData] = useState<TutorProfileData | null>(null)
-  const [isEditing, setIsEditing] = useState(false)
-  const [editedData, setEditedData] = useState(mockTutorData)
-  const [isEnrollModalVisible, setIsEnrollModalVisible] = useState(false)
-  const [enrollMessage, setEnrollMessage] = useState('')
+  const [isEditing, setIsEditing] = useState<boolean>(false)
+  const [editedData, setEditedData] = useState<TutorProfileData | null>(null)
+  const [isEnrollModalVisible, setIsEnrollModalVisible] = useState<boolean>(false)
+  const [enrollMessage, setEnrollMessage] = useState<string>('')
+  const [certificates, setCertificates] = useState<Certificate[]>([])
 
   useEffect(() => {
-    basicTutorInfoAPI(id).then((data) => {
+    basicTutorInfoAPI(id).then((data: TutorProfileData) => {
       setTutorData(data)
       setEditedData(data)
-    }).catch(() => {
-      message.error('Không thể tải thông tin giảng viên.')
     })
-
   }, [id])
 
-  if (!tutorData) {
+  useEffect(() => {
+    TutorAchievementsAPI(id)
+      .then(data => data.achievements)
+      .then((data: Certificate[]) => {
+        setCertificates(data)
+      })
+  }, [id])
+
+  if (!tutorData || !editedData) {
     return (
       <Spin
         size="large"
         tip="Đang tải thông tin giảng viên..."
         fullscreen
       />
-    )}
+    )
+  }
 
-  const isAcceptingStudents = tutorData.currMenteeCount < tutorData.maximumCapacity
+  const isAcceptingStudents: boolean = tutorData.currMenteeCount < tutorData.maximumCapacity
 
-
-  const getDepartmentName = (code: DepartmentCode) => {
+  const getDepartmentName = (code: DepartmentCode): string => {
     const dept = DEPARTMENTS.find(d => d.code === code)
     return dept?.name || code
   }
 
-  const getExpertiseName = (code: ExpertiseCode) => {
+  const getExpertiseName = (code: ExpertiseCode): string => {
     const exp = EXPERTISES.find(e => e.code === code)
     return exp?.name || code
   }
 
-  const handleSave = () => {
-    setTutorData(editedData)
-    setIsEditing(false)
-    message.success('Cập nhật thông tin thành công!')
+  const handleSave = (): void => {
+    if (editedData) {
+      setTutorData(editedData)
+      setIsEditing(false)
+      message.success('Cập nhật thông tin thành công!')
+    }
   }
 
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     setEditedData(tutorData)
     setIsEditing(false)
   }
 
-  const uploadProps = {
+  const uploadProps: UploadProps = {
     name: 'avatar',
     showUploadList: false,
-    beforeUpload: (file) => {
+    beforeUpload: (file: File): boolean => {
       const reader = new FileReader()
-      reader.onload = (e) => {
-        setEditedData({ ...editedData, avatarUrl: e.target?.result })
+      reader.onload = (e: ProgressEvent<FileReader>): void => {
+        const result = e.target?.result
+        if (typeof result === 'string' && editedData) {
+          setEditedData({ ...editedData, avatarUrl: result })
+        }
       }
       reader.readAsDataURL(file)
       return false
     }
   }
 
-  const handleEnrollRequest = () => {
+  const handleEnrollRequest = (): void => {
     if (!isAcceptingStudents) {
       message.warning('Giảng viên hiện đã đủ số lượng học viên')
       return
@@ -103,41 +129,123 @@ const TutorProfile: React.FC<{id:string}> = ({ id }) => {
     setIsEnrollModalVisible(true)
   }
 
-  const handleEnrollSubmit = () => {
+  const handleEnrollSubmit = (): void => {
     message.success('Yêu cầu nhập học đã được gửi thành công!')
     setIsEnrollModalVisible(false)
     setEnrollMessage('')
   }
 
-  const handleAddCertificate = () => {
-    const newCert = {
-      id: `cert${editedData.certificates.length + 1}`,
-      name: '',
-      issuer: '',
+  const handleAddCertificate = (): void => {
+    if (!editedData) return
+
+    const newCert: Certificate = {
+      id: `cert${certificates.length + 1}`,
+      title: '',
+      description: '',
       year: new Date().getFullYear().toString(),
-      icon: '🎓'
+      type: 'certificate'
     }
-    setEditedData({
-      ...editedData,
-      certificates: [...editedData.certificates, newCert]
-    })
+    setCertificates([...certificates, newCert])
   }
 
-  const handleRemoveCertificate = (certId) => {
-    setEditedData({
-      ...editedData,
-      certificates: editedData.certificates.filter(cert => cert.id !== certId)
-    })
+  const handleRemoveCertificate = (certId: string): void => {
+    setCertificates(certificates.filter(cert => cert.id !== certId))
   }
 
-  const handleCertificateChange = (certId, field, value) => {
-    setEditedData({
-      ...editedData,
-      certificates: editedData.certificates.map(cert =>
-        cert.id === certId ? { ...cert, [field]: value } : cert
+  const handleCertificateChange = (certId: string, field: keyof Certificate, value: string): void => {
+    setCertificates(certificates.map(cert =>
+      cert.id === certId ? { ...cert, [field]: value } : cert
+    ))
+  }
+
+  const tabItems: TabsProps['items'] = [
+    {
+      key: 'achievements',
+      label: (
+        <span className="flex items-center gap-2 px-2">
+          <SafetyCertificateOutlined />
+          <span className="font-semibold">Thành tích</span>
+        </span>
+      ),
+      children: (
+        <div>
+          {isEditing && (
+            <div className="mb-4 flex justify-end">
+              <Button
+                type="dashed"
+                icon={<PlusOutlined />}
+                onClick={handleAddCertificate}
+              >
+                Thêm chứng chỉ
+              </Button>
+            </div>
+          )}
+          {isEditing ? (
+            <div className="space-y-3">
+              {certificates.map((cert: Certificate) => (
+                <div key={cert.id} className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                  <div className="grid grid-cols-12 gap-3 items-center">
+                    <div className="col-span-11 space-y-2">
+                      <Input
+                        placeholder="Tên chứng chỉ"
+                        value={cert.title}
+                        onChange={(e) => handleCertificateChange(cert.id, 'title', e.target.value)}
+                        size="large"
+                      />
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input
+                          placeholder="Tổ chức cấp"
+                          value={cert.description}
+                          onChange={(e) => handleCertificateChange(cert.id, 'description', e.target.value)}
+                        />
+                        <Input
+                          placeholder="Năm"
+                          value={cert.year}
+                          onChange={(e) => handleCertificateChange(cert.id, 'year', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-span-1 flex justify-end">
+                      <Button
+                        type="text"
+                        danger
+                        icon={<CloseOutlined />}
+                        onClick={() => handleRemoveCertificate(cert.id)}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-4">
+              {certificates.map((cert: Certificate) => (
+                <Achievement key={cert.id} cert={cert} />
+              ))}
+            </div>
+          )}
+        </div>
       )
-    })
-  }
+    },
+    {
+      key: 'reviews',
+      label: (
+        <span className="flex items-center gap-2 px-2">
+          <StarFilled />
+          <span className="font-semibold">Đánh giá</span>
+        </span>
+      ),
+      children: (
+        <div className="space-y-6">
+          {/* Rating Distribution */}
+          <RatingDistribution tutorData={tutorData} distribution={distribution} />
+
+          {/* Reviews List */}
+          <ReviewCard reviews={mockReviews} />
+        </div>
+      )
+    }
+  ]
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8 px-4">
@@ -295,7 +403,7 @@ const TutorProfile: React.FC<{id:string}> = ({ id }) => {
                       {isEditing ? (
                         <Select
                           value={editedData.department}
-                          onChange={(value) => setEditedData({ ...editedData, department: value })}
+                          onChange={(value: DepartmentCode) => setEditedData({ ...editedData, department: value })}
                           className="w-full"
                           size="small"
                         >
@@ -325,8 +433,8 @@ const TutorProfile: React.FC<{id:string}> = ({ id }) => {
                       <p className="text-xs text-gray-500">Điện thoại</p>
                       {isEditing ? (
                         <Input
-                          value={editedData.phone}
-                          onChange={(e) => setEditedData({ ...editedData, phone: e.target.value })}
+                          value={editedData.phoneNumber}
+                          onChange={(e) => setEditedData({ ...editedData, phoneNumber: e.target.value })}
                           size="small"
                         />
                       ) : (
@@ -419,7 +527,7 @@ const TutorProfile: React.FC<{id:string}> = ({ id }) => {
                   mode="multiple"
                   placeholder="Chọn chuyên môn"
                   value={editedData.expertise}
-                  onChange={(value) => setEditedData({ ...editedData, expertise: value })}
+                  onChange={(value: ExpertiseCode[]) => setEditedData({ ...editedData, expertise: value })}
                   className="w-full"
                   size="large"
                 >
@@ -429,7 +537,7 @@ const TutorProfile: React.FC<{id:string}> = ({ id }) => {
                 </Select>
               ) : (
                 <div className="flex flex-wrap gap-4">
-                  {tutorData.expertise.map((exp, idx) => (
+                  {tutorData.expertise.map((exp: ExpertiseCode, idx: number) => (
                     <Tag
                       key={idx}
                       color="blue"
@@ -447,94 +555,7 @@ const TutorProfile: React.FC<{id:string}> = ({ id }) => {
               <Tabs
                 defaultActiveKey="achievements"
                 size="large"
-                items={[
-                  {
-                    key: 'achievements',
-                    label: (
-                      <span className="flex items-center gap-2 px-2">
-                        <SafetyCertificateOutlined />
-                        <span className="font-semibold">Thành tích</span>
-                      </span>
-                    ),
-                    children: (
-                      <div>
-                        {isEditing && (
-                          <div className="mb-4 flex justify-end">
-                            <Button
-                              type="dashed"
-                              icon={<PlusOutlined />}
-                              onClick={handleAddCertificate}
-                            >
-                              Thêm chứng chỉ
-                            </Button>
-                          </div>
-                        )}
-                        {isEditing ? (
-                          <div className="space-y-3">
-                            {editedData.certificates.map((cert) => (
-                              <div key={cert.id} className="p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                <div className="grid grid-cols-12 gap-3 items-center">
-                                  <div className="col-span-11 space-y-2">
-                                    <Input
-                                      placeholder="Tên chứng chỉ"
-                                      value={cert.name}
-                                      onChange={(e) => handleCertificateChange(cert.id, 'name', e.target.value)}
-                                      size="large"
-                                    />
-                                    <div className="grid grid-cols-2 gap-2">
-                                      <Input
-                                        placeholder="Tổ chức cấp"
-                                        value={cert.issuer}
-                                        onChange={(e) => handleCertificateChange(cert.id, 'issuer', e.target.value)}
-                                      />
-                                      <Input
-                                        placeholder="Năm"
-                                        value={cert.year}
-                                        onChange={(e) => handleCertificateChange(cert.id, 'year', e.target.value)}
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className="col-span-1 flex justify-end">
-                                    <Button
-                                      type="text"
-                                      danger
-                                      icon={<CloseOutlined />}
-                                      onClick={() => handleRemoveCertificate(cert.id)}
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="grid md:grid-cols-2 gap-4">
-                            {certificates.map((cert) => (
-                              <Achievement key={cert.id} cert={cert} />
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )
-                  },
-                  {
-                    key: 'reviews',
-                    label: (
-                      <span className="flex items-center gap-2 px-2">
-                        <StarFilled />
-                        <span className="font-semibold">Đánh giá</span>
-                      </span>
-                    ),
-                    children: (
-                      <div className="space-y-6">
-                        {/* Rating Distribution */}
-                        <RatingDistribution tutorData={tutorData} distribution={distribution} />
-
-                        {/* Reviews List */}
-                        <ReviewCard reviews={mockReviews} />
-                      </div>
-                    )
-                  }
-                ]}
+                items={tabItems}
               />
             </Card>
           </div>

@@ -8,8 +8,8 @@ export interface Notification {
   timestamp: string
   isRead: boolean
   actionUrl?: string
-  avatar?: string
   senderName?: string
+  avatarUrl?: string
 }
 
 interface NotificationContextType {

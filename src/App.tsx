@@ -26,7 +26,7 @@ import Logs from '~/pages/admin/Logs.tsx'
 import Dashboard from '~/pages/Dashboard/Dashboard.tsx'
 import MyCalendar from '~/pages/Calendar/MyCalendar.tsx'
 // import StudentProfile from '~/pages/StudentProfile/StudentProfile.tsx'
-import Profile from '~/pages/Profile/Profile.tsx';
+import Profile from '~/pages/Profile/Profile.tsx'
 interface ProtectedRouteProps {
   user: User | null
   allowedRoles?: string[]

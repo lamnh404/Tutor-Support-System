@@ -75,8 +75,8 @@ export default function Noti({ notification }: NotiProps) {
       <div className="flex items-start gap-3">
         {/* Icon or Avatar */}
         <div className="flex-shrink-0 mt-1">
-          {notification.avatar ? (
-            <Avatar src={notification.avatar} size={40} />
+          {notification.avatarUrl ? (
+            <Avatar src={notification.avatarUrl} size={40} />
           ) : (
             <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
               {getNotificationIcon(notification.type)}
