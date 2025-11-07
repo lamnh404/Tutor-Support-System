@@ -9,10 +9,9 @@ const Settings: React.FC = () => {
   const [formData, setFormData] = useState({
     firstName: user?.firstName,
     lastName: user?.lastName,
-    username: user?.username || user?.email?.split('@')[0] || '',
-    email: user?.email,
-    phone: '+84 123 456 789',
-    bio: 'Sinh viên năm 3 ngành Công nghệ Thông tin'
+    username: user?.username || '',
+    email: user?.username ? `${user.username}@hcmut.edu.vn` : '',
+    phone: '+84 123 456 789'
   })
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
 
@@ -38,7 +37,6 @@ const Settings: React.FC = () => {
           ...user,
           firstName: formData.firstName ?? user.firstName,
           lastName: formData.lastName ?? user.lastName,
-          email: formData.email ?? user.email,
           roles: user.roles ?? []
         }
         setUser(updatedUser)
@@ -122,8 +120,8 @@ const Settings: React.FC = () => {
                     type="email"
                     name="email"
                     value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    disabled
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed text-gray-700"
                     placeholder="Nhập email"
                   />
                 </div>
@@ -151,20 +149,6 @@ const Settings: React.FC = () => {
                       placeholder="Tên đăng nhập"
                     />
                   </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Giới thiệu về bản thân</label>
-                  <textarea
-                    name="bio"
-                    value={formData.bio}
-                    onChange={handleInputChange}
-                    rows={4}
-                    maxLength={200}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Viết vài dòng giới thiệu về bản thân..."
-                  />
-                  <div className="text-right text-sm text-gray-500 mt-1">{formData.bio.length}/200</div>
                 </div>
 
                 <button
