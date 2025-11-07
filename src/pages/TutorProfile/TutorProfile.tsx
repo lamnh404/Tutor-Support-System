@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import { basicTutorInfoAPI, TutorAchievementsAPI } from '~/apis/profileAPI.tsx'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
   UserOutlined,
   MailOutlined,
@@ -26,12 +25,14 @@ import Achievement from '~/pages/TutorProfile/Achievement.tsx'
 import RatingDistribution from '~/pages/TutorProfile/RatingDistribution.tsx'
 import ReviewCard from '~/components/Review/Review'
 import { mockReviews } from '~/components/Review/mockReviews'
+import type { TutorProfileType, UserInfo } from '~/pages/Profile/ProfileConfig.ts'
 
 const { TextArea } = Input
 const { Option } = Select
 
 interface TutorProfileProps {
-  id: string
+  userInfo: UserInfo
+  tutorInfo: TutorProfileType
 }
 
 interface RatingDistribution {
@@ -47,28 +48,29 @@ const distribution: RatingDistribution = {
   1: 3
 }
 
-const TutorProfile: React.FC<TutorProfileProps> = ({ id }) => {
+const TutorProfile: React.FC<TutorProfileProps> = ({ userInfo, tutorInfo }) => {
   const [tutorData, setTutorData] = useState<TutorProfileData | null>(null)
   const [isEditing, setIsEditing] = useState<boolean>(false)
   const [editedData, setEditedData] = useState<TutorProfileData | null>(null)
   const [isEnrollModalVisible, setIsEnrollModalVisible] = useState<boolean>(false)
   const [enrollMessage, setEnrollMessage] = useState<string>('')
-  const [certificates, setCertificates] = useState<Certificate[]>([])
+
+  const { achievements } = { ...userInfo, ...tutorInfo }
+
+  const [tutorAchievements, setTutorAchievements] = useState<Certificate[]>(achievements || [])
+
+  const tutorDetails = useMemo(() => {
+    const { achievements: _achievements, ...rest } = tutorInfo ?? {}
+    return { ...userInfo, ...rest }
+  }, [userInfo, tutorInfo])
 
   useEffect(() => {
-    basicTutorInfoAPI(id).then((data: TutorProfileData) => {
-      setTutorData(data)
-      setEditedData(data)
-    })
-  }, [id])
+    if (tutorDetails) {
+      setTutorData(tutorDetails)
+      setEditedData(tutorDetails)
+    }
+  }, [tutorDetails])
 
-  useEffect(() => {
-    TutorAchievementsAPI(id)
-      .then(data => data.achievements)
-      .then((data: Certificate[]) => {
-        setCertificates(data)
-      })
-  }, [id])
 
   if (!tutorData || !editedData) {
     return (
@@ -139,21 +141,21 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id }) => {
     if (!editedData) return
 
     const newCert: Certificate = {
-      id: `cert${certificates.length + 1}`,
+      id: `cert${tutorAchievements.length + 1}`,
       title: '',
       description: '',
       year: new Date().getFullYear().toString(),
       type: 'certificate'
     }
-    setCertificates([...certificates, newCert])
+    setTutorAchievements([...tutorAchievements, newCert])
   }
 
   const handleRemoveCertificate = (certId: string): void => {
-    setCertificates(certificates.filter(cert => cert.id !== certId))
+    setTutorAchievements(tutorAchievements.filter(cert => cert.id !== certId))
   }
 
   const handleCertificateChange = (certId: string, field: keyof Certificate, value: string): void => {
-    setCertificates(certificates.map(cert =>
+    setTutorAchievements(tutorAchievements.map(cert =>
       cert.id === certId ? { ...cert, [field]: value } : cert
     ))
   }
@@ -182,7 +184,7 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id }) => {
           )}
           {isEditing ? (
             <div className="space-y-3">
-              {certificates.map((cert: Certificate) => (
+              {tutorAchievements.map((cert: Certificate) => (
                 <div key={cert.id} className="p-4 bg-gray-50 rounded-xl border border-gray-200">
                   <div className="grid grid-cols-12 gap-3 items-center">
                     <div className="col-span-11 space-y-2">
@@ -219,9 +221,13 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id }) => {
             </div>
           ) : (
             <div className="grid md:grid-cols-2 gap-4">
-              {certificates.map((cert: Certificate) => (
-                <Achievement key={cert.id} cert={cert} />
-              ))}
+              {tutorAchievements.length > 0 ?
+                tutorAchievements.map((cert: Certificate) => (
+                  <Achievement key={cert.id} cert={cert} />
+                ))
+                :
+                <p className="text-gray-600">Giảng viên chưa thêm chứng chỉ nào.</p>
+              }
             </div>
           )}
         </div>
@@ -497,14 +503,14 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id }) => {
                 <TextArea
                   rows={6}
                   placeholder="Viết giới thiệu về bản thân..."
-                  value={editedData.description}
-                  onChange={(e) => setEditedData({ ...editedData, description: e.target.value })}
+                  value={editedData.tutorDescription}
+                  onChange={(e) => setEditedData({ ...editedData, tutorDescription: e.target.value })}
                   className="text-base"
                 />
               ) : (
                 <div className="p-4 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl border-l-4 border-indigo-500">
                   <p className="text-gray-700 leading-relaxed text-base">
-                    {tutorData.description}
+                    {tutorData.tutorDescription}
                   </p>
                 </div>
               )}

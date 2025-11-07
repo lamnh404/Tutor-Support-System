@@ -11,7 +11,7 @@ export interface Certificate {
 export interface TutorProfileData {
   firstName: string
   lastName: string
-  avatarUrl: string
+  avatarUrl?: string
   department: DepartmentCode
   expertise: ExpertiseCode []
   ratingCount: number
@@ -20,7 +20,7 @@ export interface TutorProfileData {
   maximumCapacity: number
   totalStudentTaught: number
   yearsOfExperience: number
-  description: string
+  tutorDescription: string
   email: string
   phoneNumber: string
 }

@@ -17,11 +17,18 @@ import {
 } from '@ant-design/icons'
 import { Card, Avatar, Button, Tag, Input, Select, message, Divider, Upload, type UploadProps } from 'antd'
 import { DEPARTMENTS } from '~/utils/definitions.tsx'
+import type { StudentProfileType, UserInfo } from '~/pages/Profile/ProfileConfig.ts'
 
 const { TextArea } = Input
 const { Option } = Select
 
-const StudentProfile: React.FC = () => {
+interface StudentProfileProps {
+  userInfo: UserInfo
+  studentInfo: StudentProfileType
+}
+
+
+const StudentProfile: React.FC<StudentProfileProps> = ({userInfo, studentInfo}) => {
   const { user } = useContext(userContext)
   const navigate = useNavigate()
 

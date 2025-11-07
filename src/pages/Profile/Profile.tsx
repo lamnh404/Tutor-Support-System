@@ -2,17 +2,32 @@ import React, { useEffect, useState } from 'react'
 import StudentProfile from '~/pages/StudentProfile/StudentProfile.tsx'
 import TutorProfile from '~/pages/TutorProfile/TutorProfile.tsx'
 import { useNavigate, useParams } from 'react-router-dom'
-import { userIdentityAPI } from '~/apis/userAPI.ts'
+import { profileAPI } from '~/apis/profileAPI'
+import type { UserInfo, StudentProfileType, TutorProfileType } from '~/pages/Profile/ProfileConfig'
+
+
 const Profile: React.FC = () => {
   const navigate = useNavigate()
   const { id } = useParams()
-  const [role, setRole] = useState<string>('STUDENT')
   const [activeProfile, setActiveProfile] = useState('STUDENT')
+  const [isStudent, setIsStudent] = useState(false)
+  const [isTutor, setIsTutor] = useState(false)
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
+  const [studentProfile, setStudentProfile] = useState<StudentProfileType | null>(null)
+  const [tutorProfile, setTutorProfile] = useState<TutorProfileType | null>(null)
   useEffect(() => {
-    userIdentityAPI(id as string)
-      .then(response => response.data)
+    profileAPI(id as string)
       .then(data => {
-        setRole(data.roles)
+        console.log(data)
+        if ( 'studentProfile' in data)
+          setIsStudent(true)
+
+        if ( 'tutorProfile' in data)
+          setIsTutor(true)
+        const { studentProfile, tutorProfile, ...userInfo } = data
+        setUserInfo(userInfo as UserInfo)
+        setStudentProfile(studentProfile as StudentProfileType)
+        setTutorProfile(tutorProfile as TutorProfileType)
       })
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .catch(_error => {
@@ -21,9 +36,11 @@ const Profile: React.FC = () => {
   }, [id, navigate])
   return (
     <>
-      { role === 'STUDENT' && <StudentProfile /> }
-      { role === 'TUTOR' && <TutorProfile id={id!} /> }
-      {role === 'BOTH' && (
+      { isStudent && <StudentProfile userInfo ={userInfo!} studentInfo = {studentProfile!} /> }
+
+      { isTutor && <TutorProfile userInfo={userInfo!} tutorInfo={tutorProfile!} /> }
+
+      { isStudent && isTutor && (
         <div>
           {/* Nút chuyển đổi */}
           <div className="flex gap-2 pb-4 pt-4 mx-auto items-center justify-center">
@@ -48,9 +65,11 @@ const Profile: React.FC = () => {
                 Hồ sơ Gia sư
             </button>
           </div>
-
-          {/* Hiển thị profile tương ứng */}
-          {activeProfile === 'STUDENT' ? <StudentProfile /> : <TutorProfile id = {id!}/>}
+          {/* Display corresponding profile */}
+          {activeProfile === 'STUDENT' ?
+            <StudentProfile userInfo ={userInfo!} studentInfo = {studentProfile!} />
+            :
+            <TutorProfile userInfo={userInfo!} tutorInfo={tutorProfile!} /> }
         </div>
       )}
     </>
