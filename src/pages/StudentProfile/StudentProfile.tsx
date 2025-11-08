@@ -1,7 +1,6 @@
 import React, { useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { userContext } from '~/context/User/userContext'
-import { initialStudents, type Student } from '~/pages/StudentProfile/StudentData'
 import {
   UserOutlined,
   MailOutlined,
@@ -17,21 +16,53 @@ import {
 } from '@ant-design/icons'
 import { Card, Avatar, Button, Tag, Input, Select, message, Divider, Upload, type UploadProps } from 'antd'
 import { DEPARTMENTS } from '~/pages/TutorSearch/TutorDefinitions'
+import type { DepartmentCode } from '~/pages/TutorSearch/TutorDefinitions'
 
 const { TextArea } = Input
 const { Option } = Select
 
-const StudentProfile: React.FC = () => {
+export interface UserInfo {
+  firstName: string
+  lastName: string
+  email: string
+  phoneNumber: string
+  department: DepartmentCode
+  avatarUrl?: string
+}
+
+export interface StudentProfileType {
+  studentID: string
+  currentGPA: number
+  learningGoals: string[]
+  studentDescription: string
+  achievements: Certificate[]
+  // Additional fields from old structure
+  year?: number
+  completedCourses?: number
+  totalHoursLearned?: number
+  currentCourses?: string[]
+  needHelpWith?: string[]
+}
+
+interface Certificate {
+  id: string
+  name: string
+  issuer: string
+  date: string
+}
+
+interface StudentProfileProps {
+  userInfo: UserInfo
+  studentInfo: StudentProfileType
+}
+
+const StudentProfile: React.FC<StudentProfileProps> = ({ userInfo, studentInfo }) => {
   const { user } = useContext(userContext)
   const navigate = useNavigate()
 
-  // Mock data - In real app, fetch based on user.email
-  const [studentData, setStudentData] = useState<Student>(
-    initialStudents.find(s => s.id === 'student2') || initialStudents[0]
-  )
-
   const [isEditing, setIsEditing] = useState(false)
-  const [editedData, setEditedData] = useState<Student>(studentData)
+  const [editedUserInfo, setEditedUserInfo] = useState<UserInfo>(userInfo)
+  const [editedStudentInfo, setEditedStudentInfo] = useState<StudentProfileType>(studentInfo)
 
   if (!user) {
     navigate('/login')
@@ -60,17 +91,18 @@ const StudentProfile: React.FC = () => {
     return { text: 'Trung bình', color: '#fa8c16', bg: 'bg-orange-50' }
   }
 
-  const { text: gpaText, color: gpaColor, bg: gpaBg } = getGPAColor(studentData.gpa)
+  const { text: gpaText, color: gpaColor, bg: gpaBg } = getGPAColor(studentInfo.currentGPA)
 
   const handleSave = () => {
     // In real app, call API to save
-    setStudentData(editedData)
+    // Update would happen here with editedUserInfo and editedStudentInfo
     setIsEditing(false)
     message.success('Cập nhật thông tin thành công!')
   }
 
   const handleCancel = () => {
-    setEditedData(studentData)
+    setEditedUserInfo(userInfo)
+    setEditedStudentInfo(studentInfo)
     setIsEditing(false)
   }
 
@@ -92,7 +124,7 @@ const StudentProfile: React.FC = () => {
       // In real app, upload to server
       const reader = new FileReader()
       reader.onload = (e) => {
-        setEditedData({ ...editedData, avatarUrl: e.target?.result as string })
+        setEditedUserInfo({ ...editedUserInfo, avatarUrl: e.target?.result as string })
       }
       reader.readAsDataURL(file)
       return false
@@ -162,7 +194,7 @@ const StudentProfile: React.FC = () => {
                   <div className="relative group">
                     <Avatar
                       size={100}
-                      src={isEditing ? editedData.avatarUrl : studentData.avatarUrl}
+                      src={isEditing ? editedUserInfo.avatarUrl : userInfo.avatarUrl}
                       className="border-4 border-white shadow-2xl ring-2 ring-blue-100"
                     />
                     {isEditing && (
@@ -183,20 +215,20 @@ const StudentProfile: React.FC = () => {
                     <Input
                       prefix={<UserOutlined />}
                       placeholder="Họ"
-                      value={editedData.lastName}
-                      onChange={(e) => setEditedData({ ...editedData, lastName: e.target.value })}
+                      value={editedUserInfo.lastName}
+                      onChange={(e) => setEditedUserInfo({ ...editedUserInfo, lastName: e.target.value })}
                     />
                     <Input
                       prefix={<UserOutlined />}
                       placeholder="Tên"
-                      value={editedData.firstName}
-                      onChange={(e) => setEditedData({ ...editedData, firstName: e.target.value })}
+                      value={editedUserInfo.firstName}
+                      onChange={(e) => setEditedUserInfo({ ...editedUserInfo, firstName: e.target.value })}
                     />
                   </div>
                 ) : (
                   <>
                     <h1 className="text-xl font-bold text-gray-900 mb-2">
-                      {studentData.lastName} {studentData.firstName}
+                      {userInfo.lastName} {userInfo.firstName}
                     </h1>
                     <Tag icon={<CheckCircleFilled />} color="blue" className="text-xs">
                       Đã xác thực
@@ -212,19 +244,19 @@ const StudentProfile: React.FC = () => {
                 <div className="grid grid-cols-3 gap-2 mb-3">
                   <div className="text-center bg-gradient-to-br from-blue-50 to-blue-100 p-2.5 rounded-xl">
                     <div className="text-lg font-bold text-blue-600">
-                      {studentData.completedCourses}
+                      {studentInfo.completedCourses || 0}
                     </div>
                     <div className="text-xs text-gray-600">Môn học</div>
                   </div>
                   <div className="text-center bg-gradient-to-br from-purple-50 to-purple-100 p-2.5 rounded-xl">
                     <div className="text-lg font-bold text-purple-600">
-                      {studentData.totalHoursLearned}h
+                      {studentInfo.totalHoursLearned || 0}h
                     </div>
                     <div className="text-xs text-gray-600">Giờ học</div>
                   </div>
                   <div className={`text-center p-2.5 rounded-xl ${gpaBg}`}>
                     <div className="text-lg font-bold" style={{ color: gpaColor }}>
-                      {studentData.gpa.toFixed(2)}
+                      {studentInfo.currentGPA.toFixed(2)}
                     </div>
                     <div className="text-xs font-semibold" style={{ color: gpaColor }}>
                       {gpaText}
@@ -240,8 +272,8 @@ const StudentProfile: React.FC = () => {
                       <p className="text-xs text-gray-500">Khoa</p>
                       {isEditing ? (
                         <Select
-                          value={editedData.department}
-                          onChange={(value) => setEditedData({ ...editedData, department: value })}
+                          value={editedUserInfo.department}
+                          onChange={(value) => setEditedUserInfo({ ...editedUserInfo, department: value })}
                           className="w-full"
                           size="small"
                         >
@@ -250,7 +282,7 @@ const StudentProfile: React.FC = () => {
                           ))}
                         </Select>
                       ) : (
-                        <p className="font-semibold text-gray-800 text-sm truncate">{getDepartmentName(studentData.department)}</p>
+                        <p className="font-semibold text-gray-800 text-sm truncate">{getDepartmentName(userInfo.department)}</p>
                       )}
                     </div>
                   </div>
@@ -261,8 +293,8 @@ const StudentProfile: React.FC = () => {
                       <p className="text-xs text-gray-500">Năm học</p>
                       {isEditing ? (
                         <Select
-                          value={editedData.year}
-                          onChange={(value) => setEditedData({ ...editedData, year: value })}
+                          value={editedStudentInfo.year}
+                          onChange={(value) => setEditedStudentInfo({ ...editedStudentInfo, year: value })}
                           className="w-full"
                           size="small"
                         >
@@ -271,7 +303,7 @@ const StudentProfile: React.FC = () => {
                           ))}
                         </Select>
                       ) : (
-                        <p className="font-semibold text-gray-800 text-sm">{getYearText(studentData.year)}</p>
+                        <p className="font-semibold text-gray-800 text-sm">{getYearText(studentInfo.year || 1)}</p>
                       )}
                     </div>
                   </div>
@@ -280,7 +312,7 @@ const StudentProfile: React.FC = () => {
                     <GlobalOutlined className="text-green-500" />
                     <div className="flex-1">
                       <p className="text-xs text-gray-500">MSSV</p>
-                      <p className="font-mono font-semibold text-gray-800 text-sm">{studentData.studentId}</p>
+                      <p className="font-mono font-semibold text-gray-800 text-sm">{studentInfo.studentID}</p>
                     </div>
                   </div>
                 </div>
@@ -307,17 +339,14 @@ const StudentProfile: React.FC = () => {
                   rows={6}
                   placeholder="Viết vài dòng giới thiệu về bản thân bạn..."
                   className="text-base"
-                  defaultValue={`Xin chào! Mình là ${studentData.firstName}, sinh viên năm ${studentData.year} khoa ${getDepartmentName(studentData.department)}. Mình đang tìm kiếm cơ hội học hỏi và phát triển kỹ năng trong các môn học chuyên ngành.`}
+                  value={editedStudentInfo.studentDescription}
+                  onChange={(e) => setEditedStudentInfo({ ...editedStudentInfo, studentDescription: e.target.value })}
                 />
               ) : (
                 <div className="p-4 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl border-l-4 border-indigo-500">
                   <p className="text-gray-700 leading-relaxed text-base">
-                    Xin chào! Mình là <span className="font-bold text-indigo-600">{studentData.firstName}</span>,
-                    sinh viên năm {studentData.year} khoa <span className="font-bold text-indigo-600">{getDepartmentName(studentData.department)}</span>.
-                    Mình đang tìm kiếm cơ hội học hỏi và phát triển kỹ năng trong các môn học chuyên ngành.
-                    Với GPA <span className="font-bold" style={{ color: gpaColor }}>{studentData.gpa.toFixed(2)}</span>,
-                    mình đã hoàn thành <span className="font-bold text-purple-600">{studentData.completedCourses} môn học</span> và
-                    tích lũy được <span className="font-bold text-blue-600">{studentData.totalHoursLearned} giờ học</span>.
+                    {studentInfo.studentDescription || `Xin chào! Mình là ${userInfo.firstName}, sinh viên năm ${studentInfo.year || 1} khoa ${getDepartmentName(userInfo.department)}. 
+                    Với GPA ${studentInfo.currentGPA.toFixed(2)}, mình đã hoàn thành ${studentInfo.completedCourses || 0} môn học và tích lũy được ${studentInfo.totalHoursLearned || 0} giờ học.`}
                   </p>
                 </div>
               )}
@@ -339,18 +368,18 @@ const StudentProfile: React.FC = () => {
                 <Select
                   mode="multiple"
                   placeholder="Chọn các môn đang học"
-                  value={editedData.currentCourses}
-                  onChange={(value) => setEditedData({ ...editedData, currentCourses: value })}
+                  value={editedStudentInfo.currentCourses}
+                  onChange={(value) => setEditedStudentInfo({ ...editedStudentInfo, currentCourses: value })}
                   className="w-full"
                   size="large"
                 >
-                  {studentData.currentCourses.map(course => (
+                  {(studentInfo.currentCourses || []).map((course: string) => (
                     <Option key={course} value={course}>{course}</Option>
                   ))}
                 </Select>
               ) : (
                 <div className="flex flex-wrap gap-4">
-                  {studentData.currentCourses.map((course, idx) => (
+                  {(studentInfo.currentCourses || []).map((course: string, idx: number) => (
                     <Tag
                       key={idx}
                       color="blue"
@@ -379,18 +408,18 @@ const StudentProfile: React.FC = () => {
                 <Select
                   mode="multiple"
                   placeholder="Chọn các môn cần hỗ trợ"
-                  value={editedData.needHelpWith}
-                  onChange={(value) => setEditedData({ ...editedData, needHelpWith: value })}
+                  value={editedStudentInfo.needHelpWith}
+                  onChange={(value) => setEditedStudentInfo({ ...editedStudentInfo, needHelpWith: value })}
                   className="w-full"
                   size="large"
                 >
-                  {studentData.needHelpWith.map(subject => (
+                  {(studentInfo.needHelpWith || []).map((subject: string) => (
                     <Option key={subject} value={subject}>{subject}</Option>
                   ))}
                 </Select>
               ) : (
                 <div className="flex flex-wrap gap-4">
-                  {studentData.needHelpWith.map((subject, idx) => (
+                  {(studentInfo.needHelpWith || []).map((subject: string, idx: number) => (
                     <Tag
                       key={idx}
                       color="orange"
@@ -418,17 +447,17 @@ const StudentProfile: React.FC = () => {
               {isEditing ? (
                 <TextArea
                   rows={5}
-                  value={editedData.learningGoals[0]}
-                  onChange={(e) => setEditedData({
-                    ...editedData,
-                    learningGoals: [e.target.value, ...editedData.learningGoals.slice(1)]
+                  value={editedStudentInfo.learningGoals[0] || ''}
+                  onChange={(e) => setEditedStudentInfo({
+                    ...editedStudentInfo,
+                    learningGoals: [e.target.value, ...(editedStudentInfo.learningGoals?.slice(1) || [])]
                   })}
                   placeholder="Nhập mục tiêu học tập của bạn..."
                   className="text-base"
                 />
               ) : (
                 <div className="space-y-4">
-                  {studentData.learningGoals.map((goal, idx) => (
+                  {studentInfo.learningGoals.map((goal: string, idx: number) => (
                     <div key={idx} className="flex items-start gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border-l-4 border-blue-500">
                       <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">
                         {idx + 1}
@@ -459,7 +488,7 @@ const StudentProfile: React.FC = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-gray-500 mb-1">Email</p>
-                    <p className="font-semibold text-gray-800 truncate">{user.username + '@hcmut.edu.vn'}</p>
+                    <p className="font-semibold text-gray-800 truncate">{userInfo.email}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 p-5 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl">
@@ -472,9 +501,11 @@ const StudentProfile: React.FC = () => {
                       <Input
                         placeholder="Số điện thoại"
                         size="large"
+                        value={editedUserInfo.phoneNumber}
+                        onChange={(e) => setEditedUserInfo({ ...editedUserInfo, phoneNumber: e.target.value })}
                       />
                     ) : (
-                      <p className="font-semibold text-gray-800">Chưa cập nhật</p>
+                      <p className="font-semibold text-gray-800">{userInfo.phoneNumber || 'Chưa cập nhật'}</p>
                     )}
                   </div>
                 </div>
