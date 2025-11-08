@@ -10,3 +10,13 @@ export const profileAPI = async (id: string) => {
     })
   return response.data
 }
+
+export const getIdByUsernameAPI = async (username: string) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/get-id`,
+    {
+      params: {
+        username: username
+      }
+    })
+  return response.data
+}

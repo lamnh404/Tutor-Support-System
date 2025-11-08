@@ -1,13 +1,15 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Dropdown, Button } from 'antd'
 import type { MenuProps } from 'antd'
 import { MenuOutlined } from '@ant-design/icons'
 import { userContext } from '~/context/User/userContext'
+import { getIdByUsernameAPI } from '~/apis/profileAPI.tsx'
+
 
 const allNavLinks = [
   { path: '/', label: 'Trang Chủ', requiredRoles: ['STUDENT', 'TUTOR', 'ADMIN'] },
-  { path: '/students', label: 'Trang Cá Nhân', requiredRoles: ['STUDENT', 'TUTOR'] },
+  { path: '/id', label: 'Trang Cá Nhân', requiredRoles: ['STUDENT', 'TUTOR'] },
   { path: '/dashboard', label: 'Bảng điều khiển', requiredRoles: ['STUDENT', 'TUTOR'] },
   { path: '/calendar', label: 'Lịch', requiredRoles: ['STUDENT', 'TUTOR'] },
   { path: '/search', label: 'Tìm kiếm', requiredRoles: ['STUDENT', 'TUTOR'] },
@@ -21,12 +23,28 @@ const allNavLinks = [
 const HeaderButtons: React.FC = () => {
   const { pathname } = useLocation()
   const { user } = useContext(userContext)
+  const [userId, setUserId] = React.useState<string>('')
+
+
+  useEffect(() => {
+    getIdByUsernameAPI(user?.username || '').then((data) => {
+      setUserId(data.id)
+    })
+  }, [user?.username])
 
   const availableNavLinks = user?.roles
-    ? allNavLinks.filter(link => {
-      return link.requiredRoles.some(requiredRole => user.roles?.includes(requiredRole))
-    })
+    ? allNavLinks
+      .filter(link =>
+        link.requiredRoles.some(requiredRole => user.roles?.includes(requiredRole))
+      )
+      .map(link => {
+        if (link.path === '/id' && userId) {
+          return { ...link, path: `/${userId}` }
+        }
+        return link
+      })
     : []
+
 
   const baseStyle = 'text-white py-4 px-3 rounded-xl text-lg transition-colors min-w-24 cursor-pointer'
   const activeStyle = 'bg-[#044CC8]'
