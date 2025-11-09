@@ -1,7 +1,4 @@
-import React, { useState, useContext } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { userContext } from '~/context/User/userContext'
-import { initialStudents, type Student } from '~/pages/StudentProfile/StudentData'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
   UserOutlined,
   MailOutlined,
@@ -13,10 +10,16 @@ import {
   CameraOutlined,
   TrophyOutlined,
   CheckCircleFilled,
-  GlobalOutlined
+  RiseOutlined,
+  BulbOutlined,
+  SafetyCertificateOutlined,
+  PlusOutlined
 } from '@ant-design/icons'
-import { Card, Avatar, Button, Tag, Input, Select, message, Divider, Upload, type UploadProps } from 'antd'
-import { DEPARTMENTS } from '~/utils/definitions.tsx'
+import { Card, Avatar, Button, Tag, Input, Select, Divider, Upload, message, Tabs } from 'antd'
+import type { UploadProps, TabsProps } from 'antd'
+import { type Certificate, type StudentProfileData } from './StudentProfileConfig'
+import { type DepartmentCode, DEPARTMENTS } from '~/utils/definitions.tsx'
+import Achievement from '~/pages/TutorProfile/Achievement.tsx'
 import type { StudentProfileType, UserInfo } from '~/pages/Profile/ProfileConfig.ts'
 
 const { TextArea } = Input
@@ -27,56 +30,44 @@ interface StudentProfileProps {
   studentInfo: StudentProfileType
 }
 
+const StudentProfile: React.FC<StudentProfileProps> = ({ userInfo, studentInfo }) => {
+  const [studentData, setStudentData] = useState<StudentProfileData | null>(null)
+  const [isEditing, setIsEditing] = useState<boolean>(false)
+  const [editedData, setEditedData] = useState<StudentProfileData | null>(null)
 
-const StudentProfile: React.FC<StudentProfileProps> = ({userInfo, studentInfo}) => {
-  const { user } = useContext(userContext)
-  const navigate = useNavigate()
+  const { achievements } = { ...userInfo, ...studentInfo }
+  const [studentAchievements, setStudentAchievements] = useState<Certificate[]>(achievements || [])
 
-  // Mock data - In real app, fetch based on user.email
-  const [studentData, setStudentData] = useState<Student>(
-    initialStudents.find(s => s.id === 'student2') || initialStudents[0]
-  )
+  const studentDetails = useMemo(() => {
+    const { achievements: _achievements, ...rest } = studentInfo ?? {}
+    return { ...userInfo, ...rest }
+  }, [userInfo, studentInfo])
 
-  const [isEditing, setIsEditing] = useState(false)
-  const [editedData, setEditedData] = useState<Student>(studentData)
+  useEffect(() => {
+    if (studentDetails) {
+      setStudentData(studentDetails)
+      setEditedData(studentDetails)
+    }
+  }, [studentDetails])
 
-  if (!user) {
-    navigate('/login')
+  if (!studentData || !editedData) {
     return null
   }
 
-  const getDepartmentName = (code: string) => {
+  const getDepartmentName = (code: DepartmentCode): string => {
     const dept = DEPARTMENTS.find(d => d.code === code)
     return dept?.name || code
   }
 
-  const getYearText = (year: number) => {
-    switch (year) {
-    case 1: return 'Năm 1'
-    case 2: return 'Năm 2'
-    case 3: return 'Năm 3'
-    case 4: return 'Năm 4'
-    default: return `Năm ${year}`
+  const handleSave = (): void => {
+    if (editedData) {
+      setStudentData(editedData)
+      setIsEditing(false)
+      message.success('Cập nhật thông tin thành công!')
     }
   }
 
-  const getGPAColor = (gpa: number) => {
-    if (gpa >= 3.6) return { text: 'Xuất sắc', color: '#fadb14', bg: 'bg-yellow-50' }
-    if (gpa >= 3.2) return { text: 'Giỏi', color: '#52c41a', bg: 'bg-green-50' }
-    if (gpa >= 2.5) return { text: 'Khá', color: '#1890ff', bg: 'bg-blue-50' }
-    return { text: 'Trung bình', color: '#fa8c16', bg: 'bg-orange-50' }
-  }
-
-  const { text: gpaText, color: gpaColor, bg: gpaBg } = getGPAColor(studentData.gpa)
-
-  const handleSave = () => {
-    // In real app, call API to save
-    setStudentData(editedData)
-    setIsEditing(false)
-    message.success('Cập nhật thông tin thành công!')
-  }
-
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     setEditedData(studentData)
     setIsEditing(false)
   }
@@ -84,37 +75,211 @@ const StudentProfile: React.FC<StudentProfileProps> = ({userInfo, studentInfo}) 
   const uploadProps: UploadProps = {
     name: 'avatar',
     showUploadList: false,
-    beforeUpload: (file) => {
-      const isImage = file.type.startsWith('image/')
-      if (!isImage) {
-        message.error('Bạn chỉ có thể tải lên file ảnh!')
-        return false
-      }
-      const isLt2M = file.size / 1024 / 1024 < 2
-      if (!isLt2M) {
-        message.error('Ảnh phải nhỏ hơn 2MB!')
-        return false
-      }
-
-      // In real app, upload to server
+    beforeUpload: (file: File): boolean => {
       const reader = new FileReader()
-      reader.onload = (e) => {
-        setEditedData({ ...editedData, avatarUrl: e.target?.result as string })
+      reader.onload = (e: ProgressEvent<FileReader>): void => {
+        const result = e.target?.result
+        if (typeof result === 'string' && editedData) {
+          setEditedData({ ...editedData, avatarUrl: result })
+        }
       }
       reader.readAsDataURL(file)
       return false
     }
   }
 
+  const handleAddGoal = (): void => {
+    if (!editedData) return
+    setEditedData({
+      ...editedData,
+      learningGoals: [...editedData.learningGoals, '']
+    })
+  }
+
+  const handleRemoveGoal = (index: number): void => {
+    if (!editedData) return
+    const newGoals = editedData.learningGoals.filter((_, i) => i !== index)
+    setEditedData({ ...editedData, learningGoals: newGoals })
+  }
+
+  const handleGoalChange = (index: number, value: string): void => {
+    if (!editedData) return
+    const newGoals = [...editedData.learningGoals]
+    newGoals[index] = value
+    setEditedData({ ...editedData, learningGoals: newGoals })
+  }
+
+  const handleAddCertificate = (): void => {
+    const newCert: Certificate = {
+      id: `cert${studentAchievements.length + 1}`,
+      title: '',
+      description: '',
+      year: new Date().getFullYear().toString(),
+      type: 'certificate'
+    }
+    setStudentAchievements([...studentAchievements, newCert])
+  }
+
+  const handleRemoveCertificate = (certId: string): void => {
+    setStudentAchievements(studentAchievements.filter(cert => cert.id !== certId))
+  }
+
+  const handleCertificateChange = (certId: string, field: keyof Certificate, value: string): void => {
+    setStudentAchievements(studentAchievements.map(cert =>
+      cert.id === certId ? { ...cert, [field]: value } : cert
+    ))
+  }
+
+  const getGPAColor = (gpa: number): string => {
+    if (gpa >= 3.5) return 'from-green-500 to-emerald-600'
+    if (gpa >= 3.0) return 'from-blue-500 to-indigo-600'
+    if (gpa >= 2.5) return 'from-yellow-500 to-orange-500'
+    return 'from-orange-500 to-red-500'
+  }
+
+  const tabItems: TabsProps['items'] = [
+    {
+      key: 'goals',
+      label: (
+        <span className="flex items-center gap-2 px-2">
+          <BulbOutlined />
+          <span className="font-semibold">Mục tiêu học tập</span>
+        </span>
+      ),
+      children: (
+        <div>
+          {isEditing && (
+            <div className="mb-4 flex justify-end">
+              <Button
+                type="dashed"
+                icon={<PlusOutlined />}
+                onClick={handleAddGoal}
+              >
+                Thêm mục tiêu
+              </Button>
+            </div>
+          )}
+          {isEditing ? (
+            <div className="space-y-3">
+              {editedData.learningGoals.map((goal, index) => (
+                <div key={index} className="flex gap-3 items-center">
+                  <Input
+                    placeholder="Nhập mục tiêu học tập"
+                    value={goal}
+                    onChange={(e) => handleGoalChange(index, e.target.value)}
+                    size="large"
+                    className="flex-1"
+                  />
+                  <Button
+                    type="text"
+                    danger
+                    icon={<CloseOutlined />}
+                    onClick={() => handleRemoveGoal(index)}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {studentData.learningGoals.length > 0 ? (
+                studentData.learningGoals.map((goal, index) => (
+                  <div key={index} className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border-l-4 border-blue-500">
+                    <div className="flex items-start gap-3">
+                      <CheckCircleFilled className="text-blue-500 text-xl mt-1" />
+                      <p className="text-gray-800 font-medium">{goal}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-600">Học viên chưa thêm mục tiêu học tập nào.</p>
+              )}
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      key: 'achievements',
+      label: (
+        <span className="flex items-center gap-2 px-2">
+          <SafetyCertificateOutlined />
+          <span className="font-semibold">Thành tích</span>
+        </span>
+      ),
+      children: (
+        <div>
+          {isEditing && (
+            <div className="mb-4 flex justify-end">
+              <Button
+                type="dashed"
+                icon={<PlusOutlined />}
+                onClick={handleAddCertificate}
+              >
+                Thêm chứng chỉ
+              </Button>
+            </div>
+          )}
+          {isEditing ? (
+            <div className="space-y-3">
+              {studentAchievements.map((cert: Certificate) => (
+                <div key={cert.id} className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                  <div className="grid grid-cols-12 gap-3 items-center">
+                    <div className="col-span-11 space-y-2">
+                      <Input
+                        placeholder="Tên chứng chỉ"
+                        value={cert.title}
+                        onChange={(e) => handleCertificateChange(cert.id, 'title', e.target.value)}
+                        size="large"
+                      />
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input
+                          placeholder="Tổ chức cấp"
+                          value={cert.description}
+                          onChange={(e) => handleCertificateChange(cert.id, 'description', e.target.value)}
+                        />
+                        <Input
+                          placeholder="Năm"
+                          value={cert.year}
+                          onChange={(e) => handleCertificateChange(cert.id, 'year', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-span-1 flex justify-end">
+                      <Button
+                        type="text"
+                        danger
+                        icon={<CloseOutlined />}
+                        onClick={() => handleRemoveCertificate(cert.id)}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-4">
+              {studentAchievements.length > 0 ? (
+                studentAchievements.map((cert: Certificate) => (
+                  <Achievement key={cert.id} cert={cert} />
+                ))
+              ) : (
+                <p className="text-gray-600">Học viên chưa thêm chứng chỉ nào.</p>
+              )}
+            </div>
+          )}
+        </div>
+      )
+    }
+  ]
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50 py-8 px-4">
       <div className="max-w-7xl mx-auto">
-        {/* Header Actions - Sticky */}
+        {/* Header Actions */}
         <div className="sticky top-20 z-40 bg-white/80 backdrop-blur-md shadow-sm rounded-2xl px-6 py-4 mb-6 flex justify-between items-center">
           <div>
             <Button
               type="text"
-              onClick={() => navigate(-1)}
               className="text-gray-600 hover:text-gray-900 font-medium"
               size="large"
             >
@@ -127,7 +292,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({userInfo, studentInfo}) 
               icon={<EditOutlined />}
               onClick={() => setIsEditing(true)}
               size="large"
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border-0 shadow-lg"
+              className="bg-gradient-to-r from-purple-600 to-pink-600 border-0 shadow-lg"
             >
               Chỉnh sửa hồ sơ
             </Button>
@@ -137,7 +302,6 @@ const StudentProfile: React.FC<StudentProfileProps> = ({userInfo, studentInfo}) 
                 icon={<CloseOutlined />}
                 onClick={handleCancel}
                 size="large"
-                className="hover:bg-gray-100"
               >
                 Hủy
               </Button>
@@ -146,7 +310,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({userInfo, studentInfo}) 
                 icon={<SaveOutlined />}
                 onClick={handleSave}
                 size="large"
-                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 border-0 shadow-lg"
+                className="bg-gradient-to-r from-green-500 to-emerald-600 border-0 shadow-lg"
               >
                 Lưu thay đổi
               </Button>
@@ -159,7 +323,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({userInfo, studentInfo}) 
           <div className="lg:col-span-4">
             <Card className="shadow-2xl rounded-3xl overflow-hidden border-0">
               {/* Gradient Banner */}
-              <div className="h-24 bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 relative">
+              <div className="h-24 bg-gradient-to-br from-purple-500 via-pink-600 to-rose-600 relative">
                 <div className="absolute inset-0 bg-black/10"></div>
               </div>
 
@@ -170,7 +334,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({userInfo, studentInfo}) 
                     <Avatar
                       size={100}
                       src={isEditing ? editedData.avatarUrl : studentData.avatarUrl}
-                      className="border-4 border-white shadow-2xl ring-2 ring-blue-100"
+                      className="border-4 border-white shadow-2xl ring-2 ring-purple-100"
                     />
                     {isEditing && (
                       <Upload {...uploadProps}>
@@ -205,8 +369,8 @@ const StudentProfile: React.FC<StudentProfileProps> = ({userInfo, studentInfo}) 
                     <h1 className="text-xl font-bold text-gray-900 mb-2">
                       {studentData.lastName} {studentData.firstName}
                     </h1>
-                    <Tag icon={<CheckCircleFilled />} color="blue" className="text-xs">
-                      Đã xác thực
+                    <Tag icon={<CheckCircleFilled />} color="purple" className="text-xs">
+                      Học viên
                     </Tag>
                   </>
                 )}
@@ -216,31 +380,67 @@ const StudentProfile: React.FC<StudentProfileProps> = ({userInfo, studentInfo}) 
 
               {/* Stats Grid */}
               <div className="px-4 pb-3">
-                <div className="grid grid-cols-3 gap-2 mb-3">
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <div className="text-center bg-gradient-to-br from-purple-50 to-pink-100 p-2.5 rounded-xl col-span-2">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <RiseOutlined className={`text-lg bg-gradient-to-r ${getGPAColor(studentData.currentGPA)} bg-clip-text text-transparent`} />
+                      {isEditing ? (
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          max="4.0"
+                          value={editedData.currentGPA}
+                          onChange={(e) => setEditedData({ ...editedData, currentGPA: parseFloat(e.target.value) || 0 })}
+                          className="w-20 text-center font-bold"
+                        />
+                      ) : (
+                        <span className={`text-lg font-bold bg-gradient-to-r ${getGPAColor(studentData.currentGPA)} bg-clip-text text-transparent`}>
+                          {studentData.currentGPA.toFixed(2)}
+                        </span>
+                      )}
+                      <span className="text-lg font-bold text-gray-400">/4.0</span>
+                    </div>
+                    <div className="text-xs text-gray-600">GPA hiện tại</div>
+                  </div>
                   <div className="text-center bg-gradient-to-br from-blue-50 to-blue-100 p-2.5 rounded-xl">
-                    <div className="text-lg font-bold text-blue-600">
-                      {studentData.completedCourses}
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <TrophyOutlined className="text-blue-500 text-lg" />
+                      <span className="text-lg font-bold text-blue-600">
+                        {studentAchievements.length}
+                      </span>
                     </div>
-                    <div className="text-xs text-gray-600">Môn học</div>
+                    <div className="text-xs text-gray-600">Chứng chỉ</div>
                   </div>
-                  <div className="text-center bg-gradient-to-br from-purple-50 to-purple-100 p-2.5 rounded-xl">
-                    <div className="text-lg font-bold text-purple-600">
-                      {studentData.totalHoursLearned}h
+                  <div className="text-center bg-gradient-to-br from-green-50 to-green-100 p-2.5 rounded-xl">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <BulbOutlined className="text-green-500 text-lg" />
+                      <span className="text-lg font-bold text-green-600">
+                        {studentData.learningGoals.length}
+                      </span>
                     </div>
-                    <div className="text-xs text-gray-600">Giờ học</div>
-                  </div>
-                  <div className={`text-center p-2.5 rounded-xl ${gpaBg}`}>
-                    <div className="text-lg font-bold" style={{ color: gpaColor }}>
-                      {studentData.gpa.toFixed(2)}
-                    </div>
-                    <div className="text-xs font-semibold" style={{ color: gpaColor }}>
-                      {gpaText}
-                    </div>
+                    <div className="text-xs text-gray-600">Mục tiêu</div>
                   </div>
                 </div>
 
-                {/* Info Details - Compact */}
+                {/* Info Details */}
                 <div className="space-y-2.5">
+                  <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-lg">
+                    <UserOutlined className="text-purple-500" />
+                    <div className="flex-1">
+                      <p className="text-xs text-gray-500">MSSV</p>
+                      {isEditing ? (
+                        <Input
+                          value={editedData.studentID}
+                          onChange={(e) => setEditedData({ ...editedData, studentID: e.target.value })}
+                          size="small"
+                        />
+                      ) : (
+                        <p className="font-semibold text-gray-800 text-sm">{studentData.studentID}</p>
+                      )}
+                    </div>
+                  </div>
+
                   <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-lg">
                     <BookOutlined className="text-blue-500" />
                     <div className="flex-1 min-w-0">
@@ -248,7 +448,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({userInfo, studentInfo}) 
                       {isEditing ? (
                         <Select
                           value={editedData.department}
-                          onChange={(value) => setEditedData({ ...editedData, department: value })}
+                          onChange={(value: DepartmentCode) => setEditedData({ ...editedData, department: value })}
                           className="w-full"
                           size="small"
                         >
@@ -257,37 +457,34 @@ const StudentProfile: React.FC<StudentProfileProps> = ({userInfo, studentInfo}) 
                           ))}
                         </Select>
                       ) : (
-                        <p className="font-semibold text-gray-800 text-sm truncate">{getDepartmentName(studentData.department)}</p>
+                        <p className="font-semibold text-gray-800 text-sm truncate">
+                          {getDepartmentName(studentData.department)}
+                        </p>
                       )}
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-lg">
-                    <TrophyOutlined className="text-purple-500" />
+                    <MailOutlined className="text-green-500" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500">Email</p>
+                      <p className="font-semibold text-gray-800 text-sm truncate">{studentData.email}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-lg">
+                    <PhoneOutlined className="text-orange-500" />
                     <div className="flex-1">
-                      <p className="text-xs text-gray-500">Năm học</p>
+                      <p className="text-xs text-gray-500">Điện thoại</p>
                       {isEditing ? (
-                        <Select
-                          value={editedData.year}
-                          onChange={(value) => setEditedData({ ...editedData, year: value })}
-                          className="w-full"
+                        <Input
+                          value={editedData.phoneNumber}
+                          onChange={(e) => setEditedData({ ...editedData, phoneNumber: e.target.value })}
                           size="small"
-                        >
-                          {[1, 2, 3, 4].map(year => (
-                            <Option key={year} value={year}>{getYearText(year)}</Option>
-                          ))}
-                        </Select>
+                        />
                       ) : (
-                        <p className="font-semibold text-gray-800 text-sm">{getYearText(studentData.year)}</p>
+                        <p className="font-semibold text-gray-800 text-sm">{studentData.phoneNumber}</p>
                       )}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-lg">
-                    <GlobalOutlined className="text-green-500" />
-                    <div className="flex-1">
-                      <p className="text-xs text-gray-500">MSSV</p>
-                      <p className="font-mono font-semibold text-gray-800 text-sm">{studentData.studentId}</p>
                     </div>
                   </div>
                 </div>
@@ -297,14 +494,14 @@ const StudentProfile: React.FC<StudentProfileProps> = ({userInfo, studentInfo}) 
 
           {/* Right Column - Content Cards */}
           <div className="lg:col-span-8 space-y-6">
-            {/* About Me / Introduction */}
+            {/* About */}
             <Card
               title={
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
-                    <UserOutlined className="text-indigo-600 text-xl" />
+                  <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <UserOutlined className="text-purple-600 text-xl" />
                   </div>
-                  <span className="text-lg font-bold">Giới thiệu bản thân</span>
+                  <span className="text-lg font-bold">Giới thiệu</span>
                 </div>
               }
               className="shadow-xl rounded-3xl border-0"
@@ -312,180 +509,27 @@ const StudentProfile: React.FC<StudentProfileProps> = ({userInfo, studentInfo}) 
               {isEditing ? (
                 <TextArea
                   rows={6}
-                  placeholder="Viết vài dòng giới thiệu về bản thân bạn..."
+                  placeholder="Viết giới thiệu về bản thân..."
+                  value={editedData.studentDescription}
+                  onChange={(e) => setEditedData({ ...editedData, studentDescription: e.target.value })}
                   className="text-base"
-                  defaultValue={`Xin chào! Mình là ${studentData.firstName}, sinh viên năm ${studentData.year} khoa ${getDepartmentName(studentData.department)}. Mình đang tìm kiếm cơ hội học hỏi và phát triển kỹ năng trong các môn học chuyên ngành.`}
                 />
               ) : (
-                <div className="p-4 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl border-l-4 border-indigo-500">
+                <div className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl border-l-4 border-purple-500">
                   <p className="text-gray-700 leading-relaxed text-base">
-                    Xin chào! Mình là <span className="font-bold text-indigo-600">{studentData.firstName}</span>,
-                    sinh viên năm {studentData.year} khoa <span className="font-bold text-indigo-600">{getDepartmentName(studentData.department)}</span>.
-                    Mình đang tìm kiếm cơ hội học hỏi và phát triển kỹ năng trong các môn học chuyên ngành.
-                    Với GPA <span className="font-bold" style={{ color: gpaColor }}>{studentData.gpa.toFixed(2)}</span>,
-                    mình đã hoàn thành <span className="font-bold text-purple-600">{studentData.completedCourses} môn học</span> và
-                    tích lũy được <span className="font-bold text-blue-600">{studentData.totalHoursLearned} giờ học</span>.
+                    {studentData.studentDescription}
                   </p>
                 </div>
               )}
             </Card>
 
-            {/* Current Courses */}
-            <Card
-              title={
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                    <BookOutlined className="text-blue-600 text-xl" />
-                  </div>
-                  <span className="text-lg font-bold">Các môn đang học</span>
-                </div>
-              }
-              className="shadow-xl rounded-3xl border-0"
-            >
-              {isEditing ? (
-                <Select
-                  mode="multiple"
-                  placeholder="Chọn các môn đang học"
-                  value={editedData.currentCourses}
-                  onChange={(value) => setEditedData({ ...editedData, currentCourses: value })}
-                  className="w-full"
-                  size="large"
-                >
-                  {studentData.currentCourses.map(course => (
-                    <Option key={course} value={course}>{course}</Option>
-                  ))}
-                </Select>
-              ) : (
-                <div className="flex flex-wrap gap-4">
-                  {studentData.currentCourses.map((course, idx) => (
-                    <Tag
-                      key={idx}
-                      color="blue"
-                      className="px-8 py-4 text-xl font-bold rounded-2xl border-0 shadow-lg hover:shadow-2xl transition-all hover:scale-110 cursor-default transform"
-                    >
-                      📚 {course}
-                    </Tag>
-                  ))}
-                </div>
-              )}
-            </Card>
-
-            {/* Need Help With */}
-            <Card
-              title={
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
-                    <BookOutlined className="text-orange-600 text-xl" />
-                  </div>
-                  <span className="text-lg font-bold">Cần hỗ trợ</span>
-                </div>
-              }
-              className="shadow-xl rounded-3xl border-0"
-            >
-              {isEditing ? (
-                <Select
-                  mode="multiple"
-                  placeholder="Chọn các môn cần hỗ trợ"
-                  value={editedData.needHelpWith}
-                  onChange={(value) => setEditedData({ ...editedData, needHelpWith: value })}
-                  className="w-full"
-                  size="large"
-                >
-                  {studentData.needHelpWith.map(subject => (
-                    <Option key={subject} value={subject}>{subject}</Option>
-                  ))}
-                </Select>
-              ) : (
-                <div className="flex flex-wrap gap-4">
-                  {studentData.needHelpWith.map((subject, idx) => (
-                    <Tag
-                      key={idx}
-                      color="orange"
-                      className="px-8 py-4 text-xl font-bold rounded-2xl border-0 shadow-lg hover:shadow-2xl transition-all hover:scale-110 cursor-default transform"
-                    >
-                      ⚠️ {subject}
-                    </Tag>
-                  ))}
-                </div>
-              )}
-            </Card>
-
-            {/* Learning Goals */}
-            <Card
-              title={
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
-                    <TrophyOutlined className="text-purple-600 text-xl" />
-                  </div>
-                  <span className="text-lg font-bold">Mục tiêu học tập</span>
-                </div>
-              }
-              className="shadow-xl rounded-3xl border-0"
-            >
-              {isEditing ? (
-                <TextArea
-                  rows={5}
-                  value={editedData.learningGoals[0]}
-                  onChange={(e) => setEditedData({
-                    ...editedData,
-                    learningGoals: [e.target.value, ...editedData.learningGoals.slice(1)]
-                  })}
-                  placeholder="Nhập mục tiêu học tập của bạn..."
-                  className="text-base"
-                />
-              ) : (
-                <div className="space-y-4">
-                  {studentData.learningGoals.map((goal, idx) => (
-                    <div key={idx} className="flex items-start gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border-l-4 border-blue-500">
-                      <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">
-                        {idx + 1}
-                      </div>
-                      <p className="text-gray-700 leading-relaxed flex-1">{goal}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </Card>
-
-            {/* Contact Info */}
-            <Card
-              title={
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-                    <MailOutlined className="text-green-600 text-xl" />
-                  </div>
-                  <span className="text-lg font-bold">Thông tin liên hệ</span>
-                </div>
-              }
-              className="shadow-xl rounded-3xl border-0"
-            >
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-4 p-5 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl">
-                  <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <MailOutlined className="text-white text-xl" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs text-gray-500 mb-1">Email</p>
-                    <p className="font-semibold text-gray-800 truncate">{user.username + '@hcmut.edu.vn'}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 p-5 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl">
-                  <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <PhoneOutlined className="text-white text-xl" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs text-gray-500 mb-1">Điện thoại</p>
-                    {isEditing ? (
-                      <Input
-                        placeholder="Số điện thoại"
-                        size="large"
-                      />
-                    ) : (
-                      <p className="font-semibold text-gray-800">Chưa cập nhật</p>
-                    )}
-                  </div>
-                </div>
-              </div>
+            {/* Goals and Achievements Tabs */}
+            <Card className="shadow-xl rounded-3xl border-0">
+              <Tabs
+                defaultActiveKey="goals"
+                size="large"
+                items={tabItems}
+              />
             </Card>
           </div>
         </div>

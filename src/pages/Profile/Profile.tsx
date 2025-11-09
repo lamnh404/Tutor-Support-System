@@ -4,6 +4,7 @@ import TutorProfile from '~/pages/TutorProfile/TutorProfile.tsx'
 import { useNavigate, useParams } from 'react-router-dom'
 import { profileAPI } from '~/apis/profileAPI'
 import type { UserInfo, StudentProfileType, TutorProfileType } from '~/pages/Profile/ProfileConfig'
+import { Spin } from 'antd'
 
 
 const Profile: React.FC = () => {
@@ -12,10 +13,13 @@ const Profile: React.FC = () => {
   const [activeProfile, setActiveProfile] = useState('STUDENT')
   const [isStudent, setIsStudent] = useState(false)
   const [isTutor, setIsTutor] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
   const [studentProfile, setStudentProfile] = useState<StudentProfileType | null>(null)
   const [tutorProfile, setTutorProfile] = useState<TutorProfileType | null>(null)
+  
   useEffect(() => {
+    setIsLoading(true)
     profileAPI(id as string)
       .then(data => {
         console.log(data)
@@ -33,14 +37,29 @@ const Profile: React.FC = () => {
       .catch(_error => {
         navigate('/404', { replace: true })
       })
+      .finally(() => {
+        setIsLoading(false)
+      })
   }, [id, navigate])
+  
+  if (isLoading) {
+    return (
+      <Spin
+        size="large"
+        tip="Đang tải thông tin..."
+        fullscreen
+      />
+    )
+  }
+
+  if (!userInfo) {
+    return null
+  }
+  
   return (
     <>
-      { isStudent && <StudentProfile userInfo ={userInfo!} studentInfo = {studentProfile!} /> }
-
-      { isTutor && <TutorProfile userInfo={userInfo!} tutorInfo={tutorProfile!} /> }
-
-      { isStudent && isTutor && (
+      {/* Nếu user vừa là Student vừa là Tutor - hiển thị toggle */}
+      { isStudent && isTutor && studentProfile && tutorProfile && (
         <div>
           {/* Nút chuyển đổi */}
           <div className="flex gap-2 pb-4 pt-4 mx-auto items-center justify-center">
@@ -67,11 +86,17 @@ const Profile: React.FC = () => {
           </div>
           {/* Display corresponding profile */}
           {activeProfile === 'STUDENT' ?
-            <StudentProfile userInfo ={userInfo!} studentInfo = {studentProfile!} />
+            <StudentProfile userInfo={userInfo} studentInfo={studentProfile} />
             :
-            <TutorProfile userInfo={userInfo!} tutorInfo={tutorProfile!} /> }
+            <TutorProfile userInfo={userInfo} tutorInfo={tutorProfile} /> }
         </div>
       )}
+
+      {/* Nếu user CHỈ là Student */}
+      { isStudent && !isTutor && studentProfile && <StudentProfile userInfo={userInfo} studentInfo={studentProfile} /> }
+
+      {/* Nếu user CHỈ là Tutor */}
+      { !isStudent && isTutor && tutorProfile && <TutorProfile userInfo={userInfo} tutorInfo={tutorProfile} /> }
     </>
   )
 }
