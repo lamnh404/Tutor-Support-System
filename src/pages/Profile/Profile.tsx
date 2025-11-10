@@ -22,19 +22,27 @@ const Profile: React.FC = () => {
     setIsLoading(true)
     profileAPI(id as string)
       .then(data => {
-        console.log(data)
-        if ( 'studentProfile' in data)
+        console.log('API Response:', data)
+        
+        if ('studentProfile' in data && data.studentProfile) {
+          console.log('Setting student profile:', data.studentProfile)
           setIsStudent(true)
+          setStudentProfile(data.studentProfile as StudentProfileType)
+        }
 
-        if ( 'tutorProfile' in data)
+        if ('tutorProfile' in data && data.tutorProfile) {
+          console.log('Setting tutor profile:', data.tutorProfile)
           setIsTutor(true)
+          setTutorProfile(data.tutorProfile as TutorProfileType)
+        }
+        
         const { studentProfile, tutorProfile, ...userInfo } = data
+        console.log('User Info:', userInfo)
         setUserInfo(userInfo as UserInfo)
-        setStudentProfile(studentProfile as StudentProfileType)
-        setTutorProfile(tutorProfile as TutorProfileType)
       })
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .catch(_error => {
+        console.error('API Error:', _error)
         navigate('/404', { replace: true })
       })
       .finally(() => {
@@ -53,8 +61,11 @@ const Profile: React.FC = () => {
   }
 
   if (!userInfo) {
+    console.log('No user info available')
     return null
   }
+  
+  console.log('Render conditions:', { isStudent, isTutor, hasStudentProfile: !!studentProfile, hasTutorProfile: !!tutorProfile })
   
   return (
     <>
