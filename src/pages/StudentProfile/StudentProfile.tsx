@@ -30,6 +30,23 @@ interface StudentProfileProps {
   studentInfo: StudentProfileType
 }
 
+// Mock data for current courses
+const mockCurrentCourses = [
+  'Mạch điện tử',
+  'Xử lý tín hiệu số', 
+  'Vi xử lý',
+  'Toán cao cấp 3',
+  'Vật lý đại cương'
+]
+
+// Mock data for subjects that need help
+const mockNeedHelpWith = [
+  'Signal Processing',
+  'Embedded Systems',
+  'Circuit Analysis',
+  'Mathematics'
+]
+
 const StudentProfile: React.FC<StudentProfileProps> = ({ userInfo, studentInfo }) => {
   const navigate = useNavigate()
   const [studentData, setStudentData] = useState<StudentProfileData | null>(null)
@@ -399,13 +416,13 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ userInfo, studentInfo }
                 <div className="grid grid-cols-3 gap-2 mb-3">
                   <div className="text-center bg-gradient-to-br from-blue-50 to-blue-100 p-2.5 rounded-xl">
                     <div className="text-lg font-bold text-blue-600">
-                      {studentAchievements.length}
+                      {mockCurrentCourses.length}
                     </div>
                     <div className="text-xs text-gray-600">Môn học</div>
                   </div>
                   <div className="text-center bg-gradient-to-br from-purple-50 to-purple-100 p-2.5 rounded-xl">
                     <div className="text-lg font-bold text-purple-600">
-                      0h
+                      180h
                     </div>
                     <div className="text-xs text-gray-600">Giờ học</div>
                   </div>
@@ -528,7 +545,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ userInfo, studentInfo }
               className="shadow-xl rounded-3xl border-0"
             >
               <div className="flex flex-wrap gap-4">
-                {['Mạch điện tử', 'Xử lý tín hiệu số', 'Vi xử lý', 'Toán cao cấp 3'].map((course: string, idx: number) => (
+                {mockCurrentCourses.map((course: string, idx: number) => (
                   <Tag
                     key={idx}
                     color="blue"
@@ -553,7 +570,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ userInfo, studentInfo }
               className="shadow-xl rounded-3xl border-0"
             >
               <div className="flex flex-wrap gap-4">
-                {['Signal Processing', 'Embedded Systems', 'Circuit Analysis', 'Mathematics'].map((subject: string, idx: number) => (
+                {mockNeedHelpWith.map((subject: string, idx: number) => (
                   <Tag
                     key={idx}
                     color="orange"
