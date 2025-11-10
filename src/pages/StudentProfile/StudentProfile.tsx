@@ -11,12 +11,11 @@ import {
   CameraOutlined,
   TrophyOutlined,
   CheckCircleFilled,
-  BulbOutlined,
   SafetyCertificateOutlined,
   PlusOutlined
 } from '@ant-design/icons'
-import { Card, Avatar, Button, Tag, Input, Select, Divider, Upload, message, Tabs, Spin } from 'antd'
-import type { UploadProps, TabsProps } from 'antd'
+import { Card, Avatar, Button, Tag, Input, Select, Divider, Upload, message, Spin } from 'antd'
+import type { UploadProps } from 'antd'
 import { type Certificate, type StudentProfileData } from './StudentProfileConfig'
 import { type DepartmentCode, DEPARTMENTS } from '~/utils/definitions.tsx'
 import Achievement from '~/pages/TutorProfile/Achievement.tsx'
@@ -47,13 +46,14 @@ const mockNeedHelpWith = [
   'Mathematics'
 ]
 
+// Mock avatar URL - replace with actual avatar if available
+const mockAvatarUrl = 'https://api.dicebear.com/7.x/avataaars/svg?seed=sasuke'
+
 const StudentProfile: React.FC<StudentProfileProps> = ({ userInfo, studentInfo }) => {
   const navigate = useNavigate()
   const [studentData, setStudentData] = useState<StudentProfileData | null>(null)
   const [isEditing, setIsEditing] = useState<boolean>(false)
   const [editedData, setEditedData] = useState<StudentProfileData | null>(null)
-
-  console.log('StudentProfile received props:', { userInfo, studentInfo })
 
   const { achievements } = { ...userInfo, ...studentInfo }
   const [studentAchievements, setStudentAchievements] = useState<Certificate[]>(achievements || [])
@@ -67,12 +67,10 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ userInfo, studentInfo }
       learningGoals: rest.learningGoals || [],
       studentDescription: rest.studentDescription || ''
     }
-    console.log('Student details merged:', merged)
     return merged
   }, [userInfo, studentInfo])
 
   useEffect(() => {
-    console.log('Setting student data from details:', studentDetails)
     if (studentDetails) {
       setStudentData(studentDetails)
       setEditedData(studentDetails)
@@ -80,7 +78,6 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ userInfo, studentInfo }
   }, [studentDetails])
 
   if (!studentData || !editedData) {
-    console.log('Showing loading spinner, studentData:', studentData, 'editedData:', editedData)
     return (
       <Spin
         size="large"
@@ -89,8 +86,6 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ userInfo, studentInfo }
       />
     )
   }
-
-  console.log('Rendering StudentProfile with data:', studentData)
 
   const getDepartmentName = (code: DepartmentCode): string => {
     const dept = DEPARTMENTS.find(d => d.code === code)
@@ -168,141 +163,6 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ userInfo, studentInfo }
     ))
   }
 
-  const tabItems: TabsProps['items'] = [
-    {
-      key: 'goals',
-      label: (
-        <span className="flex items-center gap-2 px-2">
-          <BulbOutlined />
-          <span className="font-semibold">Mục tiêu học tập</span>
-        </span>
-      ),
-      children: (
-        <div>
-          {isEditing && (
-            <div className="mb-4 flex justify-end">
-              <Button
-                type="dashed"
-                icon={<PlusOutlined />}
-                onClick={handleAddGoal}
-              >
-                Thêm mục tiêu
-              </Button>
-            </div>
-          )}
-          {isEditing ? (
-            <div className="space-y-3">
-              {(editedData.learningGoals || []).map((goal, index) => (
-                <div key={index} className="flex gap-3 items-center">
-                  <Input
-                    placeholder="Nhập mục tiêu học tập"
-                    value={goal}
-                    onChange={(e) => handleGoalChange(index, e.target.value)}
-                    size="large"
-                    className="flex-1"
-                  />
-                  <Button
-                    type="text"
-                    danger
-                    icon={<CloseOutlined />}
-                    onClick={() => handleRemoveGoal(index)}
-                  />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {(studentData.learningGoals || []).length > 0 ? (
-                (studentData.learningGoals || []).map((goal, index) => (
-                  <div key={index} className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border-l-4 border-blue-500">
-                    <div className="flex items-start gap-3">
-                      <CheckCircleFilled className="text-blue-500 text-xl mt-1" />
-                      <p className="text-gray-800 font-medium">{goal}</p>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-600">Học viên chưa thêm mục tiêu học tập nào.</p>
-              )}
-            </div>
-          )}
-        </div>
-      )
-    },
-    {
-      key: 'achievements',
-      label: (
-        <span className="flex items-center gap-2 px-2">
-          <SafetyCertificateOutlined />
-          <span className="font-semibold">Thành tích</span>
-        </span>
-      ),
-      children: (
-        <div>
-          {isEditing && (
-            <div className="mb-4 flex justify-end">
-              <Button
-                type="dashed"
-                icon={<PlusOutlined />}
-                onClick={handleAddCertificate}
-              >
-                Thêm chứng chỉ
-              </Button>
-            </div>
-          )}
-          {isEditing ? (
-            <div className="space-y-3">
-              {studentAchievements.map((cert: Certificate) => (
-                <div key={cert.id} className="p-4 bg-gray-50 rounded-xl border border-gray-200">
-                  <div className="grid grid-cols-12 gap-3 items-center">
-                    <div className="col-span-11 space-y-2">
-                      <Input
-                        placeholder="Tên chứng chỉ"
-                        value={cert.title}
-                        onChange={(e) => handleCertificateChange(cert.id, 'title', e.target.value)}
-                        size="large"
-                      />
-                      <div className="grid grid-cols-2 gap-2">
-                        <Input
-                          placeholder="Tổ chức cấp"
-                          value={cert.description}
-                          onChange={(e) => handleCertificateChange(cert.id, 'description', e.target.value)}
-                        />
-                        <Input
-                          placeholder="Năm"
-                          value={cert.year}
-                          onChange={(e) => handleCertificateChange(cert.id, 'year', e.target.value)}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-span-1 flex justify-end">
-                      <Button
-                        type="text"
-                        danger
-                        icon={<CloseOutlined />}
-                        onClick={() => handleRemoveCertificate(cert.id)}
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid md:grid-cols-2 gap-4">
-              {studentAchievements.length > 0 ? (
-                studentAchievements.map((cert: Certificate) => (
-                  <Achievement key={cert.id} cert={cert} />
-                ))
-              ) : (
-                <p className="text-gray-600">Học viên chưa thêm chứng chỉ nào.</p>
-              )}
-            </div>
-          )}
-        </div>
-      )
-    }
-  ]
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8 px-4">
       <div className="max-w-7xl mx-auto">
@@ -366,7 +226,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ userInfo, studentInfo }
                   <div className="relative group">
                     <Avatar
                       size={100}
-                      src={isEditing ? editedData.avatarUrl : studentData.avatarUrl}
+                      src={isEditing ? (editedData.avatarUrl || mockAvatarUrl) : (studentData.avatarUrl || mockAvatarUrl)}
                       className="border-4 border-white shadow-2xl ring-2 ring-blue-100"
                     />
                     {isEditing && (
@@ -582,13 +442,135 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ userInfo, studentInfo }
               </div>
             </Card>
 
+            {/* Learning Goals */}
+            <Card
+              title={
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <TrophyOutlined className="text-purple-600 text-xl" />
+                  </div>
+                  <span className="text-lg font-bold">Mục tiêu học tập</span>
+                </div>
+              }
+              className="shadow-xl rounded-3xl border-0"
+            >
+              {isEditing ? (
+                <div className="space-y-3">
+                  {(editedData.learningGoals || []).map((goal, index) => (
+                    <div key={index} className="flex gap-3 items-center">
+                      <Input
+                        placeholder="Nhập mục tiêu học tập"
+                        value={goal}
+                        onChange={(e) => handleGoalChange(index, e.target.value)}
+                        size="large"
+                        className="flex-1"
+                      />
+                      <Button
+                        type="text"
+                        danger
+                        icon={<CloseOutlined />}
+                        onClick={() => handleRemoveGoal(index)}
+                      />
+                    </div>
+                  ))}
+                  <Button
+                    type="dashed"
+                    icon={<PlusOutlined />}
+                    onClick={handleAddGoal}
+                    className="w-full"
+                  >
+                    Thêm mục tiêu
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {(studentData.learningGoals || []).length > 0 ? (
+                    (studentData.learningGoals || []).map((goal, idx: number) => (
+                      <div key={idx} className="flex items-start gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border-l-4 border-blue-500">
+                        <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">
+                          {idx + 1}
+                        </div>
+                        <p className="text-gray-700 leading-relaxed flex-1">{goal}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-gray-600">Học viên chưa thêm mục tiêu học tập nào.</p>
+                  )}
+                </div>
+              )}
+            </Card>
+
             {/* Goals and Achievements Tabs */}
-            <Card className="shadow-xl rounded-3xl border-0">
-              <Tabs
-                defaultActiveKey="goals"
-                size="large"
-                items={tabItems}
-              />
+            <Card
+              title={
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
+                    <SafetyCertificateOutlined className="text-indigo-600 text-xl" />
+                  </div>
+                  <span className="text-lg font-bold">Thành tích</span>
+                </div>
+              }
+              className="shadow-xl rounded-3xl border-0"
+            >
+              {isEditing && (
+                <div className="mb-4 flex justify-end">
+                  <Button
+                    type="dashed"
+                    icon={<PlusOutlined />}
+                    onClick={handleAddCertificate}
+                  >
+                    Thêm chứng chỉ
+                  </Button>
+                </div>
+              )}
+              {isEditing ? (
+                <div className="space-y-3">
+                  {studentAchievements.map((cert: Certificate) => (
+                    <div key={cert.id} className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                      <div className="grid grid-cols-12 gap-3 items-center">
+                        <div className="col-span-11 space-y-2">
+                          <Input
+                            placeholder="Tên chứng chỉ"
+                            value={cert.title}
+                            onChange={(e) => handleCertificateChange(cert.id, 'title', e.target.value)}
+                            size="large"
+                          />
+                          <div className="grid grid-cols-2 gap-2">
+                            <Input
+                              placeholder="Tổ chức cấp"
+                              value={cert.description}
+                              onChange={(e) => handleCertificateChange(cert.id, 'description', e.target.value)}
+                            />
+                            <Input
+                              placeholder="Năm"
+                              value={cert.year}
+                              onChange={(e) => handleCertificateChange(cert.id, 'year', e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-span-1 flex justify-end">
+                          <Button
+                            type="text"
+                            danger
+                            icon={<CloseOutlined />}
+                            onClick={() => handleRemoveCertificate(cert.id)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-2 gap-4">
+                  {studentAchievements.length > 0 ? (
+                    studentAchievements.map((cert: Certificate) => (
+                      <Achievement key={cert.id} cert={cert} />
+                    ))
+                  ) : (
+                    <p className="text-gray-600">Học viên chưa thêm chứng chỉ nào.</p>
+                  )}
+                </div>
+              )}
             </Card>
 
             {/* Contact Info */}
