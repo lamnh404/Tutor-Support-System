@@ -22,7 +22,7 @@ export const getIdByUsernameAPI = async (username: string) => {
 }
 
 export const getRatingDistributionAPI = async (id: string) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/profile/ratingDistribution`,
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/profile/rating-distribution`,
     {
       params: {
         id: id

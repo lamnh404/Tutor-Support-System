@@ -4,6 +4,12 @@ import RenderStar from '~/components/Review/RenderStar'
 import type { Review } from './TypeDefinition'
 import { getReviewsAPI } from '~/apis/profileAPI'
 import { Link } from 'react-router-dom'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import 'dayjs/locale/vi.js'
+
+dayjs.extend(relativeTime)
+dayjs.locale('vi')
 interface ReviewCardProps {
   id: string,
   sort: string
@@ -51,7 +57,11 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ id, sort }) => {
                 <div className="flex items-center justify-between mb-2">
                   <div>
                     <div className="font-semibold text-gray-900">{review.reviewerName}</div>
-                    <div className="text-xs text-gray-500">{review.timestamp}</div>
+                    <div className="text-xs text-gray-500">
+                      {
+                        dayjs(review.timestamp).fromNow()
+                      }
+                    </div>
                   </div>
                   <div className="flex gap-1">
                     <RenderStar rating={review.rating} />

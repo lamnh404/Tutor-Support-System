@@ -5,6 +5,7 @@ import type { MenuProps } from 'antd'
 import { MenuOutlined } from '@ant-design/icons'
 import { userContext } from '~/context/User/userContext'
 import { getIdByUsernameAPI } from '~/apis/profileAPI.tsx'
+import { iDContext } from '~/context/IdContext/idContext'
 
 
 const allNavLinks = [
@@ -23,6 +24,7 @@ const allNavLinks = [
 const HeaderButtons: React.FC = () => {
   const { pathname } = useLocation()
   const { user } = useContext(userContext)
+  const { setOwnId } = useContext(iDContext)
   const [userId, setUserId] = React.useState<string>('')
 
 
@@ -31,6 +33,12 @@ const HeaderButtons: React.FC = () => {
       setUserId(data.id)
     })
   }, [user?.username])
+
+  useEffect(() => {
+    if (userId) {
+      setOwnId(userId)
+    }
+  }, [userId, setOwnId])
 
   const availableNavLinks = user?.roles
     ? allNavLinks

@@ -98,14 +98,14 @@ const Profile: React.FC = () => {
           </div>
           {/* Display corresponding profile */}
           {activeProfile === 'STUDENT' ?
-            <StudentProfile key={`student-${id}`} userInfo={userInfo} studentInfo={studentProfile!} />
+            <StudentProfile key={`student-${id}`} id={id as string} userInfo={userInfo} studentInfo={studentProfile!} />
             :
             <TutorProfile key={`tutor-${id}`} id = { id as string } userInfo={userInfo!} tutorInfo={tutorProfile!} /> }
         </div>
       )}
 
       {/* Nếu user CHỈ là Student */}
-      { isStudent && !isTutor && studentProfile && <StudentProfile key={`student-${id}`} userInfo={userInfo} studentInfo={studentProfile} /> }
+      { isStudent && !isTutor && studentProfile && <StudentProfile key={`student-${id}`} id={id as string} userInfo={userInfo} studentInfo={studentProfile} /> }
 
       {/* Nếu user CHỈ là Tutor */}
       { !isStudent && isTutor && tutorProfile && <TutorProfile key={`tutor-${id}`} id = {id as string } userInfo={userInfo} tutorInfo={tutorProfile} /> }

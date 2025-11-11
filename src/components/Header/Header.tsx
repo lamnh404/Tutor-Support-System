@@ -34,7 +34,7 @@ export default function Header() {
           <img src="/logoBK.png" alt="Logo" className="max-h-[35px] align-middle overflow-clip" />
         </Link>
 
-        {user && <HeaderButtons />}
+        {user &&<HeaderButtons />}
 
         <div className="h-full flex items-center ml-auto pl-0 box-border relative">
           {user ? (

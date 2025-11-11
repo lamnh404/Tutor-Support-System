@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import {
   UserOutlined,
   MailOutlined,
@@ -25,6 +25,7 @@ import Achievement from '~/pages/TutorProfile/Achievement.tsx'
 import RatingDistribution from '~/pages/TutorProfile/RatingDistribution.tsx'
 import ReviewCard from '~/components/Review/Review'
 import type { TutorProfileType, UserInfo } from '~/pages/Profile/ProfileConfig.ts'
+import { iDContext } from '~/context/IdContext/idContext.tsx'
 
 const { TextArea } = Input
 const { Option } = Select
@@ -42,6 +43,10 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) 
   const [isEnrollModalVisible, setIsEnrollModalVisible] = useState<boolean>(false)
   const [enrollMessage, setEnrollMessage] = useState<string>('')
   const [sort, setSort] = useState<string>('latest')
+
+  const { ownId } = useContext(iDContext)
+
+  const allowEditing = ownId === id
 
   const { achievements } = { ...userInfo, ...tutorInfo }
 
@@ -277,7 +282,8 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) 
               ← Quay lại
             </Button>
           </div>
-          {!isEditing ? (
+          {allowEditing &&
+          (!isEditing ? (
             <Button
               type="primary"
               icon={<EditOutlined />}
@@ -306,7 +312,7 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) 
                 Lưu thay đổi
               </Button>
             </div>
-          )}
+          ))}
         </div>
 
         <div className="grid lg:grid-cols-12 gap-6">

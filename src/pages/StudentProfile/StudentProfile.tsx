@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   UserOutlined,
@@ -20,11 +20,13 @@ import { type Certificate, type StudentProfileData } from './StudentProfileConfi
 import { type DepartmentCode, DEPARTMENTS } from '~/utils/definitions.tsx'
 import Achievement from '~/pages/TutorProfile/Achievement.tsx'
 import type { StudentProfileType, UserInfo } from '~/pages/Profile/ProfileConfig.ts'
+import { iDContext } from '~/context/IdContext/idContext'
 
 const { TextArea } = Input
 const { Option } = Select
 
 interface StudentProfileProps {
+  id: string
   userInfo: UserInfo
   studentInfo: StudentProfileType
 }
@@ -49,7 +51,7 @@ const mockNeedHelpWith = [
 // Mock avatar URL - replace with actual avatar if available
 const mockAvatarUrl = 'https://api.dicebear.com/7.x/avataaars/svg?seed=sasuke'
 
-const StudentProfile: React.FC<StudentProfileProps> = ({ userInfo, studentInfo }) => {
+const StudentProfile: React.FC<StudentProfileProps> = ({ id, userInfo, studentInfo }) => {
   const navigate = useNavigate()
   const [studentData, setStudentData] = useState<StudentProfileData | null>(null)
   const [isEditing, setIsEditing] = useState<boolean>(false)
@@ -57,6 +59,8 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ userInfo, studentInfo }
 
   const { achievements } = { ...userInfo, ...studentInfo }
   const [studentAchievements, setStudentAchievements] = useState<Certificate[]>(achievements || [])
+  const { ownId } = useContext(iDContext)
+  const allowEditing = ownId === id
 
   const studentDetails = useMemo(() => {
     const { achievements: _achievements, ...rest } = studentInfo ?? {}
@@ -178,7 +182,8 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ userInfo, studentInfo }
               ← Quay lại
             </Button>
           </div>
-          {!isEditing ? (
+          {allowEditing &&
+          (!isEditing ? (
             <Button
               type="primary"
               icon={<EditOutlined />}
@@ -208,7 +213,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ userInfo, studentInfo }
                 Lưu thay đổi
               </Button>
             </div>
-          )}
+          ))}
         </div>
 
         <div className="grid lg:grid-cols-12 gap-6">
