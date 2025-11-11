@@ -17,39 +17,43 @@ const Profile: React.FC = () => {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
   const [studentProfile, setStudentProfile] = useState<StudentProfileType | null>(null)
   const [tutorProfile, setTutorProfile] = useState<TutorProfileType | null>(null)
-  
+
   useEffect(() => {
+
+    // Reset state
+    setIsStudent(false)
+    setIsTutor(false)
+    setStudentProfile(null)
+    setTutorProfile(null)
+    setUserInfo(null)
+    setActiveProfile('STUDENT')
     setIsLoading(true)
+
     profileAPI(id as string)
       .then(data => {
-        console.log('API Response:', data)
-        
+
         if ('studentProfile' in data && data.studentProfile) {
-          console.log('Setting student profile:', data.studentProfile)
           setIsStudent(true)
           setStudentProfile(data.studentProfile as StudentProfileType)
         }
 
         if ('tutorProfile' in data && data.tutorProfile) {
-          console.log('Setting tutor profile:', data.tutorProfile)
           setIsTutor(true)
           setTutorProfile(data.tutorProfile as TutorProfileType)
         }
-        
+
         const { studentProfile, tutorProfile, ...userInfo } = data
-        console.log('User Info:', userInfo)
         setUserInfo(userInfo as UserInfo)
       })
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .catch(_error => {
-        console.error('API Error:', _error)
         navigate('/404', { replace: true })
       })
       .finally(() => {
         setIsLoading(false)
       })
   }, [id, navigate])
-  
+
   if (isLoading) {
     return (
       <Spin
@@ -61,20 +65,14 @@ const Profile: React.FC = () => {
   }
 
   if (!userInfo) {
-    console.log('No user info available')
     return null
   }
-  
-  console.log('Render conditions:', { isStudent, isTutor, hasStudentProfile: !!studentProfile, hasTutorProfile: !!tutorProfile })
-  
+
+
   return (
     <>
-      { isStudent && <StudentProfile userInfo ={userInfo!} studentInfo = {studentProfile!} /> }
-
-      { isTutor && <TutorProfile id = { id as string } userInfo={userInfo!} tutorInfo={tutorProfile!} /> }
-
       { isStudent && isTutor && (
-        <div>
+        <div key={id}>
           {/* Nút chuyển đổi */}
           <div className="flex gap-2 pb-4 pt-4 mx-auto items-center justify-center">
             <button
@@ -100,17 +98,17 @@ const Profile: React.FC = () => {
           </div>
           {/* Display corresponding profile */}
           {activeProfile === 'STUDENT' ?
-            <StudentProfile userInfo={userInfo} studentInfo={studentProfile} />
+            <StudentProfile key={`student-${id}`} userInfo={userInfo} studentInfo={studentProfile!} />
             :
-            <TutorProfile id = { id as string } userInfo={userInfo!} tutorInfo={tutorProfile!} /> }
+            <TutorProfile key={`tutor-${id}`} id = { id as string } userInfo={userInfo!} tutorInfo={tutorProfile!} /> }
         </div>
       )}
 
       {/* Nếu user CHỈ là Student */}
-      { isStudent && !isTutor && studentProfile && <StudentProfile userInfo={userInfo} studentInfo={studentProfile} /> }
+      { isStudent && !isTutor && studentProfile && <StudentProfile key={`student-${id}`} userInfo={userInfo} studentInfo={studentProfile} /> }
 
       {/* Nếu user CHỈ là Tutor */}
-      { !isStudent && isTutor && tutorProfile && <TutorProfile userInfo={userInfo} tutorInfo={tutorProfile} /> }
+      { !isStudent && isTutor && tutorProfile && <TutorProfile key={`tutor-${id}`} id = {id as string } userInfo={userInfo} tutorInfo={tutorProfile} /> }
     </>
   )
 }

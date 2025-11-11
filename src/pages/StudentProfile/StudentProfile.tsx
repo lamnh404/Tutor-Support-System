@@ -32,7 +32,7 @@ interface StudentProfileProps {
 // Mock data for current courses
 const mockCurrentCourses = [
   'Mạch điện tử',
-  'Xử lý tín hiệu số', 
+  'Xử lý tín hiệu số',
   'Vi xử lý',
   'Toán cao cấp 3',
   'Vật lý đại cương'
@@ -60,8 +60,8 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ userInfo, studentInfo }
 
   const studentDetails = useMemo(() => {
     const { achievements: _achievements, ...rest } = studentInfo ?? {}
-    const merged = { 
-      ...userInfo, 
+    const merged = {
+      ...userInfo,
       ...rest,
       // Ensure learningGoals is always an array
       learningGoals: rest.learningGoals || [],

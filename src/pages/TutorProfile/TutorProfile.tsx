@@ -622,7 +622,7 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) 
 
               <div className="p-4 bg-yellow-50 rounded-xl border border-yellow-200">
                 <p className="text-sm text-gray-700">
-                  <span className="font-semibold">💡 Lưu ý:</span> Giảng viên sẽ xem xét yêu cầu của bạn và phản hồi trong vòng 24-48 giờ.
+                  <span className="font-semibold">💡 Lưu ý: Giảng viên sẽ xem xét yêu cầu của bạn và phản hồi trong vòng 24-48 giờ.</span>
                 </p>
               </div>
             </div>
