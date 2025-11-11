@@ -69,8 +69,11 @@ const Profile: React.FC = () => {
   
   return (
     <>
-      {/* Nếu user vừa là Student vừa là Tutor - hiển thị toggle */}
-      { isStudent && isTutor && studentProfile && tutorProfile && (
+      { isStudent && <StudentProfile userInfo ={userInfo!} studentInfo = {studentProfile!} /> }
+
+      { isTutor && <TutorProfile id = { id as string } userInfo={userInfo!} tutorInfo={tutorProfile!} /> }
+
+      { isStudent && isTutor && (
         <div>
           {/* Nút chuyển đổi */}
           <div className="flex gap-2 pb-4 pt-4 mx-auto items-center justify-center">
@@ -99,7 +102,7 @@ const Profile: React.FC = () => {
           {activeProfile === 'STUDENT' ?
             <StudentProfile userInfo={userInfo} studentInfo={studentProfile} />
             :
-            <TutorProfile userInfo={userInfo} tutorInfo={tutorProfile} /> }
+            <TutorProfile id = { id as string } userInfo={userInfo!} tutorInfo={tutorProfile!} /> }
         </div>
       )}
 

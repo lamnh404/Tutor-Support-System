@@ -24,36 +24,24 @@ import { type DepartmentCode, DEPARTMENTS, type ExpertiseCode, EXPERTISES } from
 import Achievement from '~/pages/TutorProfile/Achievement.tsx'
 import RatingDistribution from '~/pages/TutorProfile/RatingDistribution.tsx'
 import ReviewCard from '~/components/Review/Review'
-import { mockReviews } from '~/components/Review/mockReviews'
 import type { TutorProfileType, UserInfo } from '~/pages/Profile/ProfileConfig.ts'
 
 const { TextArea } = Input
 const { Option } = Select
 
 interface TutorProfileProps {
+  id: string
   userInfo: UserInfo
   tutorInfo: TutorProfileType
 }
 
-interface RatingDistribution {
-  [key: number]: number
-}
-
-// Mock distribution data - replace with actual data from API
-const distribution: RatingDistribution = {
-  5: 45,
-  4: 30,
-  3: 15,
-  2: 7,
-  1: 3
-}
-
-const TutorProfile: React.FC<TutorProfileProps> = ({ userInfo, tutorInfo }) => {
+const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) => {
   const [tutorData, setTutorData] = useState<TutorProfileData | null>(null)
   const [isEditing, setIsEditing] = useState<boolean>(false)
   const [editedData, setEditedData] = useState<TutorProfileData | null>(null)
   const [isEnrollModalVisible, setIsEnrollModalVisible] = useState<boolean>(false)
   const [enrollMessage, setEnrollMessage] = useState<string>('')
+  const [sort, setSort] = useState<string>('latest')
 
   const { achievements } = { ...userInfo, ...tutorInfo }
 
@@ -159,6 +147,9 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ userInfo, tutorInfo }) => {
       cert.id === certId ? { ...cert, [field]: value } : cert
     ))
   }
+  const handleChangeSort = (value: string): void => {
+    setSort(value)
+  }
 
   const tabItems: TabsProps['items'] = [
     {
@@ -244,10 +235,29 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ userInfo, tutorInfo }) => {
       children: (
         <div className="space-y-6">
           {/* Rating Distribution */}
-          <RatingDistribution tutorData={tutorData} distribution={distribution} />
+          <RatingDistribution id = {id} ratingAvg={tutorData.ratingAvg} ratingCount={tutorData.ratingCount} />
+
+          <div className="flex justify-end">
+            <Select
+              defaultValue= {sort}
+              style={{
+                width: 180,
+                backgroundColor: '#ece7e7ff',
+                color: '#1f79ceff',
+                borderColor: '#1890ff'
+              }}
+              onChange={handleChangeSort}
+              options={[
+                { value: 'rating-descending', label: 'Đánh giá (Cao - Thấp)' },
+                { value: 'rating-ascending', label: 'Đánh giá (Thấp - Cao)' },
+                { value: 'latest', label: 'Mới nhất' }
+              ]}
+            />
+          </div>
+
 
           {/* Reviews List */}
-          <ReviewCard reviews={mockReviews} />
+          <ReviewCard id={id} sort={sort} />
         </div>
       )
     }

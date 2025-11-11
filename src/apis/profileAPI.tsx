@@ -20,3 +20,26 @@ export const getIdByUsernameAPI = async (username: string) => {
     })
   return response.data
 }
+
+export const getRatingDistributionAPI = async (id: string) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/profile/ratingDistribution`,
+    {
+      params: {
+        id: id
+      }
+    })
+  return response.data
+}
+
+export const getReviewsAPI = async (id: string, page: number, pageSize: number, sort: string) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/profile/tutor-reviews`,
+    {
+      params: {
+        id: id,
+        page: page,
+        pageSize: pageSize,
+        sort: sort
+      }
+    })
+  return response.data
+}
