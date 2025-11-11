@@ -11,6 +11,7 @@ const defaultTabs: activeTabType = {
   activeTab: 'documents',
   setActiveTab: () => {}
 }
+// eslint-disable-next-line react-refresh/only-export-components
 export const ActiveTabContext = createContext<activeTabType>(defaultTabs)
 
 export const ActiveTabContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
