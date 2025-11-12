@@ -14,6 +14,7 @@ import { useNotifications } from '~/context/NotificationContext/NotificationCont
 
 interface NotiProps {
   notification: Notification
+  onClose?: () => void
 }
 
 const getNotificationIcon = (type: Notification['type']) => {
@@ -50,12 +51,16 @@ const getTimeAgo = (timestamp: string) => {
   return `${Math.floor(diffInMinutes / 1440)} ngày trước`
 }
 
-export default function Noti({ notification }: NotiProps) {
+export default function Noti({ notification, onClose }: NotiProps) {
   const { markAsRead, removeNotification } = useNotifications()
 
   const handleClick = () => {
     if (!notification.isRead) {
       markAsRead(notification.id)
+    }
+    // Close the notification dropdown when clicking on a notification
+    if (onClose) {
+      onClose()
     }
   }
 

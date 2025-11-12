@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { Button, Dropdown, Avatar } from 'antd'
 import { BellOutlined, CheckOutlined } from '@ant-design/icons'
-import { useState, useContext } from 'react'
+import { useState, useContext, useRef, useEffect } from 'react'
 import Noti from './Noti'
 import { userContext } from '~/context/User/userContext.tsx'
 import { useNotifications } from '~/context/NotificationContext/NotificationContext'
@@ -13,8 +13,26 @@ export default function Header() {
   const [isOpenNoti, setIsOpenNoti] = useState(false)
   const navigate = useNavigate()
   const { notifications, unreadCount, markAllAsRead } = useNotifications()
+  const notiRef = useRef<HTMLDivElement>(null)
 
   const { user, logout } = useContext(userContext)
+
+  // Close notification dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notiRef.current && !notiRef.current.contains(event.target as Node)) {
+        setIsOpenNoti(false)
+      }
+    }
+
+    if (isOpenNoti) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isOpenNoti])
 
   const handleLogout = () => {
     userLogoutAPI(true)
@@ -39,7 +57,7 @@ export default function Header() {
         <div className="h-full flex items-center ml-auto pl-0 box-border relative">
           {user ? (
             <>
-              <div className="h-full flex items-center mr-3 sm:mr-5">
+              <div className="h-full flex items-center mr-3 sm:mr-5" ref={notiRef}>
                 <div className="relative cursor-pointer" onClick={() => setIsOpenNoti(!isOpenNoti)}>
                   <div className="relative">
                     <BellOutlined className="text-xl sm:text-2xl text-white hover:text-gray-200 transition-colors" />
@@ -51,7 +69,7 @@ export default function Header() {
                   </div>
                 </div>
                 {isOpenNoti && (
-                  <div className="absolute right-0 top-[60px] w-80 bg-white shadow-2xl rounded-lg overflow-hidden border border-gray-200 z-30">
+                  <div className="absolute right-0 top-[60px] w-80 bg-white shadow-2xl rounded-lg overflow-hidden border border-gray-200 z-50">
                     {/* Header */}
                     <div className="px-4 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
                       <h3 className="text-sm font-semibold text-gray-900">Thông báo</h3>
@@ -70,7 +88,11 @@ export default function Header() {
                     <div className="max-h-96 overflow-y-auto">
                       {notifications.length > 0 ? (
                         notifications.map((notification) => (
-                          <Noti notification={notification} key={notification.id} />
+                          <Noti 
+                            notification={notification} 
+                            key={notification.id}
+                            onClose={() => setIsOpenNoti(false)}
+                          />
                         ))
                       ) : (
                         <div className="p-8 text-center">
