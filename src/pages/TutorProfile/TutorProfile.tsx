@@ -272,7 +272,7 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) 
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header Actions */}
-        <div className="sticky top-20 z-40 bg-white/80 backdrop-blur-md shadow-sm rounded-2xl px-6 py-4 mb-6 flex justify-between items-center">
+        <div className="sticky top-20 z-10 bg-white/80 backdrop-blur-md shadow-sm rounded-2xl px-6 py-4 mb-6 flex justify-between items-center">
           <div>
             <Button
               type="text"
