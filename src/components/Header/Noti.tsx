@@ -14,6 +14,7 @@ import { useNotifications } from '~/context/NotificationContext/NotificationCont
 
 interface NotiProps {
   notification: Notification
+  onClose?: () => void
 }
 
 const getNotificationIcon = (type: Notification['type']) => {
@@ -50,12 +51,16 @@ const getTimeAgo = (timestamp: string) => {
   return `${Math.floor(diffInMinutes / 1440)} ngày trước`
 }
 
-export default function Noti({ notification }: NotiProps) {
+export default function Noti({ notification, onClose }: NotiProps) {
   const { markAsRead, removeNotification } = useNotifications()
 
   const handleClick = () => {
     if (!notification.isRead) {
       markAsRead(notification.id)
+    }
+    // Close the notification dropdown when clicking on a notification
+    if (onClose) {
+      onClose()
     }
   }
 
@@ -75,8 +80,8 @@ export default function Noti({ notification }: NotiProps) {
       <div className="flex items-start gap-3">
         {/* Icon or Avatar */}
         <div className="flex-shrink-0 mt-1">
-          {notification.avatar ? (
-            <Avatar src={notification.avatar} size={40} />
+          {notification.avatarUrl ? (
+            <Avatar src={notification.avatarUrl} size={40} />
           ) : (
             <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
               {getNotificationIcon(notification.type)}

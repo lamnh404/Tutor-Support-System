@@ -1,17 +1,17 @@
-import type {DepartmentCode, ExpertiseCode} from "~/utils/definitions.tsx";
+import type { DepartmentCode, ExpertiseCode } from '~/utils/definitions.tsx'
 
 export interface Certificate {
   id: string
-  name: string
-  issuer: string
+  title: string
+  description: string
   year: string
-  icon: string
+  type: string
 }
 
 export interface TutorProfileData {
   firstName: string
   lastName: string
-  avatarUrl: string
+  avatarUrl?: string
   department: DepartmentCode
   expertise: ExpertiseCode []
   ratingCount: number
@@ -20,7 +20,7 @@ export interface TutorProfileData {
   maximumCapacity: number
   totalStudentTaught: number
   yearsOfExperience: number
-  description: string
+  tutorDescription: string
   email: string
   phoneNumber: string
 }

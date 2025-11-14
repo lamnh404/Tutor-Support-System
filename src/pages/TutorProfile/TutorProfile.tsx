@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import { certificates } from './ProfileData'
-import { basicTutorInfoAPI } from '~/apis/profileAPI.tsx'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import {
   UserOutlined,
   MailOutlined,
@@ -20,82 +18,193 @@ import {
   PlusOutlined
 } from '@ant-design/icons'
 import { Card, Avatar, Button, Tag, Input, Select, Divider, Upload, Modal, message, Tabs, Spin } from 'antd'
-import { mockTutorData, distribution } from './ProfileData'
-import { type TutorProfileData } from './TutorProfileConfig'
+import type { UploadProps, TabsProps } from 'antd'
+import { type Certificate, type TutorProfileData } from './TutorProfileConfig'
 import { type DepartmentCode, DEPARTMENTS, type ExpertiseCode, EXPERTISES } from '~/utils/definitions.tsx'
 import Achievement from '~/pages/TutorProfile/Achievement.tsx'
 import RatingDistribution from '~/pages/TutorProfile/RatingDistribution.tsx'
 import ReviewCard from '~/components/Review/Review'
-import { mockReviews } from '~/components/Review/mockReviews'
+import type { TutorProfileType, UserInfo } from '~/pages/Profile/ProfileConfig.ts'
+import { iDContext } from '~/context/IdContext/idContext.tsx'
+import { updateTutorProfileAPI } from '~/apis/updateProfileAPI.tsx'
+import { toast } from 'react-toastify'
+import axios from 'axios'
+
 
 const { TextArea } = Input
 const { Option } = Select
 
+interface TutorProfileProps {
+  id: string
+  userInfo: UserInfo
+  tutorInfo: TutorProfileType
+}
 
-const TutorProfile: React.FC<{id:string}> = ({ id }) => {
+interface EditData {
+  avatar: File | null
+  phoneNumber: string
+  description: string
+  expertise: ExpertiseCode[]
+  achievements: Certificate[],
+  avatarUrl?: string
+}
+
+const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) => {
   const [tutorData, setTutorData] = useState<TutorProfileData | null>(null)
-  const [isEditing, setIsEditing] = useState(false)
-  const [editedData, setEditedData] = useState(mockTutorData)
-  const [isEnrollModalVisible, setIsEnrollModalVisible] = useState(false)
-  const [enrollMessage, setEnrollMessage] = useState('')
+  const [isEditing, setIsEditing] = useState<boolean>(false)
+  const [editedData, setEditedData] = useState<EditData | null>(null)
+  const [isEnrollModalVisible, setIsEnrollModalVisible] = useState<boolean>(false)
+  const [enrollMessage, setEnrollMessage] = useState<string>('')
+  const [sort, setSort] = useState<string>('latest')
+  const { ownId } = useContext(iDContext)
+  const [isLoading, setIsLoading] = useState<boolean>(true)
 
   useEffect(() => {
-    basicTutorInfoAPI(id).then((data) => {
-      setTutorData(data)
-      setEditedData(data)
-    }).catch(() => {
-      message.error('Không thể tải thông tin giảng viên.')
-    })
+    setIsLoading(false)
+  }, [])
 
-  }, [id])
+  const allowEditing = ownId === id
+  const allowSendRequest = ownId !== id
 
-  if (!tutorData) {
+  const { achievements } = { ...userInfo, ...tutorInfo }
+  const [prevAchievements, setPrevAchievements] = useState<Certificate[]>(achievements || [])
+
+  const [tutorAchievements, setTutorAchievements] = useState<Certificate[]>(achievements || [])
+
+  const tutorDetails = useMemo(() => {
+    const { achievements: _achievements, ...rest } = tutorInfo ?? {}
+    return { ...userInfo, ...rest }
+  }, [userInfo, tutorInfo])
+
+  useEffect(() => {
+    if (tutorDetails) {
+      setTutorData(tutorDetails)
+      setEditedData({
+        avatar: null,
+        phoneNumber: tutorDetails.phoneNumber || '',
+        description: tutorDetails.tutorDescription || '',
+        expertise: tutorDetails.expertise || [],
+        achievements: achievements || [],
+        avatarUrl: tutorDetails.avatarUrl || ''
+      })
+    }
+  }, [tutorDetails, achievements])
+
+
+  if ( !tutorData || !editedData ) {
     return (
       <Spin
         size="large"
         tip="Đang tải thông tin giảng viên..."
         fullscreen
       />
-    )}
+    )
+  }
+  if ( isLoading ) {
+    return (
+      <Spin
+        size="large"
+        tip="Đang cập nhật thông tin giảng viên..."
+        fullscreen
+      />
+    )
+  }
 
-  const isAcceptingStudents = tutorData.currMenteeCount < tutorData.maximumCapacity
+  const isAcceptingStudents: boolean = tutorData.currMenteeCount < tutorData.maximumCapacity
 
-
-  const getDepartmentName = (code: DepartmentCode) => {
+  const getDepartmentName = (code: DepartmentCode): string => {
     const dept = DEPARTMENTS.find(d => d.code === code)
     return dept?.name || code
   }
 
-  const getExpertiseName = (code: ExpertiseCode) => {
+  const getExpertiseName = (code: ExpertiseCode): string => {
     const exp = EXPERTISES.find(e => e.code === code)
     return exp?.name || code
   }
 
-  const handleSave = () => {
-    setTutorData(editedData)
+  const handleSave = async () => {
+    if (!editedData) return
+
+    setTutorData({
+      ...tutorData,
+      phoneNumber: editedData.phoneNumber,
+      tutorDescription: editedData.description,
+      expertise: editedData.expertise,
+      avatarUrl: editedData.avatarUrl
+    })
+    setEditedData({
+      ...editedData,
+      achievements: tutorAchievements
+    }
+    )
+    setPrevAchievements(tutorAchievements)
+
+
+    const formData = new FormData()
+    if (editedData.avatar) {
+      formData.append('avatar', editedData.avatar)
+    }
+    formData.append('phoneNumber', editedData.phoneNumber)
+    formData.append('description', editedData.description)
+    formData.append('expertise', JSON.stringify(editedData.expertise))
+    formData.append('achievements', JSON.stringify(editedData.achievements))
+
+    try {
+      setIsLoading(true)
+      const data = await updateTutorProfileAPI(formData)
+      setIsLoading(false)
+      const userStr = localStorage.getItem('user')
+      if (userStr) {
+        const user = JSON.parse(userStr)
+        user.avatarUrl = editedData.avatarUrl || tutorDetails.avatarUrl || ''
+        localStorage.setItem('user', JSON.stringify(user))
+      }
+
+      toast.success(data.message)
+
+    } catch (error) {
+      setIsLoading(false)
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message || 'Cập nhật hồ sơ thất bại. Vui lòng thử lại.')
+      } else {
+        toast.error('Cập nhật hồ sơ thất bại. Vui lòng thử lại.')
+      }
+    }
+
     setIsEditing(false)
-    message.success('Cập nhật thông tin thành công!')
   }
 
-  const handleCancel = () => {
-    setEditedData(tutorData)
+
+  const handleCancel = (): void => {
+    setEditedData({
+      avatar: null,
+      phoneNumber: tutorData.phoneNumber || '',
+      description: tutorData.tutorDescription || '',
+      expertise: tutorData.expertise || [],
+      achievements: achievements || [],
+      avatarUrl: tutorData.avatarUrl || ''
+    })
+    setTutorAchievements(prevAchievements)
     setIsEditing(false)
   }
 
-  const uploadProps = {
+  const uploadProps: UploadProps = {
     name: 'avatar',
     showUploadList: false,
-    beforeUpload: (file) => {
+    beforeUpload: (file: File): boolean => {
       const reader = new FileReader()
-      reader.onload = (e) => {
-        setEditedData({ ...editedData, avatarUrl: e.target?.result })
+      reader.onload = (e: ProgressEvent<FileReader>): void => {
+        const result = e.target?.result
+        if (typeof result === 'string' && editedData) {
+          setEditedData({ ...editedData, avatarUrl: result, avatar: file })
+        }
       }
       reader.readAsDataURL(file)
       return false
     }
   }
 
-  const handleEnrollRequest = () => {
+  const handleEnrollRequest = (): void => {
     if (!isAcceptingStudents) {
       message.warning('Giảng viên hiện đã đủ số lượng học viên')
       return
@@ -103,47 +212,173 @@ const TutorProfile: React.FC<{id:string}> = ({ id }) => {
     setIsEnrollModalVisible(true)
   }
 
-  const handleEnrollSubmit = () => {
+  const handleEnrollSubmit = (): void => {
     message.success('Yêu cầu nhập học đã được gửi thành công!')
     setIsEnrollModalVisible(false)
     setEnrollMessage('')
   }
 
-  const handleAddCertificate = () => {
-    const newCert = {
-      id: `cert${editedData.certificates.length + 1}`,
-      name: '',
-      issuer: '',
+  const handleAddCertificate = (): void => {
+    if (!editedData) return
+
+    const newCert: Certificate = {
+      id: `cert${tutorAchievements.length + 1}`,
+      title: '',
+      description: '',
       year: new Date().getFullYear().toString(),
-      icon: '🎓'
+      type: 'CERTIFICATION'
     }
-    setEditedData({
-      ...editedData,
-      certificates: [...editedData.certificates, newCert]
-    })
+    setTutorAchievements([...tutorAchievements, newCert])
   }
 
-  const handleRemoveCertificate = (certId) => {
-    setEditedData({
-      ...editedData,
-      certificates: editedData.certificates.filter(cert => cert.id !== certId)
-    })
+  const handleRemoveCertificate = (certId: string): void => {
+    setTutorAchievements(tutorAchievements.filter(cert => cert.id !== certId))
   }
 
-  const handleCertificateChange = (certId, field, value) => {
+  const handleCertificateChange = (certId: string, field: keyof Certificate, value: string): void => {
+    setTutorAchievements(tutorAchievements.map(cert =>
+      cert.id === certId ? { ...cert, [field]: value } : cert
+    ))
     setEditedData({
-      ...editedData,
-      certificates: editedData.certificates.map(cert =>
+      ...editedData!,
+      achievements: tutorAchievements.map(cert =>
         cert.id === certId ? { ...cert, [field]: value } : cert
       )
     })
   }
+  const handleChangeSort = (value: string): void => {
+    setSort(value)
+  }
+
+  const tabItems: TabsProps['items'] = [
+    {
+      key: 'achievements',
+      label: (
+        <span className="flex items-center gap-2 px-2">
+          <SafetyCertificateOutlined />
+          <span className="font-semibold">Thành tích</span>
+        </span>
+      ),
+      children: (
+        <div>
+          {isEditing && (
+            <div className="mb-4 flex justify-end">
+              <Button
+                type="dashed"
+                icon={<PlusOutlined />}
+                onClick={handleAddCertificate}
+              >
+                Thêm chứng chỉ
+              </Button>
+            </div>
+          )}
+          {isEditing ? (
+            <div className="space-y-3">
+              {tutorAchievements.map((cert: Certificate) => (
+                <div key={cert.id} className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                  <div className="grid grid-cols-12 gap-3 items-center">
+                    <div className="col-span-11 space-y-2 ">
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input
+                          placeholder="Tên chứng chỉ"
+                          required
+                          value={cert.title}
+                          onChange={(e) => handleCertificateChange(cert.id, 'title', e.target.value)}
+                          size="large"
+                        />
+                        <Select
+                          value={cert.type}
+                          onChange={(value) => handleCertificateChange(cert.id, 'type', value)}
+                        >
+                          <Select.Option value="AWARD">Giải thưởng</Select.Option>
+                          <Select.Option value="CERTIFICATION">Chứng Chỉ</Select.Option>
+                        </Select>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input
+                          placeholder="Tổ chức cấp"
+                          required
+                          value={cert.description}
+                          onChange={(e) => handleCertificateChange(cert.id, 'description', e.target.value)}
+                        />
+                        <Input
+                          placeholder="Năm"
+                          required
+                          value={cert.year}
+                          onChange={(e) => handleCertificateChange(cert.id, 'year', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-span-1 flex justify-end">
+                      <Button
+                        type="text"
+                        danger
+                        icon={<CloseOutlined />}
+                        onClick={() => handleRemoveCertificate(cert.id)}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-4">
+              {tutorAchievements.length > 0 ?
+                tutorAchievements.map((cert: Certificate) => (
+                  <Achievement key={cert.id} cert={cert} />
+                ))
+                :
+                <p className="text-gray-600">Giảng viên chưa thêm chứng chỉ nào.</p>
+              }
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      key: 'reviews',
+      label: (
+        <span className="flex items-center gap-2 px-2">
+          <StarFilled />
+          <span className="font-semibold">Đánh giá</span>
+        </span>
+      ),
+      children: (
+        <div className="space-y-6">
+          {/* Rating Distribution */}
+          <RatingDistribution id = {id} ratingAvg={tutorData.ratingAvg} ratingCount={tutorData.ratingCount} />
+
+          <div className="flex justify-end">
+            <Select
+              defaultValue= {sort}
+              style={{
+                width: 180,
+                backgroundColor: '#ece7e7ff',
+                color: '#1f79ceff',
+                borderColor: '#1890ff'
+              }}
+              onChange={handleChangeSort}
+              options={[
+                { value: 'rating-descending', label: 'Đánh giá (Cao - Thấp)' },
+                { value: 'rating-ascending', label: 'Đánh giá (Thấp - Cao)' },
+                { value: 'latest', label: 'Mới nhất' }
+              ]}
+            />
+          </div>
+
+
+          {/* Reviews List */}
+          <ReviewCard id={id} sort={sort} />
+        </div>
+      )
+    }
+  ]
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header Actions */}
-        <div className="sticky top-20 z-40 bg-white/80 backdrop-blur-md shadow-sm rounded-2xl px-6 py-4 mb-6 flex justify-between items-center">
+        <div className="sticky top-20 z-10 bg-white/80 backdrop-blur-md shadow-sm rounded-2xl px-6 py-4 mb-6 flex justify-between items-center">
           <div>
             <Button
               type="text"
@@ -153,7 +388,8 @@ const TutorProfile: React.FC<{id:string}> = ({ id }) => {
               ← Quay lại
             </Button>
           </div>
-          {!isEditing ? (
+          {allowEditing &&
+          (!isEditing ? (
             <Button
               type="primary"
               icon={<EditOutlined />}
@@ -182,7 +418,7 @@ const TutorProfile: React.FC<{id:string}> = ({ id }) => {
                 Lưu thay đổi
               </Button>
             </div>
-          )}
+          ))}
         </div>
 
         <div className="grid lg:grid-cols-12 gap-6">
@@ -196,51 +432,40 @@ const TutorProfile: React.FC<{id:string}> = ({ id }) => {
 
               {/* Avatar */}
               <div className="relative -mt-12 mb-3">
-                <div className="flex justify-center">
-                  <div className="relative group">
-                    <Avatar
-                      size={100}
-                      src={isEditing ? editedData.avatarUrl : tutorData.avatarUrl}
-                      className="border-4 border-white shadow-2xl ring-2 ring-blue-100"
-                    />
-                    {isEditing && (
-                      <Upload {...uploadProps}>
-                        <div className="absolute inset-0 bg-black bg-opacity-60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer">
-                          <CameraOutlined className="text-white text-2xl" />
-                        </div>
-                      </Upload>
-                    )}
-                  </div>
+                <div className="flex flex-col items-center">
+                  <Avatar
+                    size={100}
+                    src={isEditing ? editedData.avatarUrl : tutorData.avatarUrl}
+                    className="border-4 border-white shadow-2xl ring-2 ring-blue-100"
+                  >
+                    {
+                      <span className="text-4xl">
+                        {tutorData.firstName.charAt(0).toUpperCase()}
+                      </span>
+                    }
+                  </Avatar>
+                  {isEditing && (
+                    <Upload {...uploadProps} showUploadList={false}>
+                      <div className="mt-2 flex items-center gap-2 text-blue-600 cursor-pointer hover:underline select-none">
+                        <CameraOutlined className="text-lg" />
+                        <span>Đổi avatar</span>
+                      </div>
+                    </Upload>
+                  )}
                 </div>
               </div>
 
+
               {/* Name */}
               <div className="text-center px-4 mb-3">
-                {isEditing ? (
-                  <div className="space-y-2">
-                    <Input
-                      prefix={<UserOutlined />}
-                      placeholder="Họ"
-                      value={editedData.lastName}
-                      onChange={(e) => setEditedData({ ...editedData, lastName: e.target.value })}
-                    />
-                    <Input
-                      prefix={<UserOutlined />}
-                      placeholder="Tên"
-                      value={editedData.firstName}
-                      onChange={(e) => setEditedData({ ...editedData, firstName: e.target.value })}
-                    />
-                  </div>
-                ) : (
-                  <>
-                    <h1 className="text-xl font-bold text-gray-900 mb-2">
-                      {tutorData.lastName} {tutorData.firstName}
-                    </h1>
-                    <Tag icon={<CheckCircleFilled />} color="blue" className="text-xs">
+                <>
+                  <h1 className="text-xl font-bold text-gray-900 mb-2">
+                    {tutorData.lastName} {tutorData.firstName}
+                  </h1>
+                  <Tag icon={<CheckCircleFilled />} color="blue" className="text-xs">
                       Giảng viên
-                    </Tag>
-                  </>
-                )}
+                  </Tag>
+                </>
               </div>
 
               <Divider className="my-2" />
@@ -292,22 +517,10 @@ const TutorProfile: React.FC<{id:string}> = ({ id }) => {
                     <BookOutlined className="text-blue-500" />
                     <div className="flex-1 min-w-0">
                       <p className="text-xs text-gray-500">Khoa</p>
-                      {isEditing ? (
-                        <Select
-                          value={editedData.department}
-                          onChange={(value) => setEditedData({ ...editedData, department: value })}
-                          className="w-full"
-                          size="small"
-                        >
-                          {DEPARTMENTS.map(dept => (
-                            <Option key={dept.code} value={dept.code}>{dept.name}</Option>
-                          ))}
-                        </Select>
-                      ) : (
-                        <p className="font-semibold text-gray-800 text-sm truncate">
-                          {getDepartmentName(tutorData.department)}
-                        </p>
-                      )}
+                      <p className="font-semibold text-gray-800 text-sm truncate">
+                        {getDepartmentName(tutorData.department)}
+                      </p>
+
                     </div>
                   </div>
 
@@ -325,8 +538,8 @@ const TutorProfile: React.FC<{id:string}> = ({ id }) => {
                       <p className="text-xs text-gray-500">Điện thoại</p>
                       {isEditing ? (
                         <Input
-                          value={editedData.phone}
-                          onChange={(e) => setEditedData({ ...editedData, phone: e.target.value })}
+                          value={editedData.phoneNumber}
+                          onChange={(e) => setEditedData({ ...editedData, phoneNumber: e.target.value })}
                           size="small"
                         />
                       ) : (
@@ -342,7 +555,7 @@ const TutorProfile: React.FC<{id:string}> = ({ id }) => {
           {/* Right Column - Content Cards */}
           <div className="lg:col-span-8 space-y-6">
             {/* Enroll Button - Only show if not editing */}
-            {!isEditing && (
+            {allowSendRequest && (
               <Card className="shadow-xl rounded-3xl border-0 overflow-hidden">
                 <div className={`p-6 ${isAcceptingStudents ? 'bg-gradient-to-r from-green-50 to-emerald-50' : 'bg-gradient-to-r from-gray-50 to-gray-100'}`}>
                   <div className="flex items-center justify-between">
@@ -396,7 +609,7 @@ const TutorProfile: React.FC<{id:string}> = ({ id }) => {
               ) : (
                 <div className="p-4 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl border-l-4 border-indigo-500">
                   <p className="text-gray-700 leading-relaxed text-base">
-                    {tutorData.description}
+                    {tutorData.tutorDescription}
                   </p>
                 </div>
               )}
@@ -419,7 +632,7 @@ const TutorProfile: React.FC<{id:string}> = ({ id }) => {
                   mode="multiple"
                   placeholder="Chọn chuyên môn"
                   value={editedData.expertise}
-                  onChange={(value) => setEditedData({ ...editedData, expertise: value })}
+                  onChange={(value: ExpertiseCode[]) => setEditedData({ ...editedData, expertise: value })}
                   className="w-full"
                   size="large"
                 >
@@ -429,7 +642,7 @@ const TutorProfile: React.FC<{id:string}> = ({ id }) => {
                 </Select>
               ) : (
                 <div className="flex flex-wrap gap-4">
-                  {tutorData.expertise.map((exp, idx) => (
+                  {tutorData.expertise.map((exp: ExpertiseCode, idx: number) => (
                     <Tag
                       key={idx}
                       color="blue"
@@ -447,94 +660,7 @@ const TutorProfile: React.FC<{id:string}> = ({ id }) => {
               <Tabs
                 defaultActiveKey="achievements"
                 size="large"
-                items={[
-                  {
-                    key: 'achievements',
-                    label: (
-                      <span className="flex items-center gap-2 px-2">
-                        <SafetyCertificateOutlined />
-                        <span className="font-semibold">Thành tích</span>
-                      </span>
-                    ),
-                    children: (
-                      <div>
-                        {isEditing && (
-                          <div className="mb-4 flex justify-end">
-                            <Button
-                              type="dashed"
-                              icon={<PlusOutlined />}
-                              onClick={handleAddCertificate}
-                            >
-                              Thêm chứng chỉ
-                            </Button>
-                          </div>
-                        )}
-                        {isEditing ? (
-                          <div className="space-y-3">
-                            {editedData.certificates.map((cert) => (
-                              <div key={cert.id} className="p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                <div className="grid grid-cols-12 gap-3 items-center">
-                                  <div className="col-span-11 space-y-2">
-                                    <Input
-                                      placeholder="Tên chứng chỉ"
-                                      value={cert.name}
-                                      onChange={(e) => handleCertificateChange(cert.id, 'name', e.target.value)}
-                                      size="large"
-                                    />
-                                    <div className="grid grid-cols-2 gap-2">
-                                      <Input
-                                        placeholder="Tổ chức cấp"
-                                        value={cert.issuer}
-                                        onChange={(e) => handleCertificateChange(cert.id, 'issuer', e.target.value)}
-                                      />
-                                      <Input
-                                        placeholder="Năm"
-                                        value={cert.year}
-                                        onChange={(e) => handleCertificateChange(cert.id, 'year', e.target.value)}
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className="col-span-1 flex justify-end">
-                                    <Button
-                                      type="text"
-                                      danger
-                                      icon={<CloseOutlined />}
-                                      onClick={() => handleRemoveCertificate(cert.id)}
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="grid md:grid-cols-2 gap-4">
-                            {certificates.map((cert) => (
-                              <Achievement key={cert.id} cert={cert} />
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )
-                  },
-                  {
-                    key: 'reviews',
-                    label: (
-                      <span className="flex items-center gap-2 px-2">
-                        <StarFilled />
-                        <span className="font-semibold">Đánh giá</span>
-                      </span>
-                    ),
-                    children: (
-                      <div className="space-y-6">
-                        {/* Rating Distribution */}
-                        <RatingDistribution tutorData={tutorData} distribution={distribution} />
-
-                        {/* Reviews List */}
-                        <ReviewCard reviews={mockReviews} />
-                      </div>
-                    )
-                  }
-                ]}
+                items={tabItems}
               />
             </Card>
           </div>
@@ -585,7 +711,7 @@ const TutorProfile: React.FC<{id:string}> = ({ id }) => {
 
               <div className="p-4 bg-yellow-50 rounded-xl border border-yellow-200">
                 <p className="text-sm text-gray-700">
-                  <span className="font-semibold">💡 Lưu ý:</span> Giảng viên sẽ xem xét yêu cầu của bạn và phản hồi trong vòng 24-48 giờ.
+                  <span className="font-semibold">💡 Lưu ý: Giảng viên sẽ xem xét yêu cầu của bạn và phản hồi trong vòng 24-48 giờ.</span>
                 </p>
               </div>
             </div>

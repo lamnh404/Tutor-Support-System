@@ -17,10 +17,9 @@ type LoginFormData = {
   username: string
   password: string
 }
-interface UserResponse {
+interface UserResponse extends User {
   accessToken?: string
   tokenType?: string
-  user: User
 }
 
 const Login: React.FC = () => {
@@ -45,8 +44,9 @@ const Login: React.FC = () => {
         // error: 'Đăng nhập thất bại!'
       }
     ).then((res) => {
-      //eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { accessToken='', tokenType= 'Bearer', ...userData } = res || {}
+      delete res.accessToken
+      delete res.tokenType
+      const userData: User = res
       login(userData)
       setError(null)
       navigate('/')

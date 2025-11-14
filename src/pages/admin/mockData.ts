@@ -2,7 +2,7 @@ import { type User } from '~/context/User/userContext'
 import { type DashboardStats, type ActivityLog, type UserDetail } from '~/pages/admin/TypeDefinition'
 
 export const mockAdminData: User = {
-  email: 'admin@hcmut.edu.vn',
+  username: 'admin',
   firstName: 'Admin',
   lastName: 'System',
   roles: ['admin'],

@@ -37,11 +37,10 @@ import CreateAssignment from '~/pages/Course/Modals/CreateAssignment.tsx'
 import AvailabilityModal from '~/pages/Course/Modals/AvailabilityModal.tsx'
 import SessionModal from '~/pages/Course/Modals/SessionModal.tsx'
 import { userContext } from '~/context/User/userContext.tsx'
-import StudentCard from "~/pages/Course/Contents/StudentCard.tsx";
+import StudentCard from '~/pages/Course/Contents/StudentCard.tsx'
 
 const TutorCommunityPlatform: React.FC = () => {
   const { user } = useContext(userContext)
-  // setUser(prev => prev? { ...prev, roles: ['TUTOR'] } : prev)
   const { activeTab } = useContext(ActiveTabContext)
   const [showUploadModal, setShowUploadModal] = useState<boolean>(false)
   const [showAssignmentModal, setShowAssignmentModal] = useState<boolean>(false)

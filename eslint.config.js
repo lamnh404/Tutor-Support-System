@@ -25,6 +25,11 @@ export default tseslint.config([
     },
      rules: {
 
+       "@typescript-eslint/no-unused-vars": [
+         "warn",
+         { "ignoreRestSiblings": true }
+       ],
+
       // 🔹 React
       'react-refresh/only-export-components': 'warn',
       'react-hooks/rules-of-hooks': 'error',
