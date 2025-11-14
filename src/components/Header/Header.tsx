@@ -88,8 +88,8 @@ export default function Header() {
                     <div className="max-h-96 overflow-y-auto">
                       {notifications.length > 0 ? (
                         notifications.map((notification) => (
-                          <Noti 
-                            notification={notification} 
+                          <Noti
+                            notification={notification}
                             key={notification.id}
                             onClose={() => setIsOpenNoti(false)}
                           />

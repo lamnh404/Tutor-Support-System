@@ -43,7 +43,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ id, sort }) => {
         {reviews.map(review => (
           <div key={review.reviewID} className="p-5 bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl border border-gray-100">
             <div className="flex items-start gap-4">
-              <Link to={`/${review.reviewID}`}>
+              <Link to={`/${review.reviewerID}`}>
                 {review.avatarUrl ? (
                   <Avatar size={64} src={review.avatarUrl} />
                 ) : (

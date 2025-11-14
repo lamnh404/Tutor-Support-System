@@ -437,7 +437,13 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) 
                     size={100}
                     src={isEditing ? editedData.avatarUrl : tutorData.avatarUrl}
                     className="border-4 border-white shadow-2xl ring-2 ring-blue-100"
-                  />
+                  >
+                    {
+                      <span className="text-4xl">
+                        {tutorData.firstName.charAt(0).toUpperCase()}
+                      </span>
+                    }
+                  </Avatar>
                   {isEditing && (
                     <Upload {...uploadProps} showUploadList={false}>
                       <div className="mt-2 flex items-center gap-2 text-blue-600 cursor-pointer hover:underline select-none">
