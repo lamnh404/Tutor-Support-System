@@ -32,7 +32,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ id, sort }) => {
     getReviewsAPI(id, currentPage, PAGE_SIZE, sort)
       .then(data => {
         setReviews(data.reviews.data)
-        setTotalPages(data.totalPages)
+        setTotalPages(data.reviews.totalPages)
       })
   }, [id, currentPage, sort])
 

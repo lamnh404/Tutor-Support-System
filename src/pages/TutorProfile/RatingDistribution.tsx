@@ -27,6 +27,7 @@ const RatingDistribution: React.FC<RatingDistributionProps> = ({ id, ratingAvg, 
 
   useEffect(() => {
     getRatingDistributionAPI(id)
+      .then(data => data.rating)
       .then(data => {
         setDistribution(data)
       })

@@ -26,6 +26,10 @@ import RatingDistribution from '~/pages/TutorProfile/RatingDistribution.tsx'
 import ReviewCard from '~/components/Review/Review'
 import type { TutorProfileType, UserInfo } from '~/pages/Profile/ProfileConfig.ts'
 import { iDContext } from '~/context/IdContext/idContext.tsx'
+import { updateTutorProfileAPI } from '~/apis/updateProfileAPI.tsx'
+import { toast } from 'react-toastify'
+import axios from 'axios'
+
 
 const { TextArea } = Input
 const { Option } = Select
@@ -36,19 +40,34 @@ interface TutorProfileProps {
   tutorInfo: TutorProfileType
 }
 
+interface EditData {
+  avatar: File | null
+  phoneNumber: string
+  description: string
+  expertise: ExpertiseCode[]
+  achievements: Certificate[],
+  avatarUrl?: string
+}
+
 const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) => {
   const [tutorData, setTutorData] = useState<TutorProfileData | null>(null)
   const [isEditing, setIsEditing] = useState<boolean>(false)
-  const [editedData, setEditedData] = useState<TutorProfileData | null>(null)
+  const [editedData, setEditedData] = useState<EditData | null>(null)
   const [isEnrollModalVisible, setIsEnrollModalVisible] = useState<boolean>(false)
   const [enrollMessage, setEnrollMessage] = useState<string>('')
   const [sort, setSort] = useState<string>('latest')
-
   const { ownId } = useContext(iDContext)
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+
+  useEffect(() => {
+    setIsLoading(false)
+  }, [])
 
   const allowEditing = ownId === id
+  const allowSendRequest = ownId !== id
 
   const { achievements } = { ...userInfo, ...tutorInfo }
+  const [prevAchievements, setPrevAchievements] = useState<Certificate[]>(achievements || [])
 
   const [tutorAchievements, setTutorAchievements] = useState<Certificate[]>(achievements || [])
 
@@ -60,16 +79,32 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) 
   useEffect(() => {
     if (tutorDetails) {
       setTutorData(tutorDetails)
-      setEditedData(tutorDetails)
+      setEditedData({
+        avatar: null,
+        phoneNumber: tutorDetails.phoneNumber || '',
+        description: tutorDetails.tutorDescription || '',
+        expertise: tutorDetails.expertise || [],
+        achievements: achievements || [],
+        avatarUrl: tutorDetails.avatarUrl || ''
+      })
     }
-  }, [tutorDetails])
+  }, [tutorDetails, achievements])
 
 
-  if (!tutorData || !editedData) {
+  if ( !tutorData || !editedData ) {
     return (
       <Spin
         size="large"
         tip="Đang tải thông tin giảng viên..."
+        fullscreen
+      />
+    )
+  }
+  if ( isLoading ) {
+    return (
+      <Spin
+        size="large"
+        tip="Đang cập nhật thông tin giảng viên..."
         fullscreen
       />
     )
@@ -87,16 +122,69 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) 
     return exp?.name || code
   }
 
-  const handleSave = (): void => {
-    if (editedData) {
-      setTutorData(editedData)
-      setIsEditing(false)
-      message.success('Cập nhật thông tin thành công!')
+  const handleSave = async () => {
+    if (!editedData) return
+
+    setTutorData({
+      ...tutorData,
+      phoneNumber: editedData.phoneNumber,
+      tutorDescription: editedData.description,
+      expertise: editedData.expertise,
+      avatarUrl: editedData.avatarUrl
+    })
+    setEditedData({
+      ...editedData,
+      achievements: tutorAchievements
     }
+    )
+    setPrevAchievements(tutorAchievements)
+
+
+    const formData = new FormData()
+    if (editedData.avatar) {
+      formData.append('avatar', editedData.avatar)
+    }
+    formData.append('phoneNumber', editedData.phoneNumber)
+    formData.append('description', editedData.description)
+    formData.append('expertise', JSON.stringify(editedData.expertise))
+    formData.append('achievements', JSON.stringify(editedData.achievements))
+
+    try {
+      setIsLoading(true)
+      const data = await updateTutorProfileAPI(formData)
+      setIsLoading(false)
+      const userStr = localStorage.getItem('user')
+      if (userStr) {
+        const user = JSON.parse(userStr)
+        user.avatarUrl = editedData.avatarUrl || tutorDetails.avatarUrl || ''
+        localStorage.setItem('user', JSON.stringify(user))
+      }
+
+      toast.success(data.message)
+
+    } catch (error) {
+      setIsLoading(false)
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message || 'Cập nhật hồ sơ thất bại. Vui lòng thử lại.')
+      } else {
+        toast.error('Cập nhật hồ sơ thất bại. Vui lòng thử lại.')
+      }
+    }
+
+    setIsEditing(false)
   }
 
+
   const handleCancel = (): void => {
-    setEditedData(tutorData)
+    setEditedData({
+      avatar: null,
+      phoneNumber: tutorData.phoneNumber || '',
+      description: tutorData.tutorDescription || '',
+      expertise: tutorData.expertise || [],
+      achievements: achievements || [],
+      avatarUrl: tutorData.avatarUrl || ''
+    })
+    setTutorAchievements(prevAchievements)
     setIsEditing(false)
   }
 
@@ -108,7 +196,7 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) 
       reader.onload = (e: ProgressEvent<FileReader>): void => {
         const result = e.target?.result
         if (typeof result === 'string' && editedData) {
-          setEditedData({ ...editedData, avatarUrl: result })
+          setEditedData({ ...editedData, avatarUrl: result, avatar: file })
         }
       }
       reader.readAsDataURL(file)
@@ -138,7 +226,7 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) 
       title: '',
       description: '',
       year: new Date().getFullYear().toString(),
-      type: 'certificate'
+      type: 'CERTIFICATION'
     }
     setTutorAchievements([...tutorAchievements, newCert])
   }
@@ -151,6 +239,12 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) 
     setTutorAchievements(tutorAchievements.map(cert =>
       cert.id === certId ? { ...cert, [field]: value } : cert
     ))
+    setEditedData({
+      ...editedData!,
+      achievements: tutorAchievements.map(cert =>
+        cert.id === certId ? { ...cert, [field]: value } : cert
+      )
+    })
   }
   const handleChangeSort = (value: string): void => {
     setSort(value)
@@ -183,21 +277,33 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) 
               {tutorAchievements.map((cert: Certificate) => (
                 <div key={cert.id} className="p-4 bg-gray-50 rounded-xl border border-gray-200">
                   <div className="grid grid-cols-12 gap-3 items-center">
-                    <div className="col-span-11 space-y-2">
-                      <Input
-                        placeholder="Tên chứng chỉ"
-                        value={cert.title}
-                        onChange={(e) => handleCertificateChange(cert.id, 'title', e.target.value)}
-                        size="large"
-                      />
+                    <div className="col-span-11 space-y-2 ">
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input
+                          placeholder="Tên chứng chỉ"
+                          required
+                          value={cert.title}
+                          onChange={(e) => handleCertificateChange(cert.id, 'title', e.target.value)}
+                          size="large"
+                        />
+                        <Select
+                          value={cert.type}
+                          onChange={(value) => handleCertificateChange(cert.id, 'type', value)}
+                        >
+                          <Select.Option value="AWARD">Giải thưởng</Select.Option>
+                          <Select.Option value="CERTIFICATION">Chứng Chỉ</Select.Option>
+                        </Select>
+                      </div>
                       <div className="grid grid-cols-2 gap-2">
                         <Input
                           placeholder="Tổ chức cấp"
+                          required
                           value={cert.description}
                           onChange={(e) => handleCertificateChange(cert.id, 'description', e.target.value)}
                         />
                         <Input
                           placeholder="Năm"
+                          required
                           value={cert.year}
                           onChange={(e) => handleCertificateChange(cert.id, 'year', e.target.value)}
                         />
@@ -326,51 +432,34 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) 
 
               {/* Avatar */}
               <div className="relative -mt-12 mb-3">
-                <div className="flex justify-center">
-                  <div className="relative group">
-                    <Avatar
-                      size={100}
-                      src={isEditing ? editedData.avatarUrl : tutorData.avatarUrl}
-                      className="border-4 border-white shadow-2xl ring-2 ring-blue-100"
-                    />
-                    {isEditing && (
-                      <Upload {...uploadProps}>
-                        <div className="absolute inset-0 bg-black bg-opacity-60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer">
-                          <CameraOutlined className="text-white text-2xl" />
-                        </div>
-                      </Upload>
-                    )}
-                  </div>
+                <div className="flex flex-col items-center">
+                  <Avatar
+                    size={100}
+                    src={isEditing ? editedData.avatarUrl : tutorData.avatarUrl}
+                    className="border-4 border-white shadow-2xl ring-2 ring-blue-100"
+                  />
+                  {isEditing && (
+                    <Upload {...uploadProps} showUploadList={false}>
+                      <div className="mt-2 flex items-center gap-2 text-blue-600 cursor-pointer hover:underline select-none">
+                        <CameraOutlined className="text-lg" />
+                        <span>Đổi avatar</span>
+                      </div>
+                    </Upload>
+                  )}
                 </div>
               </div>
 
+
               {/* Name */}
               <div className="text-center px-4 mb-3">
-                {isEditing ? (
-                  <div className="space-y-2">
-                    <Input
-                      prefix={<UserOutlined />}
-                      placeholder="Họ"
-                      value={editedData.lastName}
-                      onChange={(e) => setEditedData({ ...editedData, lastName: e.target.value })}
-                    />
-                    <Input
-                      prefix={<UserOutlined />}
-                      placeholder="Tên"
-                      value={editedData.firstName}
-                      onChange={(e) => setEditedData({ ...editedData, firstName: e.target.value })}
-                    />
-                  </div>
-                ) : (
-                  <>
-                    <h1 className="text-xl font-bold text-gray-900 mb-2">
-                      {tutorData.lastName} {tutorData.firstName}
-                    </h1>
-                    <Tag icon={<CheckCircleFilled />} color="blue" className="text-xs">
+                <>
+                  <h1 className="text-xl font-bold text-gray-900 mb-2">
+                    {tutorData.lastName} {tutorData.firstName}
+                  </h1>
+                  <Tag icon={<CheckCircleFilled />} color="blue" className="text-xs">
                       Giảng viên
-                    </Tag>
-                  </>
-                )}
+                  </Tag>
+                </>
               </div>
 
               <Divider className="my-2" />
@@ -422,22 +511,10 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) 
                     <BookOutlined className="text-blue-500" />
                     <div className="flex-1 min-w-0">
                       <p className="text-xs text-gray-500">Khoa</p>
-                      {isEditing ? (
-                        <Select
-                          value={editedData.department}
-                          onChange={(value: DepartmentCode) => setEditedData({ ...editedData, department: value })}
-                          className="w-full"
-                          size="small"
-                        >
-                          {DEPARTMENTS.map(dept => (
-                            <Option key={dept.code} value={dept.code}>{dept.name}</Option>
-                          ))}
-                        </Select>
-                      ) : (
-                        <p className="font-semibold text-gray-800 text-sm truncate">
-                          {getDepartmentName(tutorData.department)}
-                        </p>
-                      )}
+                      <p className="font-semibold text-gray-800 text-sm truncate">
+                        {getDepartmentName(tutorData.department)}
+                      </p>
+
                     </div>
                   </div>
 
@@ -472,7 +549,7 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) 
           {/* Right Column - Content Cards */}
           <div className="lg:col-span-8 space-y-6">
             {/* Enroll Button - Only show if not editing */}
-            {!isEditing && (
+            {allowSendRequest && (
               <Card className="shadow-xl rounded-3xl border-0 overflow-hidden">
                 <div className={`p-6 ${isAcceptingStudents ? 'bg-gradient-to-r from-green-50 to-emerald-50' : 'bg-gradient-to-r from-gray-50 to-gray-100'}`}>
                   <div className="flex items-center justify-between">
@@ -519,8 +596,8 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) 
                 <TextArea
                   rows={6}
                   placeholder="Viết giới thiệu về bản thân..."
-                  value={editedData.tutorDescription}
-                  onChange={(e) => setEditedData({ ...editedData, tutorDescription: e.target.value })}
+                  value={editedData.description}
+                  onChange={(e) => setEditedData({ ...editedData, description: e.target.value })}
                   className="text-base"
                 />
               ) : (

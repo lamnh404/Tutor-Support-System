@@ -22,7 +22,7 @@ export const getIdByUsernameAPI = async (username: string) => {
 }
 
 export const getRatingDistributionAPI = async (id: string) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/profile/rating-distribution`,
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/info/tutor-rating-distribution`,
     {
       params: {
         id: id
@@ -32,7 +32,7 @@ export const getRatingDistributionAPI = async (id: string) => {
 }
 
 export const getReviewsAPI = async (id: string, page: number, pageSize: number, sort: string) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/profile/tutor-reviews`,
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/info/tutor-reviews`,
     {
       params: {
         id: id,
