@@ -29,6 +29,7 @@ import { iDContext } from '~/context/IdContext/idContext.tsx'
 import { updateTutorProfileAPI } from '~/apis/updateProfileAPI.tsx'
 import { toast } from 'react-toastify'
 import axios from 'axios'
+import { connectionAPI } from '~/apis/connectionAPI'
 
 
 const { TextArea } = Input
@@ -212,10 +213,13 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) 
     setIsEnrollModalVisible(true)
   }
 
-  const handleEnrollSubmit = (): void => {
-    message.success('Yêu cầu nhập học đã được gửi thành công!')
+  const handleEnrollSubmit = async () => {
+    const data = await connectionAPI(id, ownId, enrollMessage)
+
+    toast.success( data.message || 'Yêu cầu nhập học đã được gửi thành công!')
     setIsEnrollModalVisible(false)
     setEnrollMessage('')
+
   }
 
   const handleAddCertificate = (): void => {

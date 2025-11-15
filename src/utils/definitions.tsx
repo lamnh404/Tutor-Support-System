@@ -62,3 +62,29 @@ export const DEPARTMENT_EXPERTISE_MAP: Record<DepartmentCode, ExpertiseCode[]> =
   ME: ['THERMODYNAMICS', 'MECHANICAL_DESIGN', 'CONTROL_SYSTEMS'],
   CH: ['PROCESS_ENGINEERING', 'MATERIALS_SCIENCE', 'THERMODYNAMICS']
 }
+
+export interface Notification {
+  id: string
+  type: string
+  title: string
+  content: string
+  timestamp: string
+  isRead: boolean
+  [key: string]: unknown
+}
+
+export const NOTIFICATION_TYPES = [
+  'CONNECTION_REQUEST',
+  'CONNECTION_ACCEPTED',
+  'CONNECTION_REJECTED',
+  'NEW_MESSAGE',
+  'BOOKING_CREATED',
+  'BOOKING_CANCELLED',
+  'BOOKING_COMPLETED',
+  'ASSIGNMENT_CREATED',
+  'ASSIGNMENT_GRADED',
+  'REVIEW_RECEIVED',
+  'SYSTEM_INFO'
+] as const
+
+export type NotificationType = typeof NOTIFICATION_TYPES[number];

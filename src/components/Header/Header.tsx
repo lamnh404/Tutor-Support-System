@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Button, Dropdown, Avatar } from 'antd'
 import { BellOutlined, CheckOutlined } from '@ant-design/icons'
 import { useState, useContext, useRef, useEffect } from 'react'
-import Noti from './Noti'
+import Notification from './Notification'
 import { userContext } from '~/context/User/userContext.tsx'
 import { useNotifications } from '~/context/NotificationContext/NotificationContext'
 import type { MenuProps } from 'antd'
@@ -88,7 +88,7 @@ export default function Header() {
                     <div className="max-h-96 overflow-y-auto">
                       {notifications.length > 0 ? (
                         notifications.map((notification) => (
-                          <Noti
+                          <Notification
                             notification={notification}
                             key={notification.id}
                             onClose={() => setIsOpenNoti(false)}

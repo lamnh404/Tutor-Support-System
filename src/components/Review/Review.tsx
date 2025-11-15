@@ -6,10 +6,8 @@ import { getReviewsAPI } from '~/apis/profileAPI'
 import { Link } from 'react-router-dom'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import 'dayjs/locale/vi.js'
 
 dayjs.extend(relativeTime)
-dayjs.locale('vi')
 interface ReviewCardProps {
   id: string,
   sort: string

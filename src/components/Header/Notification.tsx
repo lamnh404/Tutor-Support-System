@@ -1,18 +1,25 @@
 import { Link } from 'react-router-dom'
-import { Avatar } from 'antd'
 import {
   MessageOutlined,
   CalendarOutlined,
   StarOutlined,
   CheckCircleOutlined,
   InfoCircleOutlined,
-  ExclamationCircleOutlined,
-  CloseOutlined
+  CloseCircleOutlined,
+  UserAddOutlined,
+  CloseSquareOutlined,
+  CloseOutlined,
+  FileTextOutlined
 } from '@ant-design/icons'
-import type { Notification } from '~/context/NotificationContext/NotificationContext'
+import type { Notification } from '~/utils/definitions'
 import { useNotifications } from '~/context/NotificationContext/NotificationContext'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
 
-interface NotiProps {
+
+dayjs.extend(relativeTime)
+
+interface NotificationProps {
   notification: Notification
   onClose?: () => void
 }
@@ -21,37 +28,34 @@ const getNotificationIcon = (type: Notification['type']) => {
   const iconProps = { className: 'text-lg' }
 
   switch (type) {
-  case 'booking':
+  case 'CONNECTION_REQUEST':
+    return <UserAddOutlined {...iconProps} style={{ color: '#722ed1' }} />
+  case 'CONNECTION_ACCEPTED':
+    return <CheckCircleOutlined {...iconProps} style={{ color: '#52c41a' }} />
+  case 'CONNECTION_REJECTED':
+    return <CloseCircleOutlined {...iconProps} style={{ color: '#ff4d4f' }} />
+  case 'NEW_MESSAGE':
+    return <MessageOutlined {...iconProps} style={{ color: '#1890ff' }} />
+  case 'BOOKING_CREATED':
     return <CalendarOutlined {...iconProps} style={{ color: '#52c41a' }} />
-  case 'assignment':
-    return <MessageOutlined {...iconProps} style={{ color: '#722ed1' }} />
-  case 'review':
+  case 'BOOKING_CANCELLED':
+    return <CloseSquareOutlined {...iconProps} style={{ color: '#ff4d4f' }} />
+  case 'BOOKING_COMPLETED':
+    return <CalendarOutlined {...iconProps} style={{ color: '#52c41a' }} />
+  case 'ASSIGNMENT_CREATED':
+    return <FileTextOutlined {...iconProps} style={{ color: '#1890ff' }} />
+  case 'ASSIGNMENT_GRADED':
+    return <CheckCircleOutlined {...iconProps} style={{ color: '#52c41a' }} />
+  case 'REVIEW_RECEIVED':
     return <StarOutlined {...iconProps} style={{ color: '#faad14' }} />
-  case 'payment':
-    return <CheckCircleOutlined {...iconProps} style={{ color: '#52c41a' }} />
-  case 'success':
-    return <CheckCircleOutlined {...iconProps} style={{ color: '#52c41a' }} />
-  case 'warning':
-    return <ExclamationCircleOutlined {...iconProps} style={{ color: '#faad14' }} />
-  case 'error':
-    return <CloseOutlined {...iconProps} style={{ color: '#ff4d4f' }} />
+  case 'SYSTEM_INFO':
+    return <InfoCircleOutlined {...iconProps} style={{ color: '#1890ff' }} />
   default:
     return <InfoCircleOutlined {...iconProps} style={{ color: '#1890ff' }} />
   }
 }
 
-const getTimeAgo = (timestamp: string) => {
-  const now = new Date()
-  const notifTime = new Date(timestamp)
-  const diffInMinutes = Math.floor((now.getTime() - notifTime.getTime()) / (1000 * 60))
-
-  if (diffInMinutes < 1) return 'Vừa xong'
-  if (diffInMinutes < 60) return `${diffInMinutes} phút trước`
-  if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)} giờ trước`
-  return `${Math.floor(diffInMinutes / 1440)} ngày trước`
-}
-
-export default function Noti({ notification, onClose }: NotiProps) {
+export default function Notification({ notification, onClose }: NotificationProps) {
   const { markAsRead, removeNotification } = useNotifications()
 
   const handleClick = () => {
@@ -80,13 +84,9 @@ export default function Noti({ notification, onClose }: NotiProps) {
       <div className="flex items-start gap-3">
         {/* Icon or Avatar */}
         <div className="flex-shrink-0 mt-1">
-          {notification.avatarUrl ? (
-            <Avatar src={notification.avatarUrl} size={40} />
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-              {getNotificationIcon(notification.type)}
-            </div>
-          )}
+          <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+            {getNotificationIcon(notification.type)}
+          </div>
         </div>
 
         {/* Content */}
@@ -99,11 +99,11 @@ export default function Noti({ notification, onClose }: NotiProps) {
                 {notification.title}
               </h4>
               <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                {notification.message}
+                {notification.content}
               </p>
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-xs text-gray-400">
-                  {getTimeAgo(notification.timestamp)}
+                  {dayjs(notification.timestamp).fromNow()}
                 </span>
                 {!notification.isRead && (
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
