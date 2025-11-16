@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import TutorCard from './TutorCard'
@@ -12,6 +12,7 @@ import {
 } from '../../utils/definitions.tsx'
 import tutorSearchAPI, { type tutorSearchParams } from '~/apis/TutorSearchAPI'
 import { toast } from 'react-toastify'
+import { userContext } from '~/context/User/userContext.tsx'
 
 // await tutorSearchAPI()
 const Spinner = () => (
@@ -81,6 +82,12 @@ const TutorSearchPage: React.FC = () => {
   const [availableExpertise, setAvailableExpertise] = useState<{ code: ExpertiseCode; name: string }[]>(EXPERTISES)
 
   const uniqueDepartments = ['All', ...DEPARTMENTS.map(d => d.code)]
+
+  const { user } = useContext(userContext)
+  let isAllowRequest = true
+  if (user && !user.roles.includes('STUDENT')) {
+    isAllowRequest = false
+  }
 
   useEffect(() => {
     if (selectedDepartment === 'All') {
@@ -266,7 +273,7 @@ const TutorSearchPage: React.FC = () => {
             className="space-y-6"
           >
             {displayedTutors.map((tutor) => (
-              <TutorCard key={tutor.id} tutor={tutor} />
+              <TutorCard key={tutor.id} tutor={tutor} isAllowedToRequest = {isAllowRequest} />
             ))}
           </InfiniteScroll>
         )}

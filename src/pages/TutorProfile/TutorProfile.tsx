@@ -30,6 +30,7 @@ import { updateTutorProfileAPI } from '~/apis/updateProfileAPI.tsx'
 import { toast } from 'react-toastify'
 import axios from 'axios'
 import { connectionAPI } from '~/apis/connectionAPI'
+import { userContext } from '~/context/User/userContext.tsx'
 
 
 const { TextArea } = Input
@@ -59,6 +60,13 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) 
   const [sort, setSort] = useState<string>('latest')
   const { ownId } = useContext(iDContext)
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const statusConnection = tutorInfo?.statusConnection || ''
+  const [isRequested, setIsRequested] = useState(statusConnection === 'PENDING' || statusConnection === 'ACCEPTED')
+  const { user } = useContext(userContext)
+  let isAllowSendRequest = true
+  if (user && (!user.roles.includes('STUDENT'))) {
+    isAllowSendRequest = false
+  }
 
   useEffect(() => {
     setIsLoading(false)
@@ -216,10 +224,12 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) 
   const handleEnrollSubmit = async () => {
     const data = await connectionAPI(id, ownId, enrollMessage)
 
-    toast.success( data.message || 'Yêu cầu nhập học đã được gửi thành công!')
+    if ( process.env.NODE_ENV === 'development') {
+      toast.success( data.message )
+    }
     setIsEnrollModalVisible(false)
     setEnrollMessage('')
-
+    setIsRequested(true)
   }
 
   const handleAddCertificate = (): void => {
@@ -573,18 +583,23 @@ const TutorProfile: React.FC<TutorProfileProps> = ({ id, userInfo, tutorInfo }) 
                           : 'Giảng viên hiện đã đủ số lượng học viên'}
                       </p>
                     </div>
+                    { isAllowSendRequest &&
                     <Button
                       type="primary"
                       size="large"
                       icon={<UserAddOutlined />}
                       onClick={handleEnrollRequest}
-                      disabled={!isAcceptingStudents}
+                      disabled={!isAcceptingStudents || isRequested}
                       className={isAcceptingStudents
                         ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 border-0 shadow-lg h-12 px-8 text-lg font-bold'
                         : 'h-12 px-8'}
                     >
-                      Gửi yêu cầu nhập học
+                      {isRequested ? 'Yêu cầu đã gửi'
+                        : isAcceptingStudents ? 'Gửi yêu cầu nhập học'
+                          : 'Đã đủ học viên'
+                      }
                     </Button>
+                    }
                   </div>
                 </div>
               </Card>

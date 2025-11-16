@@ -88,3 +88,11 @@ export const NOTIFICATION_TYPES = [
 ] as const
 
 export type NotificationType = typeof NOTIFICATION_TYPES[number];
+
+export const STATUS_REQUEST = [
+  'PENDING',
+  'ACCEPTED',
+  'REJECTED'
+] as const
+
+export type StatusRequest = typeof STATUS_REQUEST[number];
