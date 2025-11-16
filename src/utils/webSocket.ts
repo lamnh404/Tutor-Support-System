@@ -4,11 +4,11 @@ import { Client, type IFrame, type StompSubscription } from '@stomp/stompjs'
 import { API_ROOT } from './constants'
 let stompClient: Client | null = null
 let subscription: StompSubscription | null = null
-import type { Notification } from './definitions'
+import type { NotificationRequest } from './definitions'
 
 interface WebSocketConfig {
   userId: string
-  onMessage: (message: Notification) => void
+  onMessage: (message: NotificationRequest) => void
   onConnect?: () => void
   onError?: (error: Error | IFrame | Event) => void
 }
@@ -20,7 +20,7 @@ export const connectWebSocket = ({
     disconnectWebSocket()
   }
 
-  const socket = new SockJS(`${API_ROOT}/ws?userId=${userId}`);
+  const socket = new SockJS(`${API_ROOT}/ws?userId=${userId}`)
 
   stompClient = new Client({
     webSocketFactory: () => socket,

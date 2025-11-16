@@ -1,12 +1,13 @@
-import React, { createContext, useState, useContext, useEffect } from 'react'
-import { type Notification } from '~/utils/definitions'
-import { connectWebSocket, disconnectWebSocket } from '~/utils/webSocket.ts'
-import { iDContext } from '~/context/IdContext/idContext.tsx'
+import React, { createContext, useState, useContext } from 'react'
+import { type NotificationRequest } from '~/utils/definitions'
+import { sendMessage } from '~/utils/webSocket.ts'
+
 
 interface NotificationContextType {
-  notifications: Notification[]
+  notifications: NotificationRequest[]
+  setNotifications: React.Dispatch<React.SetStateAction<NotificationRequest[]>>
   unreadCount: number
-  addNotification: (notification: Notification) => void
+  addNotification: (notification: NotificationRequest) => void
   markAsRead: (id: string) => void
   markAllAsRead: () => void
   removeNotification: (id: string) => void
@@ -15,6 +16,7 @@ interface NotificationContextType {
 
 const defaultContext: NotificationContextType = {
   notifications: [],
+  setNotifications: () => {},
   unreadCount: 0,
   addNotification: () => {},
   markAsRead: () => {},
@@ -26,10 +28,9 @@ const defaultContext: NotificationContextType = {
 export const NotificationContext = createContext<NotificationContextType>(defaultContext)
 
 export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [notifications, setNotifications] = useState<Notification[]>([])
-  const { ownId } = useContext(iDContext)
+  const [notifications, setNotifications] = useState<NotificationRequest[]>([])
 
-  const addNotification = (notification: Notification) => {
+  const addNotification = (notification: NotificationRequest) => {
     setNotifications(prev => [notification, ...prev])
   }
 
@@ -42,6 +43,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         notif.id === id ? { ...notif, isRead: true } : notif
       )
     )
+    sendMessage('/app/notifications/markAsRead', { id })
   }
 
   const markAllAsRead = () => {
@@ -57,25 +59,11 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const clearAllNotifications = () => {
     setNotifications([])
   }
-  useEffect(() => {
-    const userId = ownId
-    connectWebSocket({
-      userId,
-      onMessage: (msg: Notification) => {
-        addNotification(msg)
-      },
-      onConnect: () => {},
-      onError: (_error) => {}
-    })
-    return () => {
-      disconnectWebSocket()
-    }
-
-  }, [addNotification, ownId])
 
   return (
     <NotificationContext.Provider value={{
       notifications,
+      setNotifications,
       unreadCount,
       addNotification,
       markAsRead,

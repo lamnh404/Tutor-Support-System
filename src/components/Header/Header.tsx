@@ -8,7 +8,11 @@ import { useNotifications } from '~/context/NotificationContext/NotificationCont
 import type { MenuProps } from 'antd'
 import { userLogoutAPI } from '~/apis/userAPI'
 import HeaderButtons from './HeaderButtons'
-
+import { connectWebSocket, disconnectWebSocket } from '~/utils/webSocket.ts'
+import { getNotificationsAPI } from '~/apis/notificationAPI.ts'
+import { toast } from 'react-toastify'
+import { iDContext } from '~/context/IdContext/idContext.tsx'
+import type { NotificationRequest } from '~/utils/definitions.ts'
 export default function Header() {
   const [isOpenNoti, setIsOpenNoti] = useState(false)
   const navigate = useNavigate()
@@ -16,6 +20,8 @@ export default function Header() {
   const notiRef = useRef<HTMLDivElement>(null)
 
   const { user, logout } = useContext(userContext)
+  const { ownId } = useContext(iDContext)
+  const { addNotification, setNotifications } = useNotifications()
 
   // Close notification dropdown when clicking outside
   useEffect(() => {
@@ -34,10 +40,64 @@ export default function Header() {
     }
   }, [isOpenNoti])
 
+  useEffect(() => {
+    if ( !ownId ) return
+    connectWebSocket({
+      userId: ownId,
+      onMessage: (msg: NotificationRequest) => {
+        addNotification(msg)
+      },
+      onConnect: () => {},
+      onError: (error) => {
+        if (process.env.NODE_ENV === 'development') {
+          if (error instanceof Error) {
+            toast.error(`WebSocket error: ${error.message}`)
+          }
+          else if (error instanceof Event) {
+            toast.error('WebSocket connection error')
+          }
+          else {
+            toast.error('WebSocket STOMP error')
+          }
+        }
+      }
+    })
+    getNotificationsAPI()
+      .then((data) => {
+        setNotifications(data.notifications)
+      })
+      .catch((error) => {
+        if (process.env.NODE_ENV === 'development') {
+          toast.error(error?.response?.data?.message)
+        }
+
+      })
+    return () => {
+      disconnectWebSocket()
+    }
+
+  }, [ownId])
+
+  // useEffect(() => {
+  //
+  //   getNotificationsAPI()
+  //     .then((data) => {
+  //       setNotifications(data.notifications)
+  //     })
+  //     .catch((error) => {
+  //       if (process.env.NODE_ENV === 'development') {
+  //         toast.error(error?.response?.data?.message)
+  //       }
+  //
+  //     })
+  // }, [setNotifications] )
+
   const handleLogout = () => {
     userLogoutAPI(true)
-    logout()
-    navigate('/login')
+      .then(() => {
+        logout()
+        navigate('/login')
+      })
   }
 
   const userMenuItems: MenuProps['items'] = [

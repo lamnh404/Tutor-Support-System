@@ -34,6 +34,7 @@
     "@fortawesome/react-fontawesome": "^3.0.2",
     "@stomp/stompjs": "^7.2.1",
     "@tailwindcss/vite": "^4.1.13",
+    "@types/node": "^24.10.1",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@types/sockjs-client": "^1.5.4",

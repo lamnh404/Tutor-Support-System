@@ -11,7 +11,7 @@ import {
   CloseOutlined,
   FileTextOutlined
 } from '@ant-design/icons'
-import type { Notification } from '~/utils/definitions'
+import type { NotificationRequest } from '~/utils/definitions'
 import { useNotifications } from '~/context/NotificationContext/NotificationContext'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -20,11 +20,11 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 dayjs.extend(relativeTime)
 
 interface NotificationProps {
-  notification: Notification
+  notification: NotificationRequest
   onClose?: () => void
 }
 
-const getNotificationIcon = (type: Notification['type']) => {
+const getNotificationIcon = (type: NotificationRequest['type']) => {
   const iconProps = { className: 'text-lg' }
 
   switch (type) {
@@ -62,7 +62,7 @@ export default function Notification({ notification, onClose }: NotificationProp
     if (!notification.isRead) {
       markAsRead(notification.id)
     }
-    // Close the notification dropdown when clicking on a notification
+
     if (onClose) {
       onClose()
     }

@@ -63,7 +63,7 @@ export const DEPARTMENT_EXPERTISE_MAP: Record<DepartmentCode, ExpertiseCode[]> =
   CH: ['PROCESS_ENGINEERING', 'MATERIALS_SCIENCE', 'THERMODYNAMICS']
 }
 
-export interface Notification {
+export interface NotificationRequest {
   id: string
   type: string
   title: string
