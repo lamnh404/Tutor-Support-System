@@ -2,13 +2,17 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Button, Dropdown, Avatar } from 'antd'
 import { BellOutlined, CheckOutlined } from '@ant-design/icons'
 import { useState, useContext, useRef, useEffect } from 'react'
-import Noti from './Noti'
+import Notification from './Notification'
 import { userContext } from '~/context/User/userContext.tsx'
 import { useNotifications } from '~/context/NotificationContext/NotificationContext'
 import type { MenuProps } from 'antd'
 import { userLogoutAPI } from '~/apis/userAPI'
 import HeaderButtons from './HeaderButtons'
-
+import { connectWebSocket, disconnectWebSocket } from '~/utils/webSocket.ts'
+import { getNotificationsAPI } from '~/apis/notificationAPI.ts'
+import { toast } from 'react-toastify'
+import { iDContext } from '~/context/IdContext/idContext.tsx'
+import type { NotificationRequest } from '~/utils/definitions.ts'
 export default function Header() {
   const [isOpenNoti, setIsOpenNoti] = useState(false)
   const navigate = useNavigate()
@@ -16,6 +20,8 @@ export default function Header() {
   const notiRef = useRef<HTMLDivElement>(null)
 
   const { user, logout } = useContext(userContext)
+  const { ownId } = useContext(iDContext)
+  const { addNotification, setNotifications } = useNotifications()
 
   // Close notification dropdown when clicking outside
   useEffect(() => {
@@ -34,10 +40,64 @@ export default function Header() {
     }
   }, [isOpenNoti])
 
+  useEffect(() => {
+    if ( !ownId ) return
+    connectWebSocket({
+      userId: ownId,
+      onMessage: (msg: NotificationRequest) => {
+        addNotification(msg)
+      },
+      onConnect: () => {},
+      onError: (error) => {
+        if (process.env.NODE_ENV === 'development') {
+          if (error instanceof Error) {
+            toast.error(`WebSocket error: ${error.message}`)
+          }
+          else if (error instanceof Event) {
+            toast.error('WebSocket connection error')
+          }
+          else {
+            toast.error('WebSocket STOMP error')
+          }
+        }
+      }
+    })
+    getNotificationsAPI()
+      .then((data) => {
+        setNotifications(data.notifications)
+      })
+      .catch((error) => {
+        if (process.env.NODE_ENV === 'development') {
+          toast.error(error?.response?.data?.message)
+        }
+
+      })
+    return () => {
+      disconnectWebSocket()
+    }
+
+  }, [ownId])
+
+  // useEffect(() => {
+  //
+  //   getNotificationsAPI()
+  //     .then((data) => {
+  //       setNotifications(data.notifications)
+  //     })
+  //     .catch((error) => {
+  //       if (process.env.NODE_ENV === 'development') {
+  //         toast.error(error?.response?.data?.message)
+  //       }
+  //
+  //     })
+  // }, [setNotifications] )
+
   const handleLogout = () => {
     userLogoutAPI(true)
-    logout()
-    navigate('/login')
+      .then(() => {
+        logout()
+        navigate('/login')
+      })
   }
 
   const userMenuItems: MenuProps['items'] = [
@@ -88,7 +148,7 @@ export default function Header() {
                     <div className="max-h-96 overflow-y-auto">
                       {notifications.length > 0 ? (
                         notifications.map((notification) => (
-                          <Noti
+                          <Notification
                             notification={notification}
                             key={notification.id}
                             onClose={() => setIsOpenNoti(false)}

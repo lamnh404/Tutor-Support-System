@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext, useState } from 'react'
 import { type Tutor } from './TutorData'
 import { Link } from 'react-router-dom'
 import {
@@ -6,9 +6,16 @@ import {
   DEPARTMENTS, // Import the array of department objects
   EXPERTISES // Import the array of expertise objects
 } from '../../utils/definitions.tsx'
+import { connectionAPI } from '~/apis/connectionAPI.ts'
+import { toast } from 'react-toastify'
+import { Modal } from 'antd'
+import { UserAddOutlined } from '@ant-design/icons'
+import { iDContext } from '~/context/IdContext/idContext.tsx'
+import TextArea from 'antd/es/input/TextArea'
 
 interface TutorCardProps {
   tutor: Tutor;
+  isAllowedToRequest?: boolean;
 }
 
 const getDepartmentColors = (departmentCode: DepartmentCode) => {
@@ -28,9 +35,15 @@ const getDepartmentColors = (departmentCode: DepartmentCode) => {
   }
 }
 
-const TutorCard: React.FC<TutorCardProps> = ({ tutor }) => {
+const TutorCard: React.FC<TutorCardProps> = ({ tutor, isAllowedToRequest }) => {
   const isFull = tutor.maxMentee > 0 ? tutor.currMentee >= tutor.maxMentee : true
   const menteeRatio = tutor.maxMentee > 0 ? tutor.currMentee / tutor.maxMentee : 1
+  const id = tutor.id
+  const { ownId } = useContext(iDContext)
+  const [isEnrollModalVisible, setIsEnrollModalVisible] = React.useState(false)
+  const [enrollMessage, setEnrollMessage] = React.useState('')
+  const status = tutor.statusConnection || ''
+  const [IsRequested, setIsRequested] = useState(status === 'PENDING' || status === 'ACCEPTED')
 
   let menteeColorClass = 'text-green-600'
   if (isFull) {
@@ -48,6 +61,20 @@ const TutorCard: React.FC<TutorCardProps> = ({ tutor }) => {
   const expertiseNames = tutor.expertise.map(code => {
     return EXPERTISES.find(e => e.code === code)?.name || code
   }).join(', ')
+  const handleSendRequest = async () => {
+    if (isFull) return
+    setIsEnrollModalVisible(true)
+  }
+  const handleEnrollSubmit = async () => {
+    const data = await connectionAPI(id, ownId, enrollMessage)
+
+    if ( process.env.NODE_ENV === 'development') {
+      toast.success( data.message )
+    }
+    setIsEnrollModalVisible(false)
+    setEnrollMessage('')
+    setIsRequested(true)
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 flex flex-col md:flex-row items-start gap-6 w-full transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-200/50">
@@ -100,12 +127,24 @@ const TutorCard: React.FC<TutorCardProps> = ({ tutor }) => {
         </div>
 
         <div className="flex flex-col space-y-3 w-full">
+          {isAllowedToRequest &&
           <button
             className="w-full bg-blue-500 cursor-pointer text-white font-semibold py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
-            disabled={isFull}
+            disabled={isFull || IsRequested }
+            onClick={handleSendRequest}
           >
-            {isFull ? 'Đã đầy' : 'Gửi yêu cầu kết nối'}
+            {
+              isFull
+                ? 'Đã đầy'
+                : tutor.statusConnection=== 'ACCEPTED'
+                  ? 'Đã kết nối'
+                  : tutor.statusConnection === 'PENDING'
+                    ? 'Đã gửi yêu cầu'
+                    : 'Gửi yêu cầu kết nối'
+            }
+
           </button>
+          }
           <Link
             to={`/${tutor.id}`}
             className="w-full text-center bg-white cursor-pointer text-gray-700 font-semibold py-3 px-4 rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors shadow-sm"
@@ -114,6 +153,57 @@ const TutorCard: React.FC<TutorCardProps> = ({ tutor }) => {
           </Link>
         </div>
       </div>
+      {/* Enroll Request Modal */}
+      <Modal
+        title={
+          <div className="flex items-center gap-3">
+            <UserAddOutlined className="text-blue-500 text-2xl" />
+            <span className="text-xl font-bold">Gửi yêu cầu nhập học</span>
+          </div>
+        }
+        open={isEnrollModalVisible}
+        onOk={handleEnrollSubmit}
+        onCancel={() => setIsEnrollModalVisible(false)}
+        okText="Gửi yêu cầu"
+        cancelText="Hủy"
+        okButtonProps={{
+          className: 'bg-blue-500 hover:bg-blue-600',
+          size: 'large'
+        }}
+        cancelButtonProps={{
+          size: 'large'
+        }}
+        width={600}
+      >
+        <div className="py-4">
+          <div className="mb-4 p-4 bg-blue-50 rounded-xl border-l-4 border-blue-500">
+            <p className="text-gray-700">
+              Bạn đang gửi yêu cầu nhập học với <span className="font-bold text-blue-600">{tutor.lastName} {tutor.firstName}</span>
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Lời nhắn đến giảng viên
+              </label>
+              <TextArea
+                rows={6}
+                placeholder="Giới thiệu bản thân, mục tiêu học tập và lý do muốn học với giảng viên này..."
+                value={enrollMessage}
+                onChange={(e) => setEnrollMessage(e.target.value)}
+                className="text-base"
+              />
+            </div>
+
+            <div className="p-4 bg-yellow-50 rounded-xl border border-yellow-200">
+              <p className="text-sm text-gray-700">
+                <span className="font-semibold">💡 Lưu ý: Giảng viên sẽ xem xét yêu cầu của bạn và phản hồi trong vòng 24-48 giờ.</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }

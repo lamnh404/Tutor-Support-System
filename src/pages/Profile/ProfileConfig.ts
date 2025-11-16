@@ -1,5 +1,5 @@
 import { type Certificate } from '~/pages/TutorProfile/TutorProfileConfig.ts'
-import type { DepartmentCode, ExpertiseCode } from '~/utils/definitions.tsx'
+import type {DepartmentCode, ExpertiseCode, StatusRequest} from '~/utils/definitions.tsx'
 
 
 export interface UserInfo {
@@ -29,5 +29,6 @@ export interface TutorProfileType {
   expertise: ExpertiseCode []
   tutorDescription: string
   achievements: Certificate[]
+  statusConnection: StatusRequest
 }
 

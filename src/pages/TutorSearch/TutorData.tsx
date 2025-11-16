@@ -1,6 +1,6 @@
 // TutorData.tsx
 
-import type { DepartmentCode, ExpertiseCode } from '../../utils/definitions.tsx'
+import type { DepartmentCode, ExpertiseCode, StatusRequest } from '../../utils/definitions.tsx'
 
 export type Department = DepartmentCode;
 
@@ -16,4 +16,5 @@ export interface Tutor {
   currMentee: number;
   maxMentee: number;
   description: string;
+  statusConnection: StatusRequest
 }
