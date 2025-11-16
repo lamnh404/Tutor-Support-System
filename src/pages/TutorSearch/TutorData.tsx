@@ -16,5 +16,5 @@ export interface Tutor {
   currMentee: number;
   maxMentee: number;
   description: string;
-  statusConnection: StatusRequest
+  statusConnection?: StatusRequest
 }
