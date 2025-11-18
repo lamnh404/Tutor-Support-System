@@ -1,94 +1,156 @@
-/* eslint-disable no-console */
-import SockJS from 'sockjs-client'
-import { Client, type IFrame, type StompSubscription } from '@stomp/stompjs'
-import { API_ROOT } from './constants'
-let stompClient: Client | null = null
-let subscription: StompSubscription | null = null
-import type { NotificationRequest } from './definitions'
 
-interface WebSocketConfig {
-  userId: string
-  onMessage: (message: NotificationRequest) => void
-  onConnect?: () => void
-  onError?: (error: Error | IFrame | Event) => void
+import { API_ROOT } from '~/utils/constants.ts'
+
+
+interface WebSocketMessage {
+  type: string
+  senderId : string
+  [key: string]: unknown
 }
 
-export const connectWebSocket = ({
-  userId, onMessage, onConnect, onError
-}: WebSocketConfig) => {
-  if (stompClient && stompClient.connected) {
-    disconnectWebSocket()
+type Listener<T> = (data: T) => void
+
+class WebSocketClient<T extends WebSocketMessage = WebSocketMessage> {
+  private ws: WebSocket | null = null
+  private userId: string
+
+  private listeners: Map<string, Listener<T>[]> = new Map()
+  private reconnectDelay = 2000
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null
+  private heartbeatTimer: ReturnType<typeof setInterval> | null = null
+
+  constructor(userId: string) {
+    this.userId = userId
   }
 
-  const socket = new SockJS(`${API_ROOT}/ws?userId=${userId}`)
+  buildWsUrl() {
+    let url = API_ROOT
 
-  stompClient = new Client({
-    webSocketFactory: () => socket,
-    reconnectDelay: 5000,
-    heartbeatIncoming: 4000,
-    heartbeatOutgoing: 4000,
-
-    onConnect: () => {
-      try {
-        subscription = stompClient?.subscribe(
-          '/user/queue/notifications',
-          (msg) => {
-            try {
-              const payload = JSON.parse(msg.body)
-              onMessage(payload)
-            } catch (error) {
-              console.error('❌ Lỗi parse message:', error)
-            }
-          }
-        ) || null
-      } catch (error) {
-        console.error('❌ Lỗi khi đăng ký kênh thông báo:', error)
-      }
-
-      onConnect?.()
-    },
-
-    onStompError: (frame) => {
-      console.error('❌ STOMP error:', frame.headers['message'])
-      console.error('Chi tiết:', frame.body)
-      onError?.(frame)
-    },
-
-    onWebSocketError: (event) => {
-      console.error('❌ WebSocket error:', event)
-      onError?.(event)
-    },
-
-    onDisconnect: () => {
+    if (url.startsWith('https://')) {
+      url = url.replace('https://', 'wss://')
+    } else if (url.startsWith('http://')) {
+      url = url.replace('http://', 'ws://')
     }
-  })
 
-  stompClient.activate()
-}
-
-export const disconnectWebSocket = () => {
-  if (subscription) {
-    subscription.unsubscribe()
-    subscription = null
+    return `${url}/ws?userId=${encodeURIComponent(this.userId)}`
   }
 
-  if (stompClient) {
-    stompClient.deactivate()
-    stompClient = null
-  }
-}
+  connect() {
+    this.ws = new WebSocket(this.buildWsUrl())
 
-export const sendMessage = (destination: string, body: unknown) => {
-  if (stompClient && stompClient.connected) {
-    stompClient.publish({
-      destination,
-      body: JSON.stringify(body)
+
+    this.ws?.addEventListener('open', () => {
+      this.startHeartbeat()
     })
-  } else {
-    console.error('❌ WebSocket chưa kết nối')
+
+
+    this.ws?.addEventListener('message', (event) => {
+      this.handleMessage(event.data)
+    })
+
+    this.ws?.addEventListener('close', () => {
+      this.stopHeartbeat()
+      this.scheduleReconnect()
+    })
+
+    this.ws?.addEventListener('error', (error) => {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('WebSocket error:', error)
+      }
+      this.ws?.close()
+    })
+  }
+
+  // Automatically send PING messages every 30 seconds
+  startHeartbeat() {
+    this.heartbeatTimer = setInterval(() => {
+      this.ws?.send(JSON.stringify(
+        { type: 'PING',
+          senderId: this.userId
+        }))
+    }, 30000)
+  }
+
+  stopHeartbeat() {
+    if (this.heartbeatTimer) {
+      clearInterval(this.heartbeatTimer)
+      this.heartbeatTimer = null
+    }
+  }
+
+  // Automatically try to reconnect when the connection is closed
+  private scheduleReconnect() {
+    if (this.reconnectTimer) return
+    this.reconnectTimer = setTimeout(() => {
+      this.connect()
+      this.reconnectTimer = null
+    }, this.reconnectDelay)
+  }
+
+  // Handle received messages
+  private handleMessage(raw: string) {
+    try {
+      const data : T = JSON.parse(raw)
+
+      const list = this.listeners.get(data.type)
+      if (list) {
+        list.forEach((listener) => listener(data))
+      }
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to parse WebSocket message:', error)
+      }
+    }
+  }
+
+  send(data: T) {
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify(data))
+    }
+  }
+
+  // Register event listeners
+  on(type: string, callback: Listener<T>) {
+    if (!this.listeners.has(type)) {
+      this.listeners.set(type, [])
+    }
+    this.listeners.get(type)!.push(callback)
+  }
+
+  close() {
+    this.ws?.close()
+    this.ws = null
   }
 }
 
-export const isConnected = (): boolean => {
-  return stompClient?.connected || false
+let webSocketClient: WebSocketClient | null = null
+
+export const connectWebSocket = (userId: string | null | undefined) => {
+  if (!userId) return
+  if (!webSocketClient) {
+    webSocketClient = new WebSocketClient(userId)
+    webSocketClient.connect()
+  }
 }
+
+export const getWebSocketClient = (userId: string) => {
+
+  if (!userId) {
+    return null
+  }
+
+  if (!webSocketClient) {
+    webSocketClient = new WebSocketClient(userId)
+    webSocketClient.connect()
+  }
+  return webSocketClient
+}
+
+
+export const closeWebSocketClient = () => {
+  if (webSocketClient) {
+    webSocketClient.close()
+    webSocketClient = null
+  }
+}
+

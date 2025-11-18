@@ -63,7 +63,7 @@ export const DEPARTMENT_EXPERTISE_MAP: Record<DepartmentCode, ExpertiseCode[]> =
   CH: ['PROCESS_ENGINEERING', 'MATERIALS_SCIENCE', 'THERMODYNAMICS']
 }
 
-export interface NotificationRequest {
+export interface Notification {
   id: string
   type: string
   title: string
@@ -86,6 +86,20 @@ export const NOTIFICATION_TYPES = [
   'REVIEW_RECEIVED',
   'SYSTEM_INFO'
 ] as const
+
+export const NOTIFICATION_TYPE_NAMES: Record<NotificationType, string> = {
+  CONNECTION_REQUEST: 'Yêu cầu kết nối',
+  CONNECTION_ACCEPTED: 'Yêu cầu kết nối được chấp nhận',
+  CONNECTION_REJECTED: 'Yêu cầu kết nối bị từ chối',
+  NEW_MESSAGE: 'Tin nhắn mới',
+  BOOKING_CREATED: 'Đặt lịch mới',
+  BOOKING_CANCELLED: 'Lịch đã bị hủy',
+  BOOKING_COMPLETED: 'Lịch đã hoàn thành',
+  ASSIGNMENT_CREATED: 'Bài tập mới',
+  ASSIGNMENT_GRADED: 'Bài tập đã được chấm điểm',
+  REVIEW_RECEIVED: 'Đánh giá mới',
+  SYSTEM_INFO: 'Thông tin hệ thống'
+};
 
 export type NotificationType = typeof NOTIFICATION_TYPES[number];
 

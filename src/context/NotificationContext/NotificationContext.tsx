@@ -1,13 +1,14 @@
 import React, { createContext, useState, useContext } from 'react'
-import { type NotificationRequest } from '~/utils/definitions'
-import { sendMessage } from '~/utils/webSocket.ts'
+import { type Notification } from '~/utils/definitions'
+import { getWebSocketClient } from '~/utils/webSocket.ts'
+import { iDContext } from '~/context/IdContext/idContext.tsx'
 
 
 interface NotificationContextType {
-  notifications: NotificationRequest[]
-  setNotifications: React.Dispatch<React.SetStateAction<NotificationRequest[]>>
+  notifications: Notification[]
+  setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>
   unreadCount: number
-  addNotification: (notification: NotificationRequest) => void
+  addNotification: (notification: Notification) => void
   markAsRead: (id: string) => void
   markAllAsRead: () => void
   removeNotification: (id: string) => void
@@ -28,9 +29,11 @@ const defaultContext: NotificationContextType = {
 export const NotificationContext = createContext<NotificationContextType>(defaultContext)
 
 export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [notifications, setNotifications] = useState<NotificationRequest[]>([])
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const { ownId } = useContext(iDContext)
+  const webSocketClient = getWebSocketClient(ownId)
 
-  const addNotification = (notification: NotificationRequest) => {
+  const addNotification = (notification: Notification) => {
     setNotifications(prev => [notification, ...prev])
   }
 
@@ -38,15 +41,29 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
 
   const markAsRead = (id: string) => {
+
+    webSocketClient?.send({
+      type: 'MARK_NOTIFICATIONS_AS_READ',
+      senderId: ownId!,
+      ids: [id]
+    })
     setNotifications(prev =>
       prev.map(notif =>
         notif.id === id ? { ...notif, isRead: true } : notif
       )
     )
-    sendMessage('/app/notifications/markAsRead', { id })
+
   }
 
   const markAllAsRead = () => {
+
+    webSocketClient?.send({
+      type: 'MARK_NOTIFICATIONS_AS_READ',
+      senderId: ownId!,
+      ids: notifications.filter(n => !n.isRead).map(n => n.id)
+    })
+
+
     setNotifications(prev =>
       prev.map(notif => ({ ...notif, isRead: true }))
     )

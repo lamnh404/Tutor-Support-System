@@ -8,11 +8,11 @@ import { useNotifications } from '~/context/NotificationContext/NotificationCont
 import type { MenuProps } from 'antd'
 import { userLogoutAPI } from '~/apis/userAPI'
 import HeaderButtons from './HeaderButtons'
-import { connectWebSocket, disconnectWebSocket } from '~/utils/webSocket.ts'
 import { getNotificationsAPI } from '~/apis/notificationAPI.ts'
 import { toast } from 'react-toastify'
 import { iDContext } from '~/context/IdContext/idContext.tsx'
-import type { NotificationRequest } from '~/utils/definitions.ts'
+import { connectWebSocket, getWebSocketClient, closeWebSocketClient } from '~/utils/webSocket.ts'
+import type { NotificationType } from '~/utils/definitions.ts'
 export default function Header() {
   const [isOpenNoti, setIsOpenNoti] = useState(false)
   const navigate = useNavigate()
@@ -42,25 +42,11 @@ export default function Header() {
 
   useEffect(() => {
     if ( !ownId ) return
-    connectWebSocket({
-      userId: ownId,
-      onMessage: (msg: NotificationRequest) => {
-        addNotification(msg)
-      },
-      onConnect: () => {},
-      onError: (error) => {
-        if (process.env.NODE_ENV === 'development') {
-          if (error instanceof Error) {
-            toast.error(`WebSocket error: ${error.message}`)
-          }
-          else if (error instanceof Event) {
-            toast.error('WebSocket connection error')
-          }
-          else {
-            toast.error('WebSocket STOMP error')
-          }
-        }
-      }
+
+    connectWebSocket(ownId)
+    const webSocketClient = getWebSocketClient(ownId)
+    webSocketClient?.on('PRIVATE_NOTIFICATION', (msg) => {
+      addNotification(msg.content as unknown as NotificationType)
     })
     getNotificationsAPI()
       .then((data) => {
@@ -72,8 +58,9 @@ export default function Header() {
         }
 
       })
+
     return () => {
-      disconnectWebSocket()
+      closeWebSocketClient()
     }
 
   }, [ownId])
