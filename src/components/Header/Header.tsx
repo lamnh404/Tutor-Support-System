@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Button, Dropdown, Avatar } from 'antd'
 import { BellOutlined, CheckOutlined } from '@ant-design/icons'
 import { useState, useContext, useRef, useEffect } from 'react'
-import Notification from './Notification'
+import NotificationCard from './Notification'
 import { userContext } from '~/context/User/userContext.tsx'
 import { useNotifications } from '~/context/NotificationContext/NotificationContext'
 import type { MenuProps } from 'antd'
@@ -12,7 +12,7 @@ import { getNotificationsAPI } from '~/apis/notificationAPI.ts'
 import { toast } from 'react-toastify'
 import { iDContext } from '~/context/IdContext/idContext.tsx'
 import { connectWebSocket, getWebSocketClient, closeWebSocketClient } from '~/utils/webSocket.ts'
-import type { NotificationType } from '~/utils/definitions.ts'
+import type { Notification } from '~/utils/definitions.ts'
 export default function Header() {
   const [isOpenNoti, setIsOpenNoti] = useState(false)
   const navigate = useNavigate()
@@ -46,7 +46,7 @@ export default function Header() {
     connectWebSocket(ownId)
     const webSocketClient = getWebSocketClient(ownId)
     webSocketClient?.on('PRIVATE_NOTIFICATION', (msg) => {
-      addNotification(msg.content as unknown as NotificationType)
+      addNotification(msg.content as unknown as Notification)
     })
     getNotificationsAPI()
       .then((data) => {
@@ -135,7 +135,7 @@ export default function Header() {
                     <div className="max-h-96 overflow-y-auto">
                       {notifications.length > 0 ? (
                         notifications.map((notification) => (
-                          <Notification
+                          <NotificationCard
                             notification={notification}
                             key={notification.id}
                             onClose={() => setIsOpenNoti(false)}
