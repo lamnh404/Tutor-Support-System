@@ -160,7 +160,6 @@ const Dashboard: React.FC = () => {
     getPendingReqAPI()
       .then(data => data.data)
       .then((data) => {
-        console.log(data)
         setPendingRequestsData(data)
       })
       .catch((error) => {

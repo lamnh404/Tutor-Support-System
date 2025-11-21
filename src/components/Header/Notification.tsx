@@ -57,19 +57,23 @@ const getNotificationIcon = (type: Notification['type']) => {
 
 export default function NotificationCard({ notification, onClose }: NotificationProps) {
   const { markAsRead, removeNotification } = useNotifications()
+
   const navigate = useNavigate()
-  const  navigateLink = (type: string) => {
+  const getUrlLink = (type: string) => {
     switch (type) {
     case 'CONNECTION_REQUEST':
-      return '/dashboard/connections/requests'
+      return '/dashboard/requests'
+    default:
+      return '/'
     }
   }
+
 
   const handleClick = () => {
     if (!notification.isRead) {
       markAsRead(notification.id)
-
     }
+    navigate(getUrlLink(notification.type))
 
     if (onClose) {
       onClose()
