@@ -74,7 +74,7 @@ function App() {
                 <Route path='/:id' element={<Profile />} />
 
 
-                <Route path='/dashboard' element={ <Dashboard />} />
+                <Route path='/dashboard/:tabId' element={ <Dashboard />} />
 
                 <Route path='/course/:id' element={
                   <ActiveTabContextProvider>

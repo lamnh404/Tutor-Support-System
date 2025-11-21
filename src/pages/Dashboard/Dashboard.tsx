@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useContext, useEffect } from 'react'
 import { myCurrentTutors } from './MyTutorData'
 import TutorListCard from './TutorListCard'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Button, message, Tooltip } from 'antd'
 import {
   UserOutlined,
@@ -90,14 +90,14 @@ const MyTutorsView: React.FC = () => {
 }
 
 const studentTabs = [
-  { id: 'myTutors', label: 'Gia sư của tôi', icon: <UserOutlined />, gradient: 'from-blue-500 to-blue-600' }
+  { id: 'myTutors', path: 'my-tutors', label: 'Gia sư của tôi', icon: <UserOutlined />, gradient: 'from-blue-500 to-blue-600' }
 ]
 
 const tutorTabs = [
-  { id: 'requests', label: 'Yêu cầu đang chờ', icon: <BellOutlined />, gradient: 'from-blue-500 to-blue-600' },
-  { id: 'appointments', label: 'Lịch hẹn sắp tới', icon: <CalendarOutlined />, gradient: 'from-green-500 to-green-600' },
-  { id: 'community', label: 'Cộng đồng', icon: <TeamOutlined />, gradient: 'from-purple-500 to-purple-600' },
-  { id: 'availability', label: 'Quản lý lịch trống', icon: <ClockCircleOutlined />, gradient: 'from-orange-500 to-red-500' }
+  { id: 'requests', path: 'requests', label: 'Yêu cầu đang chờ', icon: <BellOutlined />, gradient: 'from-orange-500 to-red-500' },
+  { id: 'appointments', path: 'appointments', label: 'Lịch hẹn sắp tới', icon: <CalendarOutlined />, gradient: 'from-green-500 to-green-600' },
+  { id: 'community', path: 'community', label: 'Cộng đồng', icon: <TeamOutlined />, gradient: 'from-purple-500 to-purple-600' },
+  { id: 'availability', path: 'availability', label: 'Quản lý lịch trống', icon: <ClockCircleOutlined />, gradient: 'from-gray-500 to-gray-600' }
 ]
 
 const contentVariants = {
@@ -111,6 +111,8 @@ const Dashboard: React.FC = () => {
   const userRoles = user?.roles || []
   const { ownId } = useContext(iDContext)
   const [pendingRequestsData, setPendingRequestsData] = useState([])
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const isStudent = userRoles.includes('STUDENT')
   const isTutor = userRoles.includes('TUTOR')
@@ -122,11 +124,24 @@ const Dashboard: React.FC = () => {
     return activeRole === 'STUDENT' ? studentTabs : tutorTabs
   }, [activeRole])
 
-  const [activeTabId, setActiveTabId] = useState(activeTabs[0].id)
-
   useEffect(() => {
-    setActiveTabId(activeTabs[0].id)
-  }, [activeTabs])
+    const currentPath = location.pathname.split('/').pop()
+    const matchingTab = activeTabs.find(tab => tab.path === currentPath)
+
+    if (!matchingTab && activeTabs.length > 0) {
+      navigate(`/dashboard/${activeTabs[0].path}`, { replace: true })
+    }
+  }, [location.pathname, activeTabs, navigate])
+
+  const activeTabId = useMemo(() => {
+    const currentPath = location.pathname.split('/').pop()
+    const tab = activeTabs.find(t => t.path === currentPath)
+    return tab ? tab.id : activeTabs[0]?.id
+  }, [location.pathname, activeTabs])
+
+  const handleTabClick = (path: string) => {
+    navigate(`/dashboard/${path}`)
+  }
 
   const handleToggleRole = () => {
     setActiveRole(prev => (prev === 'STUDENT' ? 'TUTOR' : 'STUDENT'))
@@ -139,12 +154,12 @@ const Dashboard: React.FC = () => {
   const handleRejectRequest = () => {
     message.info('Đã từ chối yêu cầu.')
   }
-  useEffect( () => {
-    if (ownId) return
+
+  useEffect(() => {
+    if (!ownId) return
     getPendingReqAPI()
       .then(data => data.data)
       .then((data) => {
-        console.log(data)
         setPendingRequestsData(data)
       })
       .catch((error) => {
@@ -202,7 +217,7 @@ const Dashboard: React.FC = () => {
               {activeTabs.map(tab => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTabId(tab.id)}
+                  onClick={() => handleTabClick(tab.path)}
                   className={`w-full flex items-center gap-3 p-3 rounded-lg text-base font-medium transition-all duration-300 border border-transparent
                     ${
                 activeTabId === tab.id
