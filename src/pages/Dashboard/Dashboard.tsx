@@ -20,16 +20,18 @@ import PendingRequests from './PendingRequests'
 import UpcomingAppointments from './UpcomingAppointments'
 import AvailabilityShortcut from './AvailabilityShortcut'
 import CommunityView from './CommunityView'
-import {
-  pendingRequestsData,
-  upcomingAppointmentsData
-} from './TutorDashboardData'
+import { upcomingAppointmentsData } from './TutorDashboardData'
+
+import { getPendingReqAPI } from '~/apis/connectionAPI.ts'
+import { iDContext } from '~/context/IdContext/idContext.tsx'
+import { toast } from 'react-toastify'
 
 type Role = 'STUDENT' | 'TUTOR';
 
 const MyTutorsView: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const ITEMS_PER_PAGE = 12
+
 
   const totalTutorPages = Math.ceil(myCurrentTutors.length / ITEMS_PER_PAGE)
   const paginatedTutors = useMemo(() => {
@@ -107,6 +109,8 @@ const contentVariants = {
 const Dashboard: React.FC = () => {
   const { user } = useContext(userContext)
   const userRoles = user?.roles || []
+  const { ownId } = useContext(iDContext)
+  const [pendingRequestsData, setPendingRequestsData] = useState([])
 
   const isStudent = userRoles.includes('STUDENT')
   const isTutor = userRoles.includes('TUTOR')
@@ -135,6 +139,20 @@ const Dashboard: React.FC = () => {
   const handleRejectRequest = () => {
     message.info('Đã từ chối yêu cầu.')
   }
+  useEffect( () => {
+    if (ownId) return
+    getPendingReqAPI()
+      .then(data => data.data)
+      .then((data) => {
+        console.log(data)
+        setPendingRequestsData(data)
+      })
+      .catch((error) => {
+        if (process.env.NODE_ENV === 'development') {
+          toast.error('Lỗi khi lấy dữ liệu yêu cầu đang chờ: ' + error.message)
+        }
+      })
+  }, [ownId])
 
   const renderContent = () => {
     switch (activeTabId) {

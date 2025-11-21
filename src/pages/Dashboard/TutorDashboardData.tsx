@@ -1,9 +1,9 @@
 export interface PendingRequest {
-  id: string;
+  connectionId: string;
   studentName: string;
   studentAvatar: string;
   message?: string;
-  requestDate: Date;
+  requestDate: string;
 }
 
 export interface UpcomingAppointment {
@@ -23,11 +23,6 @@ export interface CurrentStudent {
   subject: string;
   lastUpdate?: Date;
 }
-
-export const pendingRequestsData: PendingRequest[] = [
-  { id: 'req1', studentName: 'Nguyễn Văn An', studentAvatar: 'https://randomuser.me/api/portraits/men/32.jpg', message: 'Em muốn học về Thuật toán ạ.', requestDate: new Date('2025-10-27T10:00:00') },
-  { id: 'req2', studentName: 'Trần Thị Bình', studentAvatar: 'https://randomuser.me/api/portraits/women/44.jpg', requestDate: new Date('2025-10-28T09:15:00') }
-]
 
 export const upcomingAppointmentsData: UpcomingAppointment[] = [
   { id: 'app1', studentName: 'Lê Văn Cường', studentAvatar: 'https://randomuser.me/api/portraits/men/34.jpg', dateTime: new Date('2025-10-29T15:30:00'), location: 'Google Meet ID: xyz-abc-def', subject: 'Mạng máy tính', description: 'Ôn tập về mô hình TCP/IP.' },

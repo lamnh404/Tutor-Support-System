@@ -10,3 +10,8 @@ export const connectionAPI = async (tutorId: string, studentId: string, message:
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/connections/create`, formData)
   return response.data
 }
+
+export const getPendingReqAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/connections/getPendingReq`)
+  return response.data
+}

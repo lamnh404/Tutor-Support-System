@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   MessageOutlined,
   CalendarOutlined,
@@ -11,7 +11,7 @@ import {
   CloseOutlined,
   FileTextOutlined
 } from '@ant-design/icons'
-import type { Notification} from '~/utils/definitions'
+import type { Notification } from '~/utils/definitions'
 import { useNotifications } from '~/context/NotificationContext/NotificationContext'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -57,10 +57,18 @@ const getNotificationIcon = (type: Notification['type']) => {
 
 export default function NotificationCard({ notification, onClose }: NotificationProps) {
   const { markAsRead, removeNotification } = useNotifications()
+  const navigate = useNavigate()
+  const  navigateLink = (type: string) => {
+    switch (type) {
+    case 'CONNECTION_REQUEST':
+      return '/dashboard/connections/requests'
+    }
+  }
 
   const handleClick = () => {
     if (!notification.isRead) {
       markAsRead(notification.id)
+
     }
 
     if (onClose) {

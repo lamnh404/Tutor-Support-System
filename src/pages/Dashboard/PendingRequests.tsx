@@ -31,7 +31,7 @@ const PendingRequests: React.FC<PendingRequestsProps> = ({ requests, onAccept, o
         <ul className="space-y-4">
           {displayedRequests.map((req) => (
             <motion.li
-              key={req.id}
+              key={req.connectionId}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
@@ -44,14 +44,14 @@ const PendingRequests: React.FC<PendingRequestsProps> = ({ requests, onAccept, o
                   {req.message && (
                     <p className="text-xs text-gray-600 italic flex items-center gap-1 mt-0.5 truncate"><MessageOutlined /> "{req.message}"</p>
                   )}
-                  <p className="text-xs text-gray-400 mt-0.5">{req.requestDate.toLocaleDateString('vi-VN')}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{req.requestDate}</p>
                 </div>
               </div>
               <div className="flex gap-2 self-end sm:self-center flex-shrink-0">
                 <motion.button
                   whileHover={{ scale: 1.1, backgroundColor: '#38A169' }}
                   whileTap={{ scale: 0.9 }}
-                  onClick={() => onAccept(req.id)}
+                  onClick={() => onAccept(req.connectionId)}
                   aria-label={`Chấp nhận ${req.studentName}`}
                   className="p-2 px-3 rounded-full bg-green-500 text-white shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-1"
                 >
@@ -60,7 +60,7 @@ const PendingRequests: React.FC<PendingRequestsProps> = ({ requests, onAccept, o
                 <motion.button
                   whileHover={{ scale: 1.1, backgroundColor: '#E53E3E' }}
                   whileTap={{ scale: 0.9 }}
-                  onClick={() => onReject(req.id)}
+                  onClick={() => onReject(req.connectionId)}
                   aria-label={`Từ chối ${req.studentName}`}
                   className="p-2 px-3 rounded-full bg-red-500 text-white shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
                 >

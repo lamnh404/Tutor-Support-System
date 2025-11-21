@@ -50,6 +50,7 @@ export default function Header() {
     })
     getNotificationsAPI()
       .then((data) => {
+        console.log(data.notifications)
         setNotifications(data.notifications)
       })
       .catch((error) => {
