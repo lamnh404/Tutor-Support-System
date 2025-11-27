@@ -15,3 +15,12 @@ export const getPendingReqAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/connections/getPendingReq`)
   return response.data
 }
+
+export const updateConnectionStatusAPI = async (connectionId: string, studentId: string, status: 'ACCEPTED' | 'REJECTED') => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/connections/handle-request`, {
+    connectionId,
+    studentId,
+    status
+  })
+  return response.data
+}

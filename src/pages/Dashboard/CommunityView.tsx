@@ -14,8 +14,8 @@ const CommunityView: React.FC = () => {
     )
   }
 
-  const currentCourse = myTaughtCourses[0]
-  const completedCourses = myTaughtCourses.slice(1)
+  const currentCourse = myTaughtCourses.filter((course) => course.isActive)[0]
+  const completedCourses = myTaughtCourses.filter((course) => !course.isActive)
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-md border border-gray-300">

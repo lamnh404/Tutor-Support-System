@@ -4,9 +4,9 @@ import { CheckOutlined, CloseOutlined, MessageOutlined, ArrowRightOutlined } fro
 import { motion } from 'framer-motion'
 
 interface PendingRequestsProps {
-  requests: PendingRequest[];
-  onAccept: (requestId: string) => void;
-  onReject: (requestId: string) => void;
+  requests: PendingRequest[] | [];
+  onAccept: (requestId: string, studentId: string) => void;
+  onReject: (requestId: string, studentId: string) => void;
   limit?: number;
 }
 
@@ -51,18 +51,18 @@ const PendingRequests: React.FC<PendingRequestsProps> = ({ requests, onAccept, o
                 <motion.button
                   whileHover={{ scale: 1.1, backgroundColor: '#38A169' }}
                   whileTap={{ scale: 0.9 }}
-                  onClick={() => onAccept(req.connectionId)}
+                  onClick={() => onAccept(req.connectionId, req.studentId)}
                   aria-label={`Chấp nhận ${req.studentName}`}
-                  className="p-2 px-3 rounded-full bg-green-500 text-white shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-1"
+                  className="p-2 px-3 rounded-full bg-green-500 text-white shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-1 interceptor-loading"
                 >
                   <CheckOutlined />
                 </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.1, backgroundColor: '#E53E3E' }}
                   whileTap={{ scale: 0.9 }}
-                  onClick={() => onReject(req.connectionId)}
+                  onClick={() => onReject(req.connectionId, req.studentId)}
                   aria-label={`Từ chối ${req.studentName}`}
-                  className="p-2 px-3 rounded-full bg-red-500 text-white shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
+                  className="p-2 px-3 rounded-full bg-red-500 text-white shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1 interceptor-loading"
                 >
                   <CloseOutlined />
                 </motion.button>

@@ -1,4 +1,4 @@
-import type {ExpertiseCode} from "~/utils/definitions.tsx";
+import type { ExpertiseCode } from '~/utils/definitions.tsx'
 
 export const API_ROOT = 'http://localhost:8017'
 

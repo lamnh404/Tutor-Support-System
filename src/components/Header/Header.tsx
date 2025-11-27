@@ -65,19 +65,6 @@ export default function Header() {
 
   }, [ownId])
 
-  // useEffect(() => {
-  //
-  //   getNotificationsAPI()
-  //     .then((data) => {
-  //       setNotifications(data.notifications)
-  //     })
-  //     .catch((error) => {
-  //       if (process.env.NODE_ENV === 'development') {
-  //         toast.error(error?.response?.data?.message)
-  //       }
-  //
-  //     })
-  // }, [setNotifications] )
 
   const handleLogout = () => {
     userLogoutAPI(true)

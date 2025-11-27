@@ -24,3 +24,14 @@
         animation: var(--animate-spin-slow);
     }
 }
+.bg-blob-1 {
+    background: linear-gradient(to bottom right, #60a5fa4d, #c084fc4d);
+}
+
+.bg-blob-2 {
+    background: linear-gradient(to bottom right, #f472b64d, #818cf84d);
+}
+
+.bg-blob-3 {
+    background: linear-gradient(to bottom right, #c084fc4d, #60a5fa4d);
+}

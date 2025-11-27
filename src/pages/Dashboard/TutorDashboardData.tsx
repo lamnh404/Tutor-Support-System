@@ -1,5 +1,6 @@
 export interface PendingRequest {
   connectionId: string;
+  studentId: string;
   studentName: string;
   studentAvatar: string;
   message?: string;

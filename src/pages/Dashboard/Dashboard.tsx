@@ -20,9 +20,9 @@ import PendingRequests from './PendingRequests'
 import UpcomingAppointments from './UpcomingAppointments'
 import AvailabilityShortcut from './AvailabilityShortcut'
 import CommunityView from './CommunityView'
-import { upcomingAppointmentsData } from './TutorDashboardData'
+import { type PendingRequest, upcomingAppointmentsData } from './TutorDashboardData'
 
-import { getPendingReqAPI } from '~/apis/connectionAPI.ts'
+import { getPendingReqAPI, updateConnectionStatusAPI } from '~/apis/connectionAPI.ts'
 import { iDContext } from '~/context/IdContext/idContext.tsx'
 import { toast } from 'react-toastify'
 
@@ -110,7 +110,7 @@ const Dashboard: React.FC = () => {
   const { user } = useContext(userContext)
   const userRoles = user?.roles || []
   const { ownId } = useContext(iDContext)
-  const [pendingRequestsData, setPendingRequestsData] = useState([])
+  const [pendingRequestsData, setPendingRequestsData] = useState<PendingRequest[] >([])
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -147,12 +147,36 @@ const Dashboard: React.FC = () => {
     setActiveRole(prev => (prev === 'STUDENT' ? 'TUTOR' : 'STUDENT'))
   }
 
-  const handleAcceptRequest = () => {
-    message.success('Đã chấp nhận yêu cầu!')
+  const handleAcceptRequest =async (connectionId: string, studentId: string) => {
+    updateConnectionStatusAPI(connectionId, studentId, 'ACCEPTED')
+      .then((data) => {
+        setPendingRequestsData(prevData => prevData.filter(req => req.connectionId !== connectionId))
+        if (process.env.NODE_ENV === 'development') {
+          toast.success('Yêu cầu đã được chấp nhận: ' + data.message)
+        }
+        message.success('Đã chấp nhận yêu cầu.')
+      })
+      .catch((error) => {
+        if (process.env.NODE_ENV === 'development') {
+          toast.error('Lỗi khi chấp nhận yêu cầu: ' + error.message)
+        }
+      })
   }
 
-  const handleRejectRequest = () => {
-    message.info('Đã từ chối yêu cầu.')
+  const handleRejectRequest = async (connectionId: string, studentId: string) => {
+    updateConnectionStatusAPI(connectionId, studentId, 'REJECTED')
+      .then((data) => {
+        setPendingRequestsData(prevData => prevData.filter(req => req.connectionId !== connectionId))
+        if (process.env.NODE_ENV === 'development') {
+          toast.success('Yêu cầu đã được từ chối: ' + data.message)
+        }
+        message.success('Đã từ chối yêu cầu.')
+      })
+      .catch((error) => {
+        if (process.env.NODE_ENV === 'development') {
+          toast.error('Lỗi khi từ chối yêu cầu: ' + error.message)
+        }
+      })
   }
 
   useEffect(() => {
