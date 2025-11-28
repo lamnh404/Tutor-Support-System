@@ -1,8 +1,34 @@
-import React from 'react'
-import { myTaughtCourses } from './CourseInfo'
+import React, { useEffect } from 'react'
 import CourseCard from './CourseCard'
+import { getListCommunitiesOfTutorAPI } from '~/apis/communitiesAPI.ts'
+
+
+export interface TutorCourse {
+  id: string;
+  name: string;
+  studentCount: number;
+  isActive?: boolean;
+}
 
 const CommunityView: React.FC = () => {
+
+  const [myTaughtCourses, setMyTaughtCourses] = React.useState<TutorCourse[]>([])
+
+  useEffect(() => {
+    const fetchCommunities = () => {
+      try {
+        getListCommunitiesOfTutorAPI().then ((data) => {
+          setMyTaughtCourses(data.communities)
+        })
+      } catch (error) {
+        console.error('Error fetching communities:', error)
+      }
+    }
+
+    fetchCommunities()
+  }, [])
+
+
   if (myTaughtCourses.length === 0) {
     return (
       <div className="bg-white p-6 rounded-xl shadow-md border border-gray-300">
@@ -13,6 +39,7 @@ const CommunityView: React.FC = () => {
       </div>
     )
   }
+
 
   const currentCourse = myTaughtCourses.filter((course) => course.isActive)[0]
   const completedCourses = myTaughtCourses.filter((course) => !course.isActive)

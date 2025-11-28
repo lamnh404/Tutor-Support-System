@@ -1,7 +1,7 @@
 import React from 'react'
-import { type TutorCourse } from './CourseInfo'
 import { Link } from 'react-router-dom'
 import { TeamOutlined, ArrowRightOutlined } from '@ant-design/icons'
+import type { TutorCourse } from '~/pages/Dashboard/CommunityView.tsx'
 
 interface CourseCardProps {
   course: TutorCourse;
@@ -13,7 +13,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
       to={`/course/${course.id}`}
       className="block group"
     >
-      <div className={`relative p-5 rounded-xl border border-gray-200 shadow-sm transition-all duration-300 hover:shadow-md hover:border-gray-300 bg-gradient-to-bl ${course.gradient}`}>
+      <div className={'relative p-5 rounded-xl border border-gray-200 shadow-sm transition-all duration-300 hover:shadow-md hover:border-gray-300 bg-gradient-to-bl from-blue-100 to-cyan-100'}>
         <h3 className="text-lg font-bold text-gray-900 mt-1 mb-3 line-clamp-2" style={{ minHeight: '2rem' }}>
           {course.name}
         </h3>
