@@ -17,7 +17,7 @@ export default function Intro() {
         <p className="text-lg text-white mb-8 max-w-2xl mx-auto">
           Chương trình Tutor/Mentor được triển khai nhằm hỗ trợ sinh viên trong quá trình học tập và phát triển kỹ năng.
         </p>
-        <Link to={user ? '/dashboard' : '/login'}>
+        <Link to={user ? '/search' : '/login'}>
           <button className="bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-blue-700 transition-colors cursor-pointer">
             {user ? 'Tìm kiếm ngay' : 'Đăng nhập bằng BKeID'}
           </button>
